@@ -53,9 +53,10 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <form onSubmit={handleSubmit}>
       <input
+        style={{color: "black"}}
         type="text"
         value={text}
-        size={50}
+        size={30}
         onChange={handleTextChange}
       />
       </form>
