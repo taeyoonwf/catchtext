@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# lingua-rs wasm pkg
+app/lingua-rs-pkg/lingua*
+app/lingua-rs-pkg/package.json
+app/lingua-rs-pkg/README.md
+app/lingua-rs-pkg/LICENSE
