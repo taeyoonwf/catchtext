@@ -4,8 +4,8 @@ import { hasGrantedAllScopesGoogle, TokenResponse, CredentialResponse } from '@r
 import React, { useState, useEffect } from "react";
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import Image from 'next/image'
-import { DocumentData, Firestore, Timestamp, collection, getDocs, getFirestore, query } from 'firebase/firestore';
-import { getAuth, signInWithCredential, GoogleAuthProvider, signInWithCustomToken } from 'firebase/auth';
+import { DocumentData, Firestore, Timestamp, collection, doc, getDocs, getFirestore, query, setDoc } from 'firebase/firestore';
+import { getAuth, signInWithCredential, GoogleAuthProvider, signInWithCustomToken, User } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import FirebaseConfig from './firebase-config';
 
@@ -45,6 +45,11 @@ export default function Home() {
 //const analytics = getAnalytics(app);
   const db: Firestore = getFirestore(app);
 
+  const doit7 = async (user: User) => {
+      const citiesRef = collection(db, "users");
+      await setDoc(doc(citiesRef, user.uid), {
+        name: user.displayName, email: user.email, profile: user.photoURL });
+  };
   const doit6 = async () => {
     const usersCollectionRef = collection(db, 'Users', 'GYuojO5gZNXVZEAtd1BD', 'Phrases');
     const q = query(usersCollectionRef);
@@ -100,9 +105,10 @@ export default function Home() {
     console.log(credentialResponse.clientId);
     console.log(credentialResponse.credential);
     const credential = GoogleAuthProvider.credential(credentialResponse.credential);
-    signInWithCredential(auth, credential).then((result) => {
+    signInWithCredential(auth, credential).then(async (result) => {
       // User signed in to Firebase, now you can perform actions in Firestore
-      doit6();
+      //doit6();
+      await doit7(result.user);
     }).catch((error) => {
       console.log(`error occurs`);
       console.log(error);
