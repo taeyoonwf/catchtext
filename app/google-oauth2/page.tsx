@@ -47,9 +47,10 @@ export default function Home() {
 
   const doit7 = async (user: User) => {
       const citiesRef = collection(db, "users");
-      const myDoc = await setDoc(doc(citiesRef, user.uid), {
-        name: user.displayName, email: user.email, profile: user.photoURL });
+      const myDoc = await setDoc(doc(citiesRef, 'go' + user.uid), {
+        name: user.displayName, email: user.email, profile: user.photoURL, authProvider: `google` });
       console.log(myDoc);
+      //console.log(user);
   };
   const doit6 = async () => {
     const usersCollectionRef = collection(db, 'Users', 'GYuojO5gZNXVZEAtd1BD', 'Phrases');
