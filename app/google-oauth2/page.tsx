@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { DocumentData, Firestore, Timestamp, collection, doc, getDocs, getFirestore, query, setDoc } from 'firebase/firestore';
 import { getAuth, signInWithCredential, GoogleAuthProvider, signInWithCustomToken, User } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
-import FirebaseConfig from './firebase-config';
+import FirebaseConfig from '../config/firebase-config';
 
 declare interface PhraseData {
   /** A mapping between a field and its value. */
@@ -47,8 +47,9 @@ export default function Home() {
 
   const doit7 = async (user: User) => {
       const citiesRef = collection(db, "users");
-      await setDoc(doc(citiesRef, user.uid), {
+      const myDoc = await setDoc(doc(citiesRef, user.uid), {
         name: user.displayName, email: user.email, profile: user.photoURL });
+      console.log(myDoc);
   };
   const doit6 = async () => {
     const usersCollectionRef = collection(db, 'Users', 'GYuojO5gZNXVZEAtd1BD', 'Phrases');

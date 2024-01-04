@@ -41,5 +41,5 @@ app/lingua-rs-pkg/package.json
 app/lingua-rs-pkg/README.md
 app/lingua-rs-pkg/LICENSE
 
-# firebase config
-app/google-oauth2/firebase-config*
+# publisher dependent config files
+app/config
