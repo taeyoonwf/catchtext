@@ -2,11 +2,12 @@
 import './layout.css';
 import AddText from './addtext';
 import Library from './library';
+import Header from './header';
 import { useState } from 'react';
 
 export default function Home() {
     const [tab, setTab] = useState(0);
-    const [text, setText] = useState("");
+    const [headerToggle, setHeaderToggle] = useState(true);
 
     const mainContent = () => {
         if (tab == 0)
@@ -18,32 +19,37 @@ export default function Home() {
         return <h1>Others</h1>;
     }
 
-    const handleSubmit = () => {};
-    const handleTextChange = (e: React.FormEvent<HTMLInputElement>) => {
-        const { value } = e.currentTarget;
-        setText(value);
-    };
-
-    const centerBar = () => {
-        return (<form className='form-text-bar' onSubmit={handleSubmit}>
-            <input
-              type="text"
-              value={text}
-              onChange={handleTextChange}
-            />
-            </form>
-      );
+    const clickMenuBtn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        // console.log(e.target); //e.target);
+        // console.log(typeof e.target);
+        const anchor = e.target as HTMLAnchorElement;
+        // console.log(anchor.innerHTML.toString());
+        const text = anchor.innerText;
+        //console.log(anchor);
+        //console.log(anchor.innerText);
+        if (text === "Home") {
+            setHeaderToggle(true);
+            setTab(0);
+        }
+        else if (text === "Add Text") {
+            setHeaderToggle(false);
+            setTab(1);
+        }
+        else if (text === "Library") {
+            setHeaderToggle(true);
+            setTab(2);            
+        }
     }
     return (<>
         <div className="left-part">
             <div className='menu'>
-                <a href="#Home" className='menu-btn home-btn' onClick={() => setTab(0)}><span>
+                <a href="#Home" className='menu-btn home-btn' onClick={clickMenuBtn}><span>
                     Home
                 </span></a>
-                <a href="#AddText" className='menu-btn' onClick={() => setTab(1)}><span>
+                <a href="#AddText" className='menu-btn' onClick={clickMenuBtn}><span>
                     Add Text
                 </span></a>
-                <a href="#Library" className='menu-btn' onClick={() => setTab(2)}><span>
+                <a href="#Library" className='menu-btn' onClick={clickMenuBtn}><span>
                     Library
                 </span></a>
                 <a href="#Quiz" className='menu-btn' onClick={() => setTab(3)}><span>
@@ -58,17 +64,10 @@ export default function Home() {
             </div>
         </div>
         <div className="right-part">
-            <header className="top-part">
-                <div className="top-side-left"></div>
-                <div className="top-center">
-                    {centerBar()}
-                </div>
-                <div className="top-side-right"></div>
-            </header>
-            <div className='main-content'>
+            {headerToggle && <Header />}
+            <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
                 {mainContent()}
             </div>
         </div>
-    </>
-    );
+    </>);
 }
