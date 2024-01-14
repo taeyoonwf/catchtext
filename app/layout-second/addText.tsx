@@ -1,7 +1,7 @@
 import './layout.css';
 
 export default function AddText() {
-   return (<>
+    return (<>
         Hey
         <h1>Add Text 1</h1>
         <h2>Add Text 1</h2>
