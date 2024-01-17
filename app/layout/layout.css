@@ -83,6 +83,14 @@
 .menu-btn {
     flex: 1;
     margin: 8px 16px 0px 0px;
+
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    font-style: normal;
+    font-size: large;
+    text-align: left;
 }
 
 .home-btn {
