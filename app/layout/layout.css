@@ -1,0 +1,112 @@
+.main-body {
+    background-color: #fff;
+}
+
+.top-part {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    position: fixed;
+    width: calc(100% - 168px);
+    display: flex;
+    top: 0px;
+    height: 56px;
+    z-index: 1;
+    padding: 0px;
+}
+
+.top-part div {
+    flex-direction: row;
+    margin: 0px auto;
+}
+
+.top-side-left {
+    width: calc(168px * 1.00);
+}
+
+.top-side-right {
+    width: calc(168px * 2.00);
+}
+
+.top-center {
+    width: calc(100% - 336px);
+    max-width: 800px;
+}
+
+.form-text-bar {
+    margin: auto;
+    height: 100%;
+}
+
+.form-text-bar input {
+    color: black;
+    font-size: medium;
+    width: 100%;
+    height: 36px;
+    margin: 10px auto;
+    padding: 0px 8px;
+}
+
+.left-part {
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    top: 0px;
+    left: 0px;
+    width: 168px;
+    height: 100%;
+    position: fixed;
+    padding-left: 16px;
+}
+
+.right-part {
+    background-color: #fff;
+    top: 0px;
+    left: 168px;
+    width: calc(100% - 168px);
+    position: relative;
+}
+
+.main-content {
+    background-color: #fff;
+    width: 100%;
+    position:relative;
+}
+
+.header-padding {
+    top: 56px;
+}
+
+.menu {
+    flex-direction: column;
+    display: flex;
+}
+
+.menu-btn {
+    flex: 1;
+    margin: 8px 16px 0px 0px;
+}
+
+.home-btn {
+    margin: 16px 16px 16px 0px;
+}
+
+.bottom-part {
+    display: block;
+    position:relative;
+    height: 50px;
+}
+
+.login-panel {
+    background-color: #dde;
+    position: fixed;
+    z-index: 2;
+    width: calc(56px * 1);
+    height: 56px;
+    right: 0px;
+    top: 0px;
+    display: flex;
+}
+
+.login-panel img {
+    display: block;
+    margin: auto;
+}
