@@ -8,39 +8,40 @@ import Dictionary from './layout/dictionary';
 import Etc from './layout/etc';
 import Quiz from './layout/quiz';
 import HomePage from './layout/homePage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
-    const [tab, setTab] = useState(0);
-    const [headerToggle, setHeaderToggle] = useState(true);
+    const [currentHash, setCurrentHash] = useState('#Home');
+    const [headerToggle, setHeaderToggle] = useState(false);
     const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
     const pages = [HomePage, AddText, Library, Quiz, Dictionary, Etc];
 
-    const clickMenuBtn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        // console.log(e.target); //e.target);
-        // console.log(typeof e.target);
-        const anchor = e.target as HTMLAnchorElement;
-        // console.log(anchor.innerHTML.toString());
-        const text = anchor.innerText;
-        //console.log(anchor);
-        //console.log(anchor.innerText);
-        setTab(menuText.indexOf(text));
-        //setTab(menuText.findIndex(text));
-        // const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
-        if (text === menuText[0] || text === menuText[1] || text === menuText[3] || text === menuText[5]) {
-            setHeaderToggle(false);
+    useEffect(() => {
+        const handleHashChange = () => {
+            setCurrentHash(window.location.hash);
+            const pageIndex = getPageIndex(window.location.hash);
+            setHeaderToggle(pageIndex == 2 || pageIndex == 4);
+        };
+
+        if (currentHash !== window.location.hash) {
+            handleHashChange();
         }
-        else {
-            setHeaderToggle(true);
-        }
-    }
+        window.addEventListener('hashchange', handleHashChange);
+
+        // Cleanup listener
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, []);
+
+    const getPageIndex = (hash: string) => menuText.findIndex((e: string) => e.replace(/\s/g, '') === hash.substring(1));
+
     return (<>
         <div className="left-part">
             <div className='menu'>
                 {menuText.map((e) => (<a
                     href={`#${e.replace(/\s/g, '')}`}
                     className={`menu-btn ${e === "Home" ? 'home-btn' : ''}`}
-                    onClick={clickMenuBtn}
                     key={`${e}`}><span>
                     {e}
                 </span></a>))}
@@ -50,7 +51,7 @@ export default function Home() {
             {headerToggle && <Header />}
             <LoginPanel />
             <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
-                {pages[tab]()}
+                {pages[getPageIndex(currentHash)]()}
             </div>
         </div>
     </>);
