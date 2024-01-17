@@ -88,6 +88,7 @@
     border: none;
     color: blue;
     cursor: pointer;
+    font-family: inherit;
     font-style: normal;
     font-size: large;
     text-align: left;
