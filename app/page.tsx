@@ -11,16 +11,21 @@ import HomePage from './layout/homePage';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
-    const [currentHash, setCurrentHash] = useState('#Home');
-    const [headerToggle, setHeaderToggle] = useState(false);
     const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
+    const [currentHash, setCurrentHash] = useState('#' + menuText[0]);
+    const [headerToggle, setHeaderToggle] = useState(false);
     const pages = [HomePage, AddText, Library, Quiz, Dictionary, Etc];
 
     useEffect(() => {
         const handleHashChange = () => {
-            setCurrentHash(window.location.hash);
             const pageIndex = getPageIndex(window.location.hash);
-            setHeaderToggle(pageIndex == 2 || pageIndex == 4);
+            if (pageIndex >= 0) {
+                setCurrentHash(window.location.hash);
+                setHeaderToggle(pageIndex == 2 || pageIndex == 4);
+            }
+            else {
+                setCurrentHash('#' + menuText[0]);
+            }
         };
 
         if (currentHash !== window.location.hash) {
@@ -51,7 +56,7 @@ export default function Home() {
             {headerToggle && <Header />}
             <LoginPanel />
             <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
-                {pages[getPageIndex(currentHash)]()}
+                {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]()}
             </div>
         </div>
     </>);
