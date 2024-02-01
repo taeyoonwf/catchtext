@@ -10,7 +10,7 @@ export default function Home() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [speed, setSpeed] = useState(1.0);
     const [duration, setDuration] = useState(0.0);
-    const speeds: number[] = [0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6];
+    const speeds: number[] = [0.6, 0.8, 1.0, 1.2, 1.4];
     let playStartTime: Date = new Date();
     let playEndTime: Date = new Date();
     const speedConst: number = 1.45;
@@ -68,7 +68,7 @@ export default function Home() {
         console.log(text + 'speed ' + speed);
         const utterThis = new SpeechSynthesisUtterance(text);
         utterThis.voice = voices[voice];
-        utterThis.rate = Math.pow(speed, 1.0 / speedConst);
+        utterThis.rate = (speed < 1.0) ? speed : Math.pow(speed, 1.0 / speedConst);
         utterThis.onstart = (ev: SpeechSynthesisEvent) => {
             const curTarget: SpeechSynthesisUtterance = ev.currentTarget as SpeechSynthesisUtterance;
             playingUtterance.current = curTarget;
@@ -88,7 +88,7 @@ export default function Home() {
                 playEndTime = new Date();
                 const duration: number = playEndTime.getTime() - playStartTime.getTime();
                 console.log(`Speech duration: ${duration} ms`);
-                setDuration(duration * Math.pow(curTarget.rate, speedConst));
+                setDuration(duration * ((speed < 1.0) ? speed : Math.pow(curTarget.rate, speedConst)));
                 console.log(`end ` + playEndTime);
             }
             setIsPlaying(false);
