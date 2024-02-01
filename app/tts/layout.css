@@ -1,0 +1,24 @@
+.input-text {
+    color: black;
+    font-size: large;
+    margin: 20px;
+}
+
+.playBtn {
+    margin: 20px;
+    font-size: large;
+    padding: 10px;
+}
+
+.selectVoice {
+    font-size: large;
+}
+
+.selectSpeed {
+    font-size: large;
+    margin: 0px 20px 0px 0px;
+}
+
+.durationInfo {
+    margin: 0px 20px;
+}
