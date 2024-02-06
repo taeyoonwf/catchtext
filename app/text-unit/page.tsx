@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import SelectorLangId from '../dropdown-langid/selectorLangId';
 import './layout.css';
-import { Textarea } from "@nextui-org/react";
 import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 
 const tmpData = {
@@ -51,7 +50,7 @@ export default function TextUnit() {
             </div>
         </div>
         <div className='translation-part'>
-            {trans.map((value) => (<div className='text-and-langid'>
+            {trans.map((value, index) => (<div key={index} className='text-and-langid'>
                     <TextareaAutoResize
                         className='text-part-trans'
                         value={value}
