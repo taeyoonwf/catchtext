@@ -12,10 +12,6 @@ interface TextUnitProps {
     translations?: string[];
 }
 
-const arr = [1, 5, 2, 6, 4, 3];
-const result = arr.reduce((acc: number[][], curr, index) => (index % 2 === 0 ? acc.push([curr]) : acc[acc.length - 1].push(curr), acc), []);
-console.log(result);
-
 export default function TextUnit({defaultText, defaultLangId, translations}: TextUnitProps) {
     //const evenIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 0);
     //const oddIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 1);
