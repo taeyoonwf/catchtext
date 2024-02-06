@@ -18,7 +18,7 @@ export default function TextUnit({defaultText, defaultLangId, translations}: Tex
     const convArrIntoPairs = (e: string[]) => e.reduce((acc: string[][], curr, index) => (index % 2 === 0 ? acc.push([curr]) : acc[acc.length - 1].push(curr), acc), []);
     const [text, setText] = useState(defaultText !== undefined ? defaultText : '');
     const [langId, setLangId] = useState(defaultLangId !== undefined ? defaultLangId : '---');
-    const [trans, setTrans] = useState<string[][]>(translations !== undefined ? convArrIntoPairs(translations) : []);
+    const [trans, setTrans] = useState<string[][]>(translations !== undefined ? convArrIntoPairs(translations) : [['', '---']]);
     const playSound = (e: React.MouseEvent<HTMLButtonElement>) => {
         console.log('asdf');
         console.log(e);

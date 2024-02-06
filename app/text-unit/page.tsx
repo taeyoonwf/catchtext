@@ -20,5 +20,7 @@ const tmpData = {
 export default function Home() {
   return (<>
     <TextUnit defaultText={tmpData['txt']} defaultLangId={tmpData['lid']} translations={tmpData['trs']} />
+    <TextUnit />
+    <TextUnit />
   </>);
 }
