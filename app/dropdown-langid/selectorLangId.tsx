@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { ChangeEventHandler, useState } from 'react';
 import './layout.css';
 
 const langIds: string[] = ['---', 'de', 'en', 'es', 'fr', 'hi', 'id', 'it',
@@ -7,9 +7,10 @@ const langIds: string[] = ['---', 'de', 'en', 'es', 'fr', 'hi', 'id', 'it',
 
 interface SelectorLangIdProps {
     defaultSelectedKey: string;
+    onChange?: (newLangId: string) => void;
 }
 
-export default function SelectorLangId({defaultSelectedKey}: SelectorLangIdProps) {
+export default function SelectorLangId({defaultSelectedKey, onChange}: SelectorLangIdProps) {
     const [langId, setLangId] = useState(defaultSelectedKey);
     const [btnHover, setBtnHover] = useState(false);
     const [stop, setStop] = useState(false);
@@ -19,6 +20,7 @@ export default function SelectorLangId({defaultSelectedKey}: SelectorLangIdProps
         setLangId(newLangId);
         setBtnHover(false);
         SelectorLangId.prototype.justClosed = true;
+        onChange?.call(null, newLangId);
     };
 
     return (

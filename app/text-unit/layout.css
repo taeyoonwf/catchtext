@@ -1,9 +1,11 @@
 .text-unit-bg {
     margin: 10px;
-    background-color: blueviolet;
+    padding: 5px;
+    background-color: none;
 
     flex-direction: row;
     display: flex;
+    border: 1px solid;
 }
 
 .play-btn {
@@ -15,7 +17,7 @@
 .text-part {
     width: calc(50% - 10px);
     margin: 0px 0px auto 10px;
-    background-color: blue;
+    background-color: none;
 }
 
 .text-and-langid {
