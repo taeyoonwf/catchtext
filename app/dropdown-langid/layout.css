@@ -15,11 +15,18 @@
   }
   
   .sel-lang-id-dropdown-content {
-    display: none;
     position: absolute;
     background-color: #f1f1f1;
     box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.2);
     z-index: 1;
+  }
+
+  .display-none {
+    display: none;
+  }
+
+  .display-block {
+    display: block;
   }
 
   .comment {
@@ -38,6 +45,6 @@
   
   .sel-lang-id-dropdown-content button:hover {background-color: #ddd;}
 
-  .sel-lang-id-dropdown:hover .sel-lang-id-dropdown-content {display: block;}
-  
+  .sel-lang-id-dropdown-comment:hover .sel-lang-id-dropdown-content {display: block;}
+
   .sel-lang-id-dropdown:hover .sel-lang-id-dropbtn {background-color: #5d5d5d;}

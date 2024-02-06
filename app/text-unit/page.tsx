@@ -22,7 +22,7 @@ const tmpData = {
 
 export default function TextUnit() {
     const [text, setText] = useState('');
-    const [trans, setTrans] = useState<string[]>(['abc', 'def']);
+    const [trans, setTrans] = useState<string[]>([]);
     const playSound = (e: React.MouseEvent<HTMLButtonElement>) => {
         console.log('asdf');
         console.log(e);
@@ -50,7 +50,7 @@ export default function TextUnit() {
                     value={text}
                     onChange={handleTextChange}
                 />
-                <SelectorLangId defaultSelectedKey='en' />
+                <SelectorLangId defaultSelectedKey='---' />
             </div>
         </div>
         <div className='translation-part'>
@@ -60,7 +60,7 @@ export default function TextUnit() {
                         value={value}
                         onChange={handleTextChange}
                     />
-                    <SelectorLangId defaultSelectedKey='en' />
+                    <SelectorLangId defaultSelectedKey='---' />
             </div>))}
             <div className='add-translation'>
                 <button onClick={addTranslation}>+</button>
