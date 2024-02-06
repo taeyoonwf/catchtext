@@ -33,6 +33,10 @@ export default function TextUnit() {
         setText(value);
       };
     
+    const addTranslation = (e: React.MouseEvent<HTMLButtonElement>) => {
+        setTrans(oldTrans => [...oldTrans, '']);
+    }
+
     return (
     <div className='text-unit-bg'>
         <button onClick={playSound}
@@ -58,6 +62,9 @@ export default function TextUnit() {
                     />
                     <SelectorLangId defaultSelectedKey='en' />
             </div>))}
+            <div className='add-translation'>
+                <button onClick={addTranslation}>+</button>
+            </div>
         </div>
     </div>
     );

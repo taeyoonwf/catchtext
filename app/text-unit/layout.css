@@ -21,6 +21,7 @@
 .text-and-langid {
     flex-direction: row;
     display: flex;
+    margin: 0px 0px 10px;
 }
 
 .translation-part {
@@ -62,6 +63,19 @@
 
 .text-part-langid-comment div div div div div button {
     visibility: hidden;
+}
+
+.add-translation {
+    width: 100%;
+}
+
+.add-translation button {
+    width: 40px;
+    margin: 0px auto;
+    position: relative;
+    left: calc(50% - 40px);
+    height: 40px;
+    font-size: large;
 }
 
 .text-textarea {
