@@ -67,6 +67,7 @@
 
 .add-translation {
     width: 100%;
+    margin: 10px auto;
 }
 
 .add-translation button {
@@ -75,7 +76,7 @@
     position: relative;
     left: calc(50% - 40px);
     height: 40px;
-    font-size: large;
+    font-size:xx-large;
 }
 
 .text-textarea {
