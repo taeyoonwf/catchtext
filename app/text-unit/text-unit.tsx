@@ -1,16 +1,17 @@
 "use client"
-import { useState } from 'react';
-//import SelectorLangId, { Blank, LangId } from '../dropdown-langid/selectorLangId';
-import DropdownSelector from '../dropdown-selector/dropdownSelector';
+import { useContext, useEffect, useState } from 'react';
 import './layout.css';
+import DropdownSelector from '../dropdown-selector/dropdownSelector';
 import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
+import { SpeechSynthesizerContext } from '../speech-synthesizer/speechSynthesizer';
 
-const langIds = ['de', 'en', 'es', 'fr', 'hi', 'id', 'it',
-'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'] as const;
+const langIds = [
+    'de', 'en', 'es', 'fr', 'hi', 'id', 'it',
+    'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'] as const;
 const blank = '---' as const;
+const dialectIds = ['en-US', 'en-GB-0', 'en-GB-1', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'] as const;
 export type LangIdType = typeof langIds[number];
 export type BlankType = typeof blank;
-const dialectIds = ['en-US', 'en-GB-0', 'en-GB-1', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'] as const;
 export type DialectIdType = typeof dialectIds[number];
 const defaultDialect: {[key in LangIdType]?: DialectIdType } = {
     en: 'en-US',
@@ -18,22 +19,20 @@ const defaultDialect: {[key in LangIdType]?: DialectIdType } = {
     zh: 'zh-CN'
 };
 
-//const dialectIds: {[key in LangIdType|BlankType]: string[]} = {
-
 export type TextUnitData = {
-    txt: string;
-    lid: LangIdType;
-    did?: DialectIdType;
-    trs: string[];
-    tid: string;
     spd: number;
     len: number;
+    txt: string;
+    lid: LangIdType;
+    did: DialectIdType;
+    trs: string[];
+    tid: string;
     prg: string;
     crt: number;
     mdf: number;
     pid: number;
 };
-  
+
 export interface TextUnitProps {
     speed?: number;
     length?: number;
@@ -60,11 +59,27 @@ export default function TextUnit({
     const [trans, setTrans] = useState<string[][]>(translationsProp !== undefined ? convArrIntoPairs(translationsProp) : [['', blank]]);
     const [speed, setSpeed] = useState<number>(speedProp !== undefined ? speedProp : 1.0);
     const [length, setLength] = useState<number>(lengthProp !== undefined ? lengthProp : 0.0);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const speechSynthesizer = useContext(SpeechSynthesizerContext);
 
     const playSound = (e: React.MouseEvent<HTMLButtonElement>) => {
-        // console.log('asdf');
-        // console.log(e);
-    };
+        //console.log(speechSynthesizer.PlayText);
+        //console.log(speechSynthesizer.Stop);
+        if (isPlaying) {
+            speechSynthesizer.Stop!();
+            return;
+        }
+        if (speechSynthesizer.PlayText === undefined)
+            return;
+
+        const voiceId = (dialectId !== blank) ? dialectId : langId;
+        setIsPlaying(true);
+        speechSynthesizer.PlayText(text, voiceId, speed, (forcedStop, playingTime) => {
+            if (!forcedStop)
+                setLength(playingTime);
+            setIsPlaying(false);
+        });
+    }
 
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = e.currentTarget;
@@ -100,7 +115,7 @@ export default function TextUnit({
     <div className='text-unit-bg'>
         <button onClick={playSound}
                         className='play-btn'>
-                        ▶
+                        {`${!isPlaying && text.length > 0 ? '▶' : '■'}`}
                     </button>
         <div className='text-part'>
             <div className='text-and-langid'>
