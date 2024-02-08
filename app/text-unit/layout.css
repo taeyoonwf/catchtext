@@ -44,6 +44,33 @@
     width: 130px;
 }
 
+.sound-length {
+    width: 20%;
+}
+
+.sound-length span {
+    display: inline-block;
+    padding: 5px;
+}
+
+.speech-option {
+    width: 20%;
+}
+
+.playback-speed {
+    width: 60%;
+}
+
+.playback-speed span {
+    display: inline-block;
+    width: 80px;
+}
+
+.playback-speed input {
+    display: inline-block;
+    width: calc(100% - 120px);
+}
+
 .text-part-trans {
     background-color: none;
     width: calc(100% - 40px);
@@ -67,16 +94,25 @@
     visibility: hidden;
 }
 
-.add-translation {
+.add-button-panel {
     width: 100%;
     margin: 10px auto;
 }
 
-.add-translation button {
+.add-button-panel .add-trans-button {
     width: 40px;
     margin: 0px auto;
     position: relative;
     left: calc(50% - 40px);
+    height: 40px;
+    font-size:xx-large;
+}
+
+.add-button-panel .add-button {
+    width: 40px;
+    margin: 0px auto 10px;
+    position: relative;
+    left: calc(50% - 20px);
     height: 40px;
     font-size:xx-large;
 }

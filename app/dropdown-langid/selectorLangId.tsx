@@ -2,21 +2,31 @@
 import React, { ChangeEventHandler, useState } from 'react';
 import './layout.css';
 
-const langIds: string[] = ['---', 'de', 'en', 'es', 'fr', 'hi', 'id', 'it',
-'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'];
+export const langIds = ['de', 'en', 'es', 'fr', 'hi', 'id', 'it',
+'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'] as const;
+export const blank = '---' as const;
 
+export type LangId = typeof langIds[number];
+export type Blank = typeof blank;
+
+const dialectIds: string[] = ['en-GB-0', 'en-GB-1', 'en-US', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'];
+
+// Object.keys(langIds)
 interface SelectorLangIdProps {
-    defaultSelectedKey: string;
-    onChange?: (newLangId: string) => void;
+    value?: LangId;
+    onChange?: (newLangId: LangId) => void;
 }
 
-export default function SelectorLangId({defaultSelectedKey, onChange}: SelectorLangIdProps) {
-    const [langId, setLangId] = useState(defaultSelectedKey);
+export default function SelectorLangId({
+    value: defaultValue,
+    onChange
+}: SelectorLangIdProps) {
+    const [langId, setLangId] = useState<LangId|Blank>(defaultValue !== undefined ? defaultValue : blank);
     const [btnHover, setBtnHover] = useState(false);
     const [stop, setStop] = useState(false);
 
     const changeLangId = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const newLangId = e.currentTarget.innerHTML;
+        const newLangId: LangId = e.currentTarget.innerHTML as LangId;
         setLangId(newLangId);
         setBtnHover(false);
         SelectorLangId.prototype.justClosed = true;
@@ -45,7 +55,7 @@ export default function SelectorLangId({defaultSelectedKey, onChange}: SelectorL
             {langId}
         </button>
         <div className={`${(btnHover && !stop) ? "display-block" : "display-none"} sel-lang-id-dropdown-content`}>
-            {langIds.map((theId) => (theId !== '---' &&
+            {langIds.map((theId: LangId|Blank) => (theId !== blank &&
                 <button key={theId} onClick={changeLangId}>{theId}</button>
             ))}
         </div>

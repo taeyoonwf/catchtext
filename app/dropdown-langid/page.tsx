@@ -4,13 +4,16 @@ import SelectorLangId from "./selectorLangId";
 export default function Home() {
   return (<>
     <div>
-      <SelectorLangId defaultSelectedKey='fr' />
+      <SelectorLangId value='fr' />
     </div>
     <div>
-      <SelectorLangId defaultSelectedKey='---' />
+      <SelectorLangId />
     </div>
     <div>
-      <SelectorLangId defaultSelectedKey='es' />
+      <SelectorLangId value='es' />
+    </div>
+    <div>
+      <SelectorLangId value='de' />
     </div>
   </>);
 }
