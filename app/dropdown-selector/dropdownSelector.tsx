@@ -2,16 +2,8 @@
 import React, { ChangeEventHandler, useEffect, useState } from 'react';
 import './layout.css';
 
-//export const langIds = ['de', 'en', 'es', 'fr', 'hi', 'id', 'it',
-//'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'] as const;
-//export const blank = '---' as const;
+let DropdownSelectorJustClosed = false;
 
-//export type LangId = typeof langIds[number];
-//export type Blank = typeof blank;
-
-//const dialectIds: string[] = ['en-GB-0', 'en-GB-1', 'en-US', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'];
-
-// Object.keys(langIds)
 interface DropdownSelectorProps<Keys extends string, Blank extends string> {
     blankKey: Blank;
     selectedKey?: Keys|Blank;
@@ -41,15 +33,15 @@ export default function DropdownSelector<Keys extends string, Blank extends stri
         //console.log(`newKey : ${newKey}`);
         setKey(newKey);
         setBtnHover(false);
-        DropdownSelector.prototype.justClosed = true;
+        DropdownSelectorJustClosed = true;
         onChangeProp?.call(null, newKey);
     };
 
     return (
     <div className="sel-dropdown"
         onMouseMove={() => {
-            setBtnHover(!stop && DropdownSelector.prototype.justClosed != true);
-            DropdownSelector.prototype.justClosed = false;
+            setBtnHover(!stop && DropdownSelectorJustClosed != true);
+            DropdownSelectorJustClosed = false;
         }}
         onMouseOut={() => {
             setBtnHover(false);
@@ -61,7 +53,7 @@ export default function DropdownSelector<Keys extends string, Blank extends stri
         <button className="sel-dropbtn"
             onClick={() => {
                 setStop(true);
-                DropdownSelector.prototype.justClosed = true;
+                DropdownSelectorJustClosed = true;
             }}
         >
             {key}
