@@ -1,5 +1,5 @@
 "use client"
-import React, { ChangeEventHandler, useState } from 'react';
+import React, { ChangeEventHandler, useEffect, useState } from 'react';
 import './layout.css';
 
 //export const langIds = ['de', 'en', 'es', 'fr', 'hi', 'id', 'it',
@@ -14,7 +14,7 @@ import './layout.css';
 // Object.keys(langIds)
 interface DropdownSelectorProps<Keys extends string, Blank extends string> {
     blankKey: Blank;
-    selectedKey?: Keys;
+    selectedKey?: Keys|Blank;
     keys: readonly Keys[];
     onChange?: (newKey: Keys) => void;
 }
@@ -23,18 +23,26 @@ export default function DropdownSelector<Keys extends string, Blank extends stri
     blankKey: blankKeyProp,
     selectedKey: selectedKeyProp,
     keys: keysProp,
-    onChange
+    onChange: onChangeProp
 }: DropdownSelectorProps<Keys, Blank>) {
-    const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined && keysProp.includes(selectedKeyProp) ? selectedKeyProp : blankKeyProp);
+    const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined ? selectedKeyProp : blankKeyProp);
     const [btnHover, setBtnHover] = useState(false);
     const [stop, setStop] = useState(false);
 
+    useEffect(() => {
+        if (selectedKeyProp !== undefined) {
+            setKey(selectedKeyProp);
+        }
+    }, [selectedKeyProp]);
+
     const changeLangId = (e: React.MouseEvent<HTMLButtonElement>) => {
         const newKey: Keys = e.currentTarget.innerHTML as Keys;
+        //console.log(`oldKey : ${key}`);
+        //console.log(`newKey : ${newKey}`);
         setKey(newKey);
         setBtnHover(false);
         DropdownSelector.prototype.justClosed = true;
-        onChange?.call(null, newKey);
+        onChangeProp?.call(null, newKey);
     };
 
     return (

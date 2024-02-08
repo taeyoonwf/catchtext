@@ -1,24 +1,25 @@
 "use client"
 import React, { useState } from 'react';
-import TextUnit from './text-unit';
+import TextUnit, { LangIdType, TextUnitData } from './text-unit';
 
-const tmpData = {
-  "txt": "Salgo de mi habitación y veo la hora en un reloj del pasillo.",
-  "lid": "es",
-  "trs": [
+const tmpData: TextUnitData = {
+  txt: "Salgo de mi habitación y veo la hora en un reloj del pasillo.",
+  lid: "es",
+  trs: [
     "I walk out of my room and check the time on a clock in the hallway.",
     "en",
     "나는 방을 나와 복도에 있는 시계로 시간을 확인한다.",
     "ko"
   ],
 
-  "tid": "1hpfs",
-    "spd": 1,
-    "len": 0,
-    "prg": "s5oa7",
-    "crt": 1663589481,
-    "mdf": 1663594289,
-    "pid": 4
+  tid: "1hpfs",
+  spd: 1,
+  len: 0,
+  prg: "s5oa7",
+  crt: 1663589481,
+  mdf: 1663594289,
+  pid: 4,
+  did: 'es-ES'
 };
 
 export default function Home() {
