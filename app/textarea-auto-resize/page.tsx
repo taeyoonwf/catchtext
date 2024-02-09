@@ -8,6 +8,6 @@ export default function Home() {
         console.log(value);
     }
   return (<>
-    <TextareaAutoResize className='test-class' value='Annyoung' onChange={changeText} />
+    <TextareaAutoResize className='test-class' value='Annyoung Annyoung Annyoung Annyoung Annyoung Annyoung Annyoung Annyoung Annyoung Annyoung Annyoung' onChange={changeText} />
   </>);
 }

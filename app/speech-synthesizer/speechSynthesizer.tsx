@@ -1,36 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
-
-interface UserDetails {
-  username: string;
-}
-
-interface UserContextType {
-  userDetails: UserDetails;
-}
-
-const initialUserDetails: UserDetails = {
-  username: "John Doe"
-};
-
-const UserContext = createContext<UserContextType>({
-  userDetails: initialUserDetails,
-});
-const UserDispatchContext = createContext<React.Dispatch<React.SetStateAction<UserDetails>>>(() => {});
-
-function UserProvider({ children }: any) {
-  const [userDetails, setUserDetails] = useState(initialUserDetails);
-
-  return (
-    <UserContext.Provider value={{ userDetails }}>
-      <UserDispatchContext.Provider value={setUserDetails}>
-        {children}
-      </UserDispatchContext.Provider>
-    </UserContext.Provider>
-  );
-}
-
-// let voices: {[key in string]?: SpeechSynthesisVoice} = {};
-//let playingUtterance: SpeechSynthesisUtterance|undefined = undefined;
+import React, { createContext, useEffect, useRef } from "react";
 
 type StopCallbackFunc = (forcedStop: boolean, playingTimeInNormalSpeed: number) => void;
 

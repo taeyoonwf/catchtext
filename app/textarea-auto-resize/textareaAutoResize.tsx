@@ -1,5 +1,5 @@
 "use client"
-import React, { ChangeEventHandler, useRef, useState } from 'react';
+import React, { ChangeEventHandler, useRef, useState, useEffect } from 'react';
 import './layout.css';
 
 interface TextareaAutoResizeProps {
@@ -12,6 +12,10 @@ export default function TextareaAutoResize({className, value, onChange}: Textare
     const divWrapper = useRef<HTMLDivElement>(null);
     const [text, setText] = useState(value);
     
+    useEffect(() => {
+        divWrapper.current!.dataset.replicatedValue = value;
+    }, []);
+
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = e.currentTarget;
         setText(value);
