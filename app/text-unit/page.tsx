@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import TextUnit, { LangIdType, TextUnitData } from './text-unit';
+import TextUnit, { LangIdType, TextUnitData } from './textUnit';
 import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
 
 /*

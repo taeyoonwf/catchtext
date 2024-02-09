@@ -63,8 +63,10 @@ export default function TextUnit({
     const speechSynthesizer = useContext(SpeechSynthesizerContext);
 
     const playSound = (e: React.MouseEvent<HTMLButtonElement>) => {
-        //console.log(speechSynthesizer.PlayText);
-        //console.log(speechSynthesizer.Stop);
+        console.log(speechSynthesizer.PlayText);
+        console.log(speechSynthesizer.Stop);
+        console.log(speechSynthesizer.IsPlaying);
+
         if (isPlaying) {
             speechSynthesizer.Stop!();
             return;
