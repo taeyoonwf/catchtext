@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import TextUnit, { LangIdType, TextUnitData } from './textUnit';
 import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
+import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
 
 /*
 const tmpData: TextUnitData = {
@@ -45,7 +46,7 @@ export default function Home() {
     setTextUnits((prev) => [...prev, {}]);
   };
 
-  return (<SpeechSynthesizer>
+  return (<SpeechSynthesizer><LanguageIdentifier>
             <div className='add-button-panel'>
                 <button onClick={addTextUnit} className='add-button'>+</button>
             </div>
@@ -60,5 +61,5 @@ export default function Home() {
       length={tmpData.len}
       dialectId={tmpData.did}
     />
-  </SpeechSynthesizer>);
+  </LanguageIdentifier></SpeechSynthesizer>);
 }

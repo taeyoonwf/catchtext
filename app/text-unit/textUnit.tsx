@@ -4,13 +4,16 @@ import './layout.css';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
 import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 import { SpeechSynthesizerContext } from '../speech-synthesizer/speechSynthesizer';
+import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
+import { LanguageIdentifierResultType } from '../linguaWrapper';
+import { LangId } from '../dropdown-langid/selectorLangId';
 
-const langIds = [
+const allLangIds = [
     'de', 'en', 'es', 'fr', 'hi', 'id', 'it',
     'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'] as const;
 const blank = '---' as const;
 const dialectIds = ['en-US', 'en-GB-0', 'en-GB-1', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'] as const;
-export type LangIdType = typeof langIds[number];
+export type LangIdType = typeof allLangIds[number];
 export type BlankType = typeof blank;
 export type DialectIdType = typeof dialectIds[number];
 const defaultDialect: {[key in LangIdType]?: DialectIdType } = {
@@ -18,6 +21,7 @@ const defaultDialect: {[key in LangIdType]?: DialectIdType } = {
     es: 'es-ES',
     zh: 'zh-CN'
 };
+const LANG_ID_APPEAR = 0.01;
 
 export type TextUnitData = {
     spd: number;
@@ -55,12 +59,14 @@ export default function TextUnit({
     const convArrIntoPairs = (e: string[]) => e.reduce((acc: string[][], curr, index) => (index % 2 === 0 ? acc.push([curr]) : acc[acc.length - 1].push(curr), acc), []);
     const [text, setText] = useState(textProp !== undefined ? textProp : '');
     const [langId, setLangId] = useState<LangIdType|BlankType>(langIdProp !== undefined ? langIdProp : blank);
+    const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>(langIdProp !== undefined ? [langIdProp] : []);
     const [dialectId, setDialectId] = useState<DialectIdType|BlankType>(dialectIdProp !== undefined ? dialectIdProp : blank);
     const [trans, setTrans] = useState<string[][]>(translationsProp !== undefined ? convArrIntoPairs(translationsProp) : [['', blank]]);
     const [speed, setSpeed] = useState<number>(speedProp !== undefined ? speedProp : 1.0);
     const [length, setLength] = useState<number>(lengthProp !== undefined ? lengthProp : 0.0);
     const [isPlaying, setIsPlaying] = useState(false);
     const speechSynthesizer = useContext(SpeechSynthesizerContext);
+    const languageIdentifier = useContext(LanguageIdentifierContext);
 
     const playSound = (e: React.MouseEvent<HTMLButtonElement>) => {
         console.log(speechSynthesizer.PlayText);
@@ -85,8 +91,19 @@ export default function TextUnit({
 
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = e.currentTarget;
-        setText(value);
-      };
+        if (value !== text) {
+            setText(value);
+            languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
+                const newLangIdCands: LangIdType[] =
+                    langAndProbs.filter((langAndProb) => langAndProb.value >= LANG_ID_APPEAR)
+                        .map((langAndProb) => langAndProb.language as LangIdType);
+                console.log(langAndProbs);
+                console.log(newLangIdCands);
+                setLangId(newLangIdCands.length > 0 ? newLangIdCands[0] : blank);
+                setLangIdOptions(newLangIdCands);
+            });
+        }
+    };
     
     const addTranslation = (e: React.MouseEvent<HTMLButtonElement>) => {
         setTrans(oldTrans => [...oldTrans, ['', blank]]);
@@ -126,7 +143,7 @@ export default function TextUnit({
                     value={text}
                     onChange={handleTextChange}
                 />
-                <DropdownSelector blankKey={blank} keys={langIds} selectedKey={langId} onChange={handleLangId}/>
+                <DropdownSelector<LangIdType, BlankType> blankKey={blank} keys={langIdOptions} selectedKey={langId} onChange={handleLangId}/>
             </div>
             <div className='text-and-langid'>
                 <div className='sound-length'>
@@ -153,7 +170,7 @@ export default function TextUnit({
                         value={value[0]}
                         onChange={handleTextChange}
                     />
-                    <DropdownSelector blankKey={blank} keys={langIds} selectedKey={value[1] as LangIdType} />
+                    <DropdownSelector blankKey={blank} keys={allLangIds} selectedKey={value[1] as LangIdType} />
             </div>))}
             <div className='add-button-panel'>
                 <button className='add-trans-button' onClick={addTranslation}>+</button>

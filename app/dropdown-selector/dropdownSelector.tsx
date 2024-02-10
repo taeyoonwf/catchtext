@@ -18,14 +18,20 @@ export default function DropdownSelector<Keys extends string, Blank extends stri
     onChange: onChangeProp
 }: DropdownSelectorProps<Keys, Blank>) {
     const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined ? selectedKeyProp : blankKeyProp);
+    const [keyOptions, setKeyOptions] = useState<readonly Keys[]>(keysProp);
     const [btnHover, setBtnHover] = useState(false);
     const [stop, setStop] = useState(false);
 
     useEffect(() => {
+        console.log(`useEffect in dropdownSelector`);
+        console.log(`btnHover : ${btnHover}`);
+        console.log(`stop : ${stop}`);
+        console.log(`keysProp : ${keysProp}`);
         if (selectedKeyProp !== undefined) {
             setKey(selectedKeyProp);
         }
-    }, [selectedKeyProp]);
+        setKeyOptions(keysProp);
+    }, [keysProp, selectedKeyProp]);
 
     const changeLangId = (e: React.MouseEvent<HTMLButtonElement>) => {
         const newKey: Keys = e.currentTarget.innerHTML as Keys;
@@ -59,7 +65,7 @@ export default function DropdownSelector<Keys extends string, Blank extends stri
             {key}
         </button>
         <div className={`${(btnHover && !stop) ? "display-block" : "display-none"} sel-dropdown-content`}>
-            {keysProp.map((theId: Keys|Blank) => (theId !== blankKeyProp &&
+            {keyOptions.map((theId: Keys|Blank) => (theId !== blankKeyProp &&
                 <button key={theId} onClick={changeLangId}>{theId}</button>
             ))}
         </div>
