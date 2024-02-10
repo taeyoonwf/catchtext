@@ -95,7 +95,7 @@ export default function TextUnit({
             setText(value);
             languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
                 const newLangIdCands: LangIdType[] =
-                    langAndProbs.filter((langAndProb) => langAndProb.value >= LANG_ID_APPEAR)
+                    langAndProbs.filter((e) => e.language as LangIdType && e.value >= LANG_ID_APPEAR)
                         .map((langAndProb) => langAndProb.language as LangIdType);
                 console.log(langAndProbs);
                 console.log(newLangIdCands);
