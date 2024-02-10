@@ -94,9 +94,13 @@ export default function TextUnit({
         if (value !== text) {
             setText(value);
             languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
+                console.log(langAndProbs);
+                if (langAndProbs.length > 0) {
+                    console.log(langAndProbs[0].language as LangIdType);
+                }
                 const newLangIdCands: LangIdType[] =
-                    langAndProbs.filter((e) => e.language as LangIdType && e.value >= LANG_ID_APPEAR)
-                        .map((langAndProb) => langAndProb.language as LangIdType);
+                    langAndProbs.filter((e) => allLangIds.includes(e.language as LangIdType) && e.value >= LANG_ID_APPEAR)
+                        .map((e) => e.language as LangIdType);
                 console.log(langAndProbs);
                 console.log(newLangIdCands);
                 setLangId(newLangIdCands.length > 0 ? newLangIdCands[0] : blank);
