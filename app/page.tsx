@@ -15,7 +15,14 @@ export default function Home() {
     //const [currentHash, setCurrentHash] = useState('#' + menuText[0]);
     const [tab, setTab] = useState(0);
     const [headerToggle, setHeaderToggle] = useState(false);
-    const pages = [<HomePage />, <AddText />, <Library />, <Quiz />, <Dictionary />, <Etc />];
+    const pages = [
+        <HomePage key='home' />,
+        <AddText key='addText' />,
+        <Library key='library' />,
+        <Quiz key='quiz' />,
+        <Dictionary key='dictionary' />,
+        <Etc key='etc' />
+    ];
 
     const handleMenuBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
         // console.log(e.target); //e.target);

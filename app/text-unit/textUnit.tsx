@@ -61,7 +61,7 @@ export default function TextUnit({
     const [langId, setLangId] = useState<LangIdType|BlankType>(langIdProp !== undefined ? langIdProp : blank);
     const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>(langIdProp !== undefined ? [langIdProp] : []);
     const [dialectId, setDialectId] = useState<DialectIdType|BlankType>(dialectIdProp !== undefined ? dialectIdProp : blank);
-    const [trans, setTrans] = useState<string[][]>(translationsProp !== undefined ? convArrIntoPairs(translationsProp) : [['', blank]]);
+    const [trans, setTrans] = useState<string[][]>((translationsProp !== undefined && translationsProp.length >= 2) ? convArrIntoPairs(translationsProp) : [['', blank]]);
     const [transLangIdOpts, setTransLangIdOpts] = useState<LangIdType[][]>([]);
     const [speed, setSpeed] = useState<number>(speedProp !== undefined ? speedProp : 1.0);
     const [length, setLength] = useState<number>(lengthProp !== undefined ? lengthProp : 0.0);
@@ -183,6 +183,7 @@ export default function TextUnit({
                     className='text-part-text'
                     value={text}
                     onChange={handleTextChange}
+                    placeholder='Base Text'
                 />
                 <DropdownSelector<LangIdType, BlankType> blankKey={blank} keys={langIdOptions} selectedKey={langId} onChange={handleLangId}/>
             </div>
@@ -210,6 +211,7 @@ export default function TextUnit({
                         className='text-part-trans'
                         value={value[0]}
                         onChange={handleTransTextChange(index)}
+                        placeholder={`Translation #${index + 1}`}
                     />
                     <DropdownSelector
                         blankKey={blank}
