@@ -1,0 +1,118 @@
+.text-unit-bg {
+    margin: 10px 10px 20px;
+    padding: 5px;
+    background-color: none;
+
+    flex-direction: row;
+    display: flex;
+    border: 1px solid;
+}
+
+.play-btn {
+    width: 50px;
+    min-height: 50px;
+    font-size: large;
+}
+
+.text-part {
+    width: calc(50% - 10px);
+    margin: 0px 0px auto 10px;
+    background-color: none;
+}
+
+.text-and-langid {
+    flex-direction: row;
+    display: flex;
+    margin: 0px 0px 10px;
+}
+
+.translation-part {
+    width: calc(50% - 10px);
+    margin: 0px 0px auto 10px;
+}
+
+.text-part-text {
+    background-color: none;
+    width: calc(100% - 40px);
+    resize: none;
+    font-size: large;
+    overflow: hidden;
+}
+
+.text-part-langid {
+    background-color: chocolate;
+    width: 130px;
+}
+
+.sound-length {
+    width: 20%;
+}
+
+.sound-length span {
+    display: inline-block;
+    padding: 5px;
+}
+
+.speech-option {
+    width: 20%;
+}
+
+.playback-speed {
+    width: 60%;
+}
+
+.playback-speed span {
+    display: inline-block;
+    width: 80px;
+}
+
+.playback-speed input {
+    display: inline-block;
+    width: calc(100% - 120px);
+}
+
+.text-part-trans {
+    background-color: none;
+    width: calc(100% - 40px);
+    resize: none;
+    font-size: large;
+    overflow: hidden;
+}
+
+.text-part-langid-comment {
+    background-color: chocolate;
+    width: 50px;
+    resize: none;
+    font-size: large;
+}
+
+.text-part-langid-comment div div div div input {
+    width: 50px;
+}
+
+.text-part-langid-comment div div div div div button {
+    visibility: hidden;
+}
+
+.add-button-panel {
+    width: 100%;
+    margin: 10px auto;
+}
+
+.add-button-panel .add-trans-button {
+    width: 40px;
+    margin: 0px auto;
+    position: relative;
+    left: calc(50% - 40px);
+    height: 40px;
+    font-size:xx-large;
+}
+
+.add-button-panel .add-button {
+    width: 40px;
+    margin: 0px auto 10px;
+    position: relative;
+    left: calc(50% - 20px);
+    height: 40px;
+    font-size:xx-large;
+}

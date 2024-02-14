@@ -1,39 +1,32 @@
 "use client"
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { detectAll } from 'tinyld/heavy'
-import { LanguageIdentifierOutputType } from "../linguaWrapper";
+import { LanguageIdentifierResultType } from "../linguaWrapper";
+import { LanguageIdentifier, LanguageIdentifierContext } from "./languageIdentifier";
 
 export default function Home() {
   const [text, setText] = useState("");
-  const [linguaReady, setLinguaReady] = useState(false);
-  const [langIds, setLangIds] = useState<{language: string, value: number}[]>();
-  const workerRef = useRef<Worker>()
-
-  useEffect(() => {
-    workerRef.current = new Worker(new URL('../linguaWrapper.ts', import.meta.url));
-    workerRef.current.onmessage = async (event: MessageEvent<boolean|LanguageIdentifierOutputType>) => {
-      if (typeof event.data === "boolean")
-        setLinguaReady(true);
-      else
-        setLangIds(event.data.result);
-    }
-    workerRef.current?.postMessage({ init: true, text: '' });
-
-    return () => {
-      workerRef.current?.terminate()
-    }
-  }, []);
+  // const [linguaReady, setLinguaReady] = useState(false);
+  const [langIds, setLangIds] = useState<LanguageIdentifierResultType>();
+  // const speechSynthesizer = useContext(SpeechSynthesizerContext);
+  const languageIdentifier = useContext(LanguageIdentifierContext);
 
   const handleTextChange = (e: React.FormEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setText(value);
-    if (linguaReady) {
+    /*languageIdentifier.Query!(value, (langAndProb) => {
+      setLangIds(langAndProb);
+    });
+    */
+    console.log(languageIdentifier.Query);
+
+    /* if (linguaReady) {
       workerRef.current?.postMessage({ init: false, text: value });
     }
     else {
       const langAll: {lang: string, accuracy: number}[] = detectAll(value);
       setLangIds(langAll.map((e, index) => ({language: e.lang, value: e.accuracy})));
-    }
+    } */
   };
 
   const handleSubmit = () => {}
@@ -51,7 +44,9 @@ export default function Home() {
   };
 
   return (
+    <LanguageIdentifier>
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
+
       <form onSubmit={handleSubmit}>
       <input
         style={{color: "black"}}
@@ -65,5 +60,6 @@ export default function Home() {
         {showLangIds()}
       </div>
     </main>
+    </LanguageIdentifier>
   );
 }
