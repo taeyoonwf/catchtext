@@ -62,6 +62,7 @@ export default function TextUnit({
     const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>(langIdProp !== undefined ? [langIdProp] : []);
     const [dialectId, setDialectId] = useState<DialectIdType|BlankType>(dialectIdProp !== undefined ? dialectIdProp : blank);
     const [trans, setTrans] = useState<string[][]>(translationsProp !== undefined ? convArrIntoPairs(translationsProp) : [['', blank]]);
+    const [transLangIdOpts, setTransLangIdOpts] = useState<LangIdType[][]>([]);
     const [speed, setSpeed] = useState<number>(speedProp !== undefined ? speedProp : 1.0);
     const [length, setLength] = useState<number>(lengthProp !== undefined ? lengthProp : 0.0);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -103,12 +104,48 @@ export default function TextUnit({
                         .map((e) => e.language as LangIdType);
                 console.log(langAndProbs);
                 console.log(newLangIdCands);
-                setLangId(newLangIdCands.length > 0 ? newLangIdCands[0] : blank);
                 setLangIdOptions(newLangIdCands);
+
+                //const updateNewLangId = newLangIdCands.length > 0 && langId !== newLangIdCands[0];
+                if (newLangIdCands.length > 0) {
+                    const newLangId = newLangIdCands[0];
+                    if (langId !== newLangId) {
+                        setLangId(newLangId);
+                        if (defaultDialect[newLangId] !== undefined)
+                            setDialectId(defaultDialect[newLangId]!);
+                    }
+                }
+                else {
+                    setLangId(blank);
+                    setDialectId(blank);
+                }
             });
         }
     };
-    
+
+    const handleTransTextChange = (index: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const { value } = e.currentTarget;
+        const newTrans = [...trans];
+        if (newTrans[index][0] !== value) {
+            newTrans[index][0] = value;
+            setTrans(newTrans);
+            languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
+                const newLangIdCands: LangIdType[] =
+                    langAndProbs.filter((e) => allLangIds.includes(e.language as LangIdType) && e.value >= LANG_ID_APPEAR)
+                        .map((e) => e.language as LangIdType);
+                const newTrans = [...trans];
+                newTrans[index][1] = (newLangIdCands.length > 0) ? newLangIdCands[0] : blank;
+                setTrans(newTrans);
+                const newTransLangIdOpts = [...transLangIdOpts];
+                newTransLangIdOpts[index] = newLangIdCands;
+                setTransLangIdOpts(newTransLangIdOpts);
+            });
+        }
+        console.log(e.currentTarget);
+        console.log(index);
+        //if (value !== )
+    };
+
     const addTranslation = (e: React.MouseEvent<HTMLButtonElement>) => {
         setTrans(oldTrans => [...oldTrans, ['', blank]]);
     }
@@ -172,9 +209,13 @@ export default function TextUnit({
                     <TextareaAutoResize
                         className='text-part-trans'
                         value={value[0]}
-                        onChange={handleTextChange}
+                        onChange={handleTransTextChange(index)}
                     />
-                    <DropdownSelector blankKey={blank} keys={allLangIds} selectedKey={value[1] as LangIdType} />
+                    <DropdownSelector
+                        blankKey={blank}
+                        keys={transLangIdOpts[index] !== undefined ? transLangIdOpts[index] : []}
+                        selectedKey={value[1] as LangIdType}
+                    />
             </div>))}
             <div className='add-button-panel'>
                 <button className='add-trans-button' onClick={addTranslation}>+</button>

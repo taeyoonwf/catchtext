@@ -5,11 +5,9 @@ import { LanguageIdentifierResultType } from '../linguaWrapper';
 
 export default function TestUnit() {
     const [text, setText] = useState("");
-    // const [linguaReady, setLinguaReady] = useState(false);
     const [langIds, setLangIds] = useState<LanguageIdentifierResultType>();
-    // const speechSynthesizer = useContext(SpeechSynthesizerContext);
     const languageIdentifier = useContext(LanguageIdentifierContext);
-  
+
     const handleTextChange = (e: React.FormEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget;
       setText(value);
@@ -18,18 +16,9 @@ export default function TestUnit() {
         setLangIds(langAndProb);
       });
       console.log(languageIdentifier.Query);
-  
-      /* if (linguaReady) {
-        workerRef.current?.postMessage({ init: false, text: value });
-      }
-      else {
-        const langAll: {lang: string, accuracy: number}[] = detectAll(value);
-        setLangIds(langAll.map((e, index) => ({language: e.lang, value: e.accuracy})));
-      } */
     };
-  
     const handleSubmit = () => {}
-  
+
     const showLangIds = () => {
       if (langIds) {
         return (<>

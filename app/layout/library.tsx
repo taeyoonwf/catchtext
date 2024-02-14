@@ -1,23 +1,22 @@
-import './layout.css';
+"use client"
+import React, { useState } from 'react';
+import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
+import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
+import TextUnit, { TextUnitData } from '../text-unit/textUnit';
 
 export default function Library() {
-    return (<>
-        <h1>Library 0</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library 5</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library 10</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library</h1>
-        <h1>Library 15</h1>
-        <h1>Library</h1>
-    </>);
+    const [textUnits, setTextUnits] = useState<TextUnitData[]>([]);
+    //const textUnits: TextUnitData = [];
+    const addTextUnit = (e: React.MouseEvent<HTMLButtonElement>) => {
+      setTextUnits((prev) => [...prev, {} as TextUnitData]);
+    };
+  
+    return (<SpeechSynthesizer><LanguageIdentifier>
+              <div className='add-button-panel'>
+                  <button onClick={addTextUnit} className='add-button'>+</button>
+              </div>
+              {textUnits.length > 0 && textUnits.map((textUnit, index) => (
+                <TextUnit key={index}/>
+              )).reverse()}
+    </LanguageIdentifier></SpeechSynthesizer>);
 }

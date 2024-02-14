@@ -14,7 +14,14 @@ export default function Home() {
     const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
     const [currentHash, setCurrentHash] = useState('#' + menuText[0]);
     const [headerToggle, setHeaderToggle] = useState(false);
-    const pages = [HomePage, AddText, Library, Quiz, Dictionary, Etc];
+    const pages = [
+        <HomePage></HomePage>,
+        <AddText></AddText>,
+        <Library></Library>,
+        <Quiz></Quiz>,
+        <Dictionary></Dictionary>,
+        <Etc></Etc>
+    ];
 
     useEffect(() => {
         const handleHashChange = () => {
@@ -56,7 +63,7 @@ export default function Home() {
             {headerToggle && <Header />}
             <LoginPanel />
             <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
-                {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]()}
+                {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]}
             </div>
         </div>
     </>);
