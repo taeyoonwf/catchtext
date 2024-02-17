@@ -1,6 +1,6 @@
 "use client"
 import React, { createContext, useEffect, useRef } from "react";
-import { LanguageIdentifierInputType, LanguageIdentifierOutputType, LanguageIdentifierResultType } from "../linguaWrapper";
+import { LanguageIdentifierOutputType, LanguageIdentifierResultType } from "../linguaWrapper";
 import { detectAll } from 'tinyld/heavy'
 
 const langNameToId: {[key in string]: string} = {
