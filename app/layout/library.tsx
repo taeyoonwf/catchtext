@@ -2,13 +2,14 @@
 import React, { useState } from 'react';
 import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
 import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
-import TextUnit, { TextUnitData } from '../text-unit/textUnit';
+import TextUnit from '../text-unit/textUnit';
+import { TextUnitAbbrData } from '../baseTypes';
 
 export default function Library() {
-    const [textUnits, setTextUnits] = useState<TextUnitData[]>([]);
+    const [textUnits, setTextUnits] = useState<TextUnitAbbrData[]>([]);
     //const textUnits: TextUnitData = [];
     const addTextUnit = (e: React.MouseEvent<HTMLButtonElement>) => {
-      setTextUnits((prev) => [...prev, {} as TextUnitData]);
+      setTextUnits((prev) => [...prev, {} as TextUnitAbbrData]);
     };
   
     return (<SpeechSynthesizer><LanguageIdentifier>

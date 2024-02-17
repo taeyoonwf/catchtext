@@ -6,36 +6,9 @@ import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 import { SpeechSynthesizerContext } from '../speech-synthesizer/speechSynthesizer';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
-import { LangId } from '../dropdown-langid/selectorLangId';
+import { Blank, BlankType, DefaultDialect, DialectIdType, DialectIds, LangIdType, LangIds } from '../baseTypes';
 
-const allLangIds = [
-    'de', 'en', 'es', 'fr', 'hi', 'id', 'it',
-    'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'] as const;
-const blank = '---' as const;
-const dialectIds = ['en-US', 'en-GB-0', 'en-GB-1', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'] as const;
-export type LangIdType = typeof allLangIds[number];
-export type BlankType = typeof blank;
-export type DialectIdType = typeof dialectIds[number];
-const defaultDialect: {[key in LangIdType]?: DialectIdType } = {
-    en: 'en-US',
-    es: 'es-ES',
-    zh: 'zh-CN'
-};
 const LANG_ID_APPEAR = 0.01;
-
-export type TextUnitData = {
-    spd: number;
-    len: number;
-    txt: string;
-    lid: LangIdType;
-    did: DialectIdType;
-    trs: string[];
-    tid: string;
-    prg: string;
-    crt: number;
-    mdf: number;
-    pid: number;
-};
 
 export interface TextUnitProps {
     speed?: number;
@@ -58,10 +31,10 @@ export default function TextUnit({
     //const oddIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 1);
     const convArrIntoPairs = (e: string[]) => e.reduce((acc: string[][], curr, index) => (index % 2 === 0 ? acc.push([curr]) : acc[acc.length - 1].push(curr), acc), []);
     const [text, setText] = useState(textProp !== undefined ? textProp : '');
-    const [langId, setLangId] = useState<LangIdType|BlankType>(langIdProp !== undefined ? langIdProp : blank);
+    const [langId, setLangId] = useState<LangIdType|BlankType>(langIdProp !== undefined ? langIdProp : Blank);
     const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>(langIdProp !== undefined ? [langIdProp] : []);
-    const [dialectId, setDialectId] = useState<DialectIdType|BlankType>(dialectIdProp !== undefined ? dialectIdProp : blank);
-    const [trans, setTrans] = useState<string[][]>((translationsProp !== undefined && translationsProp.length >= 2) ? convArrIntoPairs(translationsProp) : [['', blank]]);
+    const [dialectId, setDialectId] = useState<DialectIdType|BlankType>(dialectIdProp !== undefined ? dialectIdProp : Blank);
+    const [trans, setTrans] = useState<string[][]>((translationsProp !== undefined && translationsProp.length >= 2) ? convArrIntoPairs(translationsProp) : [['', Blank]]);
     const [transLangIdOpts, setTransLangIdOpts] = useState<LangIdType[][]>([]);
     const [speed, setSpeed] = useState<number>(speedProp !== undefined ? speedProp : 1.0);
     const [length, setLength] = useState<number>(lengthProp !== undefined ? lengthProp : 0.0);
@@ -81,7 +54,7 @@ export default function TextUnit({
         if (speechSynthesizer.PlayText === undefined)
             return;
 
-        const voiceId = (dialectId !== blank) ? dialectId : langId;
+        const voiceId = (dialectId !== Blank) ? dialectId : langId;
         setIsPlaying(true);
         speechSynthesizer.PlayText(text, voiceId, speed, (forcedStop, playingTime) => {
             if (!forcedStop)
@@ -100,7 +73,7 @@ export default function TextUnit({
                     console.log(langAndProbs[0].language as LangIdType);
                 }
                 const newLangIdCands: LangIdType[] =
-                    langAndProbs.filter((e) => allLangIds.includes(e.language as LangIdType) && e.value >= LANG_ID_APPEAR)
+                    langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType) && e.value >= LANG_ID_APPEAR)
                         .map((e) => e.language as LangIdType);
                 console.log(langAndProbs);
                 console.log(newLangIdCands);
@@ -111,12 +84,12 @@ export default function TextUnit({
                     const newLangId = newLangIdCands[0];
                     if (langId !== newLangId) {
                         setLangId(newLangId);
-                        setDialectId(defaultDialect[newLangId] !== undefined ? defaultDialect[newLangId]! : blank);
+                        setDialectId(DefaultDialect[newLangId] !== undefined ? DefaultDialect[newLangId]! : Blank);
                     }
                 }
                 else {
-                    setLangId(blank);
-                    setDialectId(blank);
+                    setLangId(Blank);
+                    setDialectId(Blank);
                 }
             });
         }
@@ -130,10 +103,10 @@ export default function TextUnit({
             setTrans(newTrans);
             languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
                 const newLangIdCands: LangIdType[] =
-                    langAndProbs.filter((e) => allLangIds.includes(e.language as LangIdType) && e.value >= LANG_ID_APPEAR)
+                    langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType) && e.value >= LANG_ID_APPEAR)
                         .map((e) => e.language as LangIdType);
                 const newTrans = [...trans];
-                newTrans[index][1] = (newLangIdCands.length > 0) ? newLangIdCands[0] : blank;
+                newTrans[index][1] = (newLangIdCands.length > 0) ? newLangIdCands[0] : Blank;
                 setTrans(newTrans);
                 const newTransLangIdOpts = [...transLangIdOpts];
                 newTransLangIdOpts[index] = newLangIdCands;
@@ -146,7 +119,7 @@ export default function TextUnit({
     };
 
     const addTranslation = (e: React.MouseEvent<HTMLButtonElement>) => {
-        setTrans(oldTrans => [...oldTrans, ['', blank]]);
+        setTrans(oldTrans => [...oldTrans, ['', Blank]]);
     }
 
     const handleSpeed = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,7 +135,7 @@ export default function TextUnit({
             //console.log(`dialectIds : ${dialectIds[newKey]}`);
             //console.log(`newDialect : ${dialectIds[newKey][0]}`);
             //console.log(`defaultDialect[newKey] : ${defaultDialect[newKey]}`);
-            setDialectId((defaultDialect[newKey] !== undefined) ? defaultDialect[newKey]! : blank);
+            setDialectId((DefaultDialect[newKey] !== undefined) ? DefaultDialect[newKey]! : Blank);
         }
     }
 
@@ -184,7 +157,7 @@ export default function TextUnit({
                     onChange={handleTextChange}
                     placeholder='Base Text'
                 />
-                <DropdownSelector<LangIdType, BlankType> blankKey={blank} keys={langIdOptions} selectedKey={langId} onChange={handleLangId}/>
+                <DropdownSelector<LangIdType, BlankType> blankKey={Blank} keys={langIdOptions} selectedKey={langId} onChange={handleLangId}/>
             </div>
             <div className='text-and-langid'>
                 <div className='sound-length'>
@@ -192,8 +165,8 @@ export default function TextUnit({
                 </div>
                 <div className='speech-option'>
                     <DropdownSelector<DialectIdType, BlankType>
-                        blankKey={blank}
-                        keys={dialectIds.filter(e => e.startsWith(langId))}
+                        blankKey={Blank}
+                        keys={DialectIds.filter(e => e.startsWith(langId))}
                         selectedKey={dialectId}
                         onChange={handleDialect}
                     />
@@ -213,7 +186,7 @@ export default function TextUnit({
                         placeholder={`Translation #${index + 1}`}
                     />
                     <DropdownSelector
-                        blankKey={blank}
+                        blankKey={Blank}
                         keys={transLangIdOpts[index] !== undefined ? transLangIdOpts[index] : []}
                         selectedKey={value[1] as LangIdType}
                     />

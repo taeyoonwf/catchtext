@@ -1,32 +1,23 @@
 "use client"
-import React, { ChangeEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import './layout.css';
+import { Blank, BlankType, LangIdType, LangIds } from '../baseTypes';
 
-export const langIds = ['de', 'en', 'es', 'fr', 'hi', 'id', 'it',
-'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'zh'] as const;
-export const blank = '---' as const;
-
-export type LangId = typeof langIds[number];
-export type Blank = typeof blank;
-
-const dialectIds: string[] = ['en-GB-0', 'en-GB-1', 'en-US', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'];
-
-// Object.keys(langIds)
 interface SelectorLangIdProps {
-    value?: LangId;
-    onChange?: (newLangId: LangId) => void;
+    value?: LangIdType;
+    onChange?: (newLangId: LangIdType) => void;
 }
 
 export default function SelectorLangId({
     value: defaultValue,
     onChange
 }: SelectorLangIdProps) {
-    const [langId, setLangId] = useState<LangId|Blank>(defaultValue !== undefined ? defaultValue : blank);
+    const [langId, setLangId] = useState<LangIdType|BlankType>(defaultValue !== undefined ? defaultValue : Blank);
     const [btnHover, setBtnHover] = useState(false);
     const [stop, setStop] = useState(false);
 
     const changeLangId = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const newLangId: LangId = e.currentTarget.innerHTML as LangId;
+        const newLangId: LangIdType = e.currentTarget.innerHTML as LangIdType;
         setLangId(newLangId);
         setBtnHover(false);
         SelectorLangId.prototype.justClosed = true;
@@ -55,7 +46,7 @@ export default function SelectorLangId({
             {langId}
         </button>
         <div className={`${(btnHover && !stop) ? "display-block" : "display-none"} sel-lang-id-dropdown-content`}>
-            {langIds.map((theId: LangId|Blank) => (theId !== blank &&
+            {LangIds.map((theId: LangIdType|BlankType) => (theId !== Blank &&
                 <button key={theId} onClick={changeLangId}>{theId}</button>
             ))}
         </div>
