@@ -1,8 +1,9 @@
 "use client"
 import React, { useState } from 'react';
-import TextUnit, { LangIdType, TextUnitData } from './textUnit';
+import TextUnit from './textUnit';
 import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
 import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
+import { TextUnitAbbrData } from '../baseTypes';
 
 /*
 const tmpData: TextUnitData = {
@@ -25,7 +26,7 @@ const tmpData: TextUnitData = {
   pid: 4,
 }; */
 
-const tmpData: TextUnitData =   {
+const tmpData: TextUnitAbbrData =   {
   "tid": "71cwg",
   "spd": 1,
   "len": 0,
