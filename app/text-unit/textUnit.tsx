@@ -111,8 +111,7 @@ export default function TextUnit({
                     const newLangId = newLangIdCands[0];
                     if (langId !== newLangId) {
                         setLangId(newLangId);
-                        if (defaultDialect[newLangId] !== undefined)
-                            setDialectId(defaultDialect[newLangId]!);
+                        setDialectId(defaultDialect[newLangId] !== undefined ? defaultDialect[newLangId]! : blank);
                     }
                 }
                 else {
