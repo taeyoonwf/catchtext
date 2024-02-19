@@ -16,6 +16,20 @@ export const LangIds = [
 //export type LangId = typeof langIds[number];
 //export type Blank = typeof blank;
 
+export type TextUnitData = {
+  speed: number;
+  length: number;
+  text: string;
+  langId: LangIdType;
+  dialectId: DialectIdType;
+  translations: string[];
+  textId: string;
+  paragraphKey: string;
+  created: number;
+  modified: number;
+  paragraphId: number;
+};
+
 export type TextUnitAbbrData = {
   spd: number;
   len: number;

@@ -9,8 +9,10 @@ import Etc from './layout/etc';
 import Quiz from './layout/quiz';
 import HomePage from './layout/homePage';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation'
 
 export default function Home() {
+    const searchParams = useSearchParams();
     const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
     //const [currentHash, setCurrentHash] = useState('#' + menuText[0]);
     const [tab, setTab] = useState(0);
@@ -23,6 +25,7 @@ export default function Home() {
         <Dictionary key='dictionary' />,
         <Etc key='etc' />
     ];
+    const [paramA, setParamA] = useState(searchParams.get('a'));
 
     const handleMenuBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
         // console.log(e.target); //e.target);
@@ -41,6 +44,12 @@ export default function Home() {
         setHeaderToggle(newTab == 2 || newTab == 4);
     }
 
+    const pushState = () => {
+        setParamA(paramA + 't');
+        window.history.pushState({}, '', '?a=' + paramA + window.location.hash);
+        setParamA('asdf');
+    }
+
     return (<>
         <div className="left-part">
             <div className='menu'>
@@ -57,6 +66,9 @@ export default function Home() {
             {headerToggle && <Header />}
             <LoginPanel />
             <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
+                <a href='#hashtag'>Hash Tag</a>
+                <button onClick={pushState}>Test</button>
+                {paramA !== undefined && paramA}
                 {pages[tab]}
             </div>
         </div>
