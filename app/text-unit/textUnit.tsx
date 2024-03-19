@@ -6,9 +6,10 @@ import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 import { SpeechSynthesizerContext } from '../speech-synthesizer/speechSynthesizer';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
-import { Blank, BlankType, DefaultDialect, DialectIdType, DialectIds, LangIdType, LangIds } from '../baseTypes';
+import { Blank, BlankType, DefaultDialect, DialectIdType, DialectIds, LangIdType, LangIds, TextUnitDataUpdate } from '../baseTypes';
 
 const LANG_ID_APPEAR = 0.01;
+const LENGTH_THRESHOLD = 0.05;
 
 export interface TextUnitProps {
     speed?: number;
@@ -17,6 +18,8 @@ export interface TextUnitProps {
     langId?: LangIdType;
     dialectId?: DialectIdType;
     translations?: string[];
+    textId?: string;
+    onChange?: (value: TextUnitDataUpdate) => void;
 }
 
 export default function TextUnit({
@@ -25,7 +28,9 @@ export default function TextUnit({
     translations: translationsProp,
     speed: speedProp,
     length: lengthProp,
-    dialectId: dialectIdProp
+    dialectId: dialectIdProp,
+    textId: textIdProp,
+    onChange: onChangeProp
 }: TextUnitProps) {
     //const evenIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 0);
     //const oddIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 1);
@@ -42,6 +47,29 @@ export default function TextUnit({
     const speechSynthesizer = useContext(SpeechSynthesizerContext);
     const languageIdentifier = useContext(LanguageIdentifierContext);
 
+    useEffect(() => {
+        // This function will be called after state has been updated
+        // You can perform any action here that depends on the updated state
+        // For example, you can make an API call, update local storage, etc.
+        //console.log('State has been updated:', state);
+        console.log(`textUnit useEffect! ${textIdProp}`);
+        updateChanges();    
+    }, [text, langId, dialectId, trans, speed]);
+
+    const updateChanges = (newLength?: number) => {
+        if (textIdProp === undefined)
+            return;
+        onChangeProp?.call(null, {
+            paragraphKeyId: textIdProp,
+            text,
+            langId: (langId === Blank) ? 'en' : langId,
+            dialectId: (dialectId === Blank) ? 'en-US' : dialectId,
+            translations: trans,
+            speed,
+            length: (newLength !== undefined) ? newLength : length
+        });
+    }
+
     const playSound = (e: React.MouseEvent<HTMLButtonElement>) => {
         console.log(speechSynthesizer.PlayText);
         console.log(speechSynthesizer.Stop);
@@ -57,8 +85,13 @@ export default function TextUnit({
         const voiceId = (dialectId !== Blank) ? dialectId : langId;
         setIsPlaying(true);
         speechSynthesizer.PlayText(text, voiceId, speed, (forcedStop, playingTime) => {
-            if (!forcedStop)
+            if (!forcedStop) {
+                const relativeError = Math.abs(length - playingTime) / playingTime;
+                console.log(`length: ${length}, playingTime: ${playingTime}, relativeError: ${relativeError}`);
+                if (relativeError > LENGTH_THRESHOLD)
+                    updateChanges(playingTime);
                 setLength(playingTime);
+            }
             setIsPlaying(false);
         });
     }
@@ -67,6 +100,7 @@ export default function TextUnit({
         const { value } = e.currentTarget;
         if (value !== text) {
             setText(value);
+            setLength(0.0);
             languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
                 console.log(langAndProbs);
                 if (langAndProbs.length > 0) {
@@ -173,7 +207,7 @@ export default function TextUnit({
                 </div>
                 <div className='playback-speed'>
                     <span>Speed {speed.toFixed(1)}</span>
-                    <input type="range" min="0.5" max="1.5" value={speed} step="0.1" id="rate" onChange={handleSpeed}/>
+                    <input type="range" min="0.6" max="1.6" value={speed} step="0.1" id="rate" onChange={handleSpeed}/>
                 </div>
             </div>
         </div>

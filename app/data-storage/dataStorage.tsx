@@ -1,13 +1,14 @@
 import React, { createContext, useState } from "react";
-import { TextUnitData } from "../baseTypes";
+import { TextUnitData, TextUnitDataUpdate } from "../baseTypes";
 
 interface DataStorageContextType {
   GetSignIn: () => boolean;
   SetSignIn: (newSignIn: boolean) => void;
   GetTextUnits: () => TextUnitData[];
   SetTextUnits: (data: TextUnitData[]) => void;
-  UpdateTextUnit: (data: TextUnitData) => void;
-  AddTextUnit: () => string; // textId
+  UpdateTextUnit: (data: TextUnitDataUpdate) => void;
+  AddTextUnit: () => string;  // textId
+  AddParagraph: () => string; // paragraphKey
 }
 
 const DataStorageContext = createContext<DataStorageContextType>({
@@ -17,6 +18,7 @@ const DataStorageContext = createContext<DataStorageContextType>({
   SetTextUnits: () => {},
   UpdateTextUnit: () => {},
   AddTextUnit: () => "",
+  AddParagraph: () => "",
 });
 
 function DataStorage({
@@ -26,25 +28,42 @@ function DataStorage({
 }) {
   const [signIn, setSignIn] = useState<boolean>(false);
   let textUnits: TextUnitData[] = [];
-  let textIdToIndex: { [key in string]: number } = {};
+  let paragraphKeyToIndex: { [key in string]: number } = {};
 
   const GetSignIn = () => signIn;
   const GetTextUnits = () => textUnits;
 
   const SetTextUnits = (data: TextUnitData[]) => {
     textUnits = data;
-    textIdToIndex = {};
+    paragraphKeyToIndex = {};
     for (let i = 0; i < textUnits.length; ++i) {
-      textIdToIndex[textUnits[i].textId] = i;
+      const key = textUnits[i].paragraphKey + '-' + textUnits[i].paragraphId;
+      paragraphKeyToIndex[key] = i;
     }
   }
 
-  const UpdateTextUnit = (data: TextUnitData) => {
-    if (textIdToIndex[data.textId] === undefined)
+  const ConvPairsIntoArr = (e: string[][]) => e.reduce((acc: string[], curr, index) => (acc.push(...curr), acc), []);
+  const UpdateTextUnit = (data: TextUnitDataUpdate) => {
+    const key = data.paragraphKeyId;
+    console.log(paragraphKeyToIndex);
+    if (paragraphKeyToIndex[key] === undefined)
       return;
-    const index = textIdToIndex[data.textId];
+    const index = paragraphKeyToIndex[key];
 
-    textUnits[index] = data;
+    const trans = ConvPairsIntoArr(data.translations);
+    textUnits[index] = {
+      speed: data.speed,
+      length: data.length,
+      text: data.text,
+      langId: data.langId,
+      dialectId: data.dialectId,
+      translations: trans,
+      paragraphKey: key.split('-')[0],
+      paragraphId: Number.parseInt(key.split('-')[1]),
+      created: textUnits[index].created,
+      modified: new Date().getTime() + (new Date().getTimezoneOffset() * 60),
+    };
+    console.log(textUnits[index]);
   }
 
   const randomString = (length: number) => {
@@ -60,18 +79,25 @@ function DataStorage({
   const getRandomId = () => {
     while (true) {
       const key = randomString(5);
-      if (textIdToIndex[key] !== undefined)
+      if (paragraphKeyToIndex[key + '-0'] === undefined)
         return key;
     }
     return 'catch';
   }
 
   const AddTextUnit = () => {
-    const randomId = getRandomId();
+    const randomPragKey = getRandomId();
+    paragraphKeyToIndex[randomPragKey + '-0'] = textUnits.length;
     textUnits.push({
-      textId: randomId
+      paragraphKey: randomPragKey,
+      paragraphId: 0,
     } as TextUnitData);
 
+    return randomPragKey;
+  }
+
+  const AddParagraph = () => {
+    const randomId = getRandomId();
     return randomId;
   }
 
@@ -83,6 +109,7 @@ function DataStorage({
       SetTextUnits,
       UpdateTextUnit,
       AddTextUnit,
+      AddParagraph,
     }}>
       {children}
     </DataStorageContext.Provider>

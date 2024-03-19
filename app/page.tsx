@@ -10,6 +10,7 @@ import Quiz from './layout/quiz';
 import HomePage from './layout/homePage';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'
+import { DataStorage } from './data-storage/dataStorage';
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -75,7 +76,9 @@ export default function Home() {
                 <a href='#hashtag'>Hash Tag</a>
                 <button onClick={pushState}>Test</button>
                 {paramA !== undefined && paramA}
-                {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]}
+                <DataStorage>
+                    {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]}
+                </DataStorage>
             </div>
         </div>
     </>);

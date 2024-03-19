@@ -23,11 +23,21 @@ export type TextUnitData = {
   langId: LangIdType;
   dialectId: DialectIdType;
   translations: string[];
-  textId: string;
+  // textId: string;
   paragraphKey: string;
   created: number;
   modified: number;
   paragraphId: number;
+};
+
+export type TextUnitDataUpdate = {
+  speed: number;
+  length: number;
+  text: string;
+  langId: LangIdType;
+  dialectId: DialectIdType;
+  translations: string[][];
+  paragraphKeyId: string;
 };
 
 export type TextUnitAbbrData = {
@@ -37,8 +47,7 @@ export type TextUnitAbbrData = {
   lid: LangIdType;
   did: DialectIdType;
   trs: string[];
-  tid: string;
-  prg: string;
+  prk: string;
   crt: number;
   mdf: number;
   pid: number;
