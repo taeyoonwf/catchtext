@@ -5,60 +5,30 @@ import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
 import TextUnit from '../text-unit/textUnit';
 import { TextUnitAbbrData, TextUnitDataUpdate } from '../baseTypes';
 import { DataStorageContext } from '../data-storage/dataStorage';
-import { useSearchParams } from 'next/navigation';
 
 export default function Library() {
-    //const searchParams = useSearchParams();
     const [textUnits, setTextUnits] = useState<TextUnitAbbrData[]>([]);
     const { AddTextUnit, UpdateTextUnit, SetTextUnitsByUrlParam, GetTextUnits } = useContext(DataStorageContext);
-    //let storageUpdateEnabled = false;
     const [storageLoadingCount, setStorageLoadingCount] = useState<number>(0);
 
     useEffect(() => {
-      // setStorageUpdateCount(0); // = false;
-      const init = () => {
-        const tu = GetTextUnits();
-        console.log(tu);
-        setStorageLoadingCount((prev) => (prev + tu.length));
-        setTextUnits(tu.map((e, index) => ({
-          spd: e.speed,
-          len: e.length,
-          txt: e.text,
-          lid: e.langId,
-          did: e.dialectId,
-          trs: e.translations,
-          prk: e.paragraphKey,
-          pid: e.paragraphId,
-        } as TextUnitAbbrData)));
-        //storageUpdateEnabled = true;
-      }
-
       (async function() {
-        //console.log(`library useEffect data ${data}`);
         await SetTextUnitsByUrlParam().then(() => {
-          console.log(`Library type #2`);
-          init();
-          //setStorageUpdateEnabled(true);
+          const textUnitsOfStorage = GetTextUnits();
+          console.log(textUnitsOfStorage);
+          setStorageLoadingCount((prev) => (prev + textUnitsOfStorage.length));
+          setTextUnits(textUnitsOfStorage.map((e, index) => ({
+            spd: e.speed,
+            len: e.length,
+            txt: e.text,
+            lid: e.langId,
+            did: e.dialectId,
+            trs: e.translations,
+            prk: e.paragraphKey,
+            pid: e.paragraphId,
+          } as TextUnitAbbrData)));
         });
       })();
-
-      //const data = searchParams.get('d');
-      /*console.log(`Library Effect! ${data}`);
-      if (data !== null) {
-        (async function(data: string) {
-          console.log(`library useEffect data ${data}`);
-          await SetTextUnitsByUrlParam(data).then(() => {
-            console.log(`Library type #2`);
-            init();
-            setStorageUpdateEnabled(true);
-          });
-        })(data);
-      }
-      else {
-        console.log(`Library type #1`);
-        init();
-        setStorageUpdateEnabled(true);
-      }*/
     }, []);
 
     //const textUnits: TextUnitData = [];
