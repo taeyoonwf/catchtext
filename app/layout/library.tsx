@@ -12,13 +12,14 @@ export default function Library() {
     const [textUnits, setTextUnits] = useState<TextUnitAbbrData[]>([]);
     const { AddTextUnit, UpdateTextUnit, SetTextUnitsByUrlParam, GetTextUnits } = useContext(DataStorageContext);
     //let storageUpdateEnabled = false;
-    const [storageUpdateEnabled, setStorageUpdateEnabled] = useState<Boolean>(false);
+    const [storageLoadingCount, setStorageLoadingCount] = useState<number>(0);
 
     useEffect(() => {
-      setStorageUpdateEnabled(false); // = false;
+      // setStorageUpdateCount(0); // = false;
       const init = () => {
         const tu = GetTextUnits();
         console.log(tu);
+        setStorageLoadingCount((prev) => (prev + tu.length));
         setTextUnits(tu.map((e, index) => ({
           spd: e.speed,
           len: e.length,
@@ -37,7 +38,7 @@ export default function Library() {
         await SetTextUnitsByUrlParam().then(() => {
           console.log(`Library type #2`);
           init();
-          setStorageUpdateEnabled(true);
+          //setStorageUpdateEnabled(true);
         });
       })();
 
@@ -74,9 +75,12 @@ export default function Library() {
     const handleChange = async (value: TextUnitDataUpdate) => {
       console.log(value);
       //console.log(`value: ${value} - changed`);
-      console.log(`storage update enabled? ${storageUpdateEnabled}`);
-      if (storageUpdateEnabled) {
+      console.log(`storage loading count? ${storageLoadingCount}`);
+      if (storageLoadingCount <= 0) {
         await UpdateTextUnit(value);
+      }
+      else {
+        setStorageLoadingCount((prev) => (prev - 1));
       }
     }
 
