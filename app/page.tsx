@@ -9,11 +9,9 @@ import Etc from './layout/etc';
 import Quiz from './layout/quiz';
 import HomePage from './layout/homePage';
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation'
 import { DataStorage } from './data-storage/dataStorage';
 
 export default function Home() {
-    const searchParams = useSearchParams();
     const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
     const [currentHash, setCurrentHash] = useState('#' + menuText[0]);
     const [headerToggle, setHeaderToggle] = useState(false);
@@ -25,7 +23,6 @@ export default function Home() {
         <Dictionary key='dictionary' />,
         <Etc key='etc' />
     ];
-    const [paramA, setParamA] = useState(searchParams.get('a'));
 
     useEffect(() => {
         const handleHashChange = () => {
@@ -52,12 +49,6 @@ export default function Home() {
 
     const getPageIndex = (hash: string) => menuText.findIndex((e: string) => e.replace(/\s/g, '') === hash.substring(1));
 
-    const pushState = () => {
-        const newParamA = paramA === null ? 'a' : (paramA + String.fromCharCode(97 + paramA.length));
-        setParamA(newParamA);
-        window.history.pushState({}, '', '?a=' + newParamA + window.location.hash);
-    }
-
     return (<>
         <div className="left-part">
             <div className='menu'>
@@ -73,9 +64,6 @@ export default function Home() {
             {headerToggle && <Header />}
             <LoginPanel />
             <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
-                <a href='#hashtag'>Hash Tag</a>
-                <button onClick={pushState}>Test</button>
-                {paramA !== undefined && paramA}
                 <DataStorage>
                     {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]}
                 </DataStorage>
