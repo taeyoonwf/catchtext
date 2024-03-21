@@ -74,6 +74,27 @@ function DataStorage({
     console.log(`SetTextUnitsByUrlParam Done2`);
   }
 
+  const GetOrganizedTextUnits = () => {
+    const orgTextUnits: TextUnitData[] = [];
+    for (const textUnit of textUnits) {
+      const transLength = textUnit.translations.length;
+      const transList: string[] = [];
+      for (let i = 0; i < transLength; i += 2) {
+        const trans = textUnit.translations[i];
+        const langId = textUnit.translations[i + 1];
+        if (trans.trim().length !== 0) {
+          transList.push(trans);
+          transList.push(langId);
+        }
+      }
+      if (textUnit.text.trim().length === 0 && transList.length === 0)
+        continue;
+
+      orgTextUnits.push({...textUnit, ...{translations: transList}});
+    }
+    return orgTextUnits;
+  }
+
   const UpdateStorage = async () => {
     console.log(`UpdateStorage ${signIn}`);
     if (signIn) {
@@ -84,7 +105,8 @@ function DataStorage({
       setTimeout(async () => {
         const curTime = new Date().getTime() + (new Date().getTimezoneOffset() * 60);
         if (curTime > lastModifiedTime + UPDATE_APPLY_DELAY * 0.9) {
-          const b64textUnits = (await obj2compb64(textUnits, 'deflate'))
+          const orgTextUnits = GetOrganizedTextUnits();
+          const b64textUnits = (await obj2compb64(orgTextUnits, 'deflate'))
             .replace(/\+/g, '-')
             .replace(/\//g, '_')
             .replace(/=/g, '');
