@@ -8,27 +8,29 @@ import { DataStorageContext } from '../data-storage/dataStorage';
 
 export default function Library() {
     const [textUnits, setTextUnits] = useState<TextUnitAbbrData[]>([]);
-    const { AddTextUnit, UpdateTextUnit, SetTextUnitsByUrlParam, GetTextUnits } = useContext(DataStorageContext);
+    const { GetSignIn, AddTextUnit, UpdateTextUnit, SetTextUnitsByUrlParam, GetTextUnits } = useContext(DataStorageContext);
     const [storageLoadingCount, setStorageLoadingCount] = useState<number>(0);
 
     useEffect(() => {
-      (async function() {
-        await SetTextUnitsByUrlParam().then(() => {
-          const textUnitsOfStorage = GetTextUnits();
-          console.log(textUnitsOfStorage);
-          setStorageLoadingCount((prev) => (prev + textUnitsOfStorage.length));
-          setTextUnits(textUnitsOfStorage.map((e, index) => ({
-            spd: e.speed,
-            len: e.length,
-            txt: e.text,
-            lid: e.langId,
-            did: e.dialectId,
-            trs: e.translations,
-            prk: e.paragraphKey,
-            pid: e.paragraphId,
-          } as TextUnitAbbrData)));
-        });
-      })();
+      if (!GetSignIn()) {
+        (async function() {
+          await SetTextUnitsByUrlParam().then(() => {
+            const textUnitsOfStorage = GetTextUnits();
+            console.log(textUnitsOfStorage);
+            setStorageLoadingCount((prev) => (prev + textUnitsOfStorage.length));
+            setTextUnits(textUnitsOfStorage.map((e, index) => ({
+              spd: e.speed,
+              len: e.length,
+              txt: e.text,
+              lid: e.langId,
+              did: e.dialectId,
+              trs: e.translations,
+              prk: e.paragraphKey,
+              pid: e.paragraphId,
+            } as TextUnitAbbrData)));
+          });
+        })();
+      }
     }, []);
 
     //const textUnits: TextUnitData = [];

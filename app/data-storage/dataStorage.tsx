@@ -59,6 +59,10 @@ function DataStorage({
   }
 
   const SetTextUnitsByUrlParam = async () => { //urlBase64Data: string) => {
+    if (urlParamData === null) {
+      SetTextUnits([]);
+      return;
+    }
     const urlBase64Data = urlParamData!;
     console.log(`SetTextUnitsByUrlParam Done0 ${urlBase64Data}`);
     const data = urlBase64Data.replace(/-/g, '+').replace(/_/g, '/');
