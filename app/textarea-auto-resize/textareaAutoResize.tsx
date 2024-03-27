@@ -1,9 +1,9 @@
 "use client"
 import React, { CSSProperties, ChangeEventHandler, useState } from 'react';
 import './layout.css';
-interface TextareaAutoResizeProps {
+export interface TextareaAutoResizeProps {
     className?: string;
-    value: string;
+    value?: string;
     onChange?: ChangeEventHandler<HTMLTextAreaElement>;
     placeholder?: string;
     readOnly?: boolean;
@@ -11,7 +11,7 @@ interface TextareaAutoResizeProps {
 }
 
 export default function TextareaAutoResize({className, value, onChange, placeholder, readOnly, backgroundColor}: TextareaAutoResizeProps) {
-    const [text, setText] = useState(value);
+    const [text, setText] = useState(value === undefined ? '': value);
     
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = e.currentTarget;

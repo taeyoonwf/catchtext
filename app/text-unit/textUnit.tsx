@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from 'react';
 import './layout.css';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
-import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
+import TextareaAutoResize, { TextareaAutoResizeProps } from '../textarea-auto-resize/textareaAutoResize';
 import { SpeechSynthesizerContext } from '../speech-synthesizer/speechSynthesizer';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
@@ -21,7 +21,7 @@ export interface TextUnitProps {
     textId?: string;
     onChange?: (value: TextUnitDataUpdate) => void;
     visibleTrans?: boolean;
-    editableText?: boolean;
+    textareaOption?: TextareaAutoResizeProps;
 }
 
 export default function TextUnit({
@@ -34,7 +34,7 @@ export default function TextUnit({
     textId: textIdProp,
     onChange: onChangeProp,
     visibleTrans: visibleTransProp,
-    editableText: editableTextProp,
+    textareaOption: textareaOptionProp,
 }: TextUnitProps) {
     //const evenIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 0);
     //const oddIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 1);
@@ -190,11 +190,11 @@ export default function TextUnit({
         <div className={visibleTransProp === false ? 'text-part-extended' : 'text-part'}>
             <div className='text-and-langid'>
                 <TextareaAutoResize
+                    {...textareaOptionProp}
                     className='text-part-text'
                     value={text}
                     onChange={handleTextChange}
                     placeholder='Base Text'
-                    readOnly={editableTextProp !== undefined ? !editableTextProp : false}
                 />
                 <DropdownSelector<LangIdType, BlankType> blankKey={Blank} keys={langIdOptions} selectedKey={langId} onChange={handleLangId}/>
             </div>

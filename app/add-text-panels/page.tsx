@@ -36,11 +36,11 @@ export default function AddText() {
                   dialectId={undefined}
                   onChange={undefined}
                   visibleTrans={false}
-                  editableText={false}
+                  textareaOption={{backgroundColor: 'skyblue', readOnly: true}}
                 />
 
           <div className='sentence-segments'>
-            {'hello!'}
+            <span style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
           </div>
       </div>
   </div>
