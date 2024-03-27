@@ -20,6 +20,8 @@ export interface TextUnitProps {
     translations?: string[];
     textId?: string;
     onChange?: (value: TextUnitDataUpdate) => void;
+    visibleTrans?: boolean;
+    editableText?: boolean;
 }
 
 export default function TextUnit({
@@ -30,7 +32,9 @@ export default function TextUnit({
     length: lengthProp,
     dialectId: dialectIdProp,
     textId: textIdProp,
-    onChange: onChangeProp
+    onChange: onChangeProp,
+    visibleTrans: visibleTransProp,
+    editableText: editableTextProp,
 }: TextUnitProps) {
     //const evenIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 0);
     //const oddIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 1);
@@ -183,13 +187,14 @@ export default function TextUnit({
                         className='play-btn'>
                         {`${!isPlaying && text.length > 0 ? '▶' : '■'}`}
                     </button>
-        <div className='text-part'>
+        <div className={visibleTransProp === false ? 'text-part-extended' : 'text-part'}>
             <div className='text-and-langid'>
                 <TextareaAutoResize
                     className='text-part-text'
                     value={text}
                     onChange={handleTextChange}
                     placeholder='Base Text'
+                    readOnly={editableTextProp !== undefined ? !editableTextProp : false}
                 />
                 <DropdownSelector<LangIdType, BlankType> blankKey={Blank} keys={langIdOptions} selectedKey={langId} onChange={handleLangId}/>
             </div>
@@ -211,8 +216,9 @@ export default function TextUnit({
                 </div>
             </div>
         </div>
-        <div className='translation-part'>
-            {trans.map((value, index) => (<div key={index} className='text-and-langid'>
+        {visibleTransProp !== false &&
+            <div className='translation-part'>
+                {trans.map((value, index) => (<div key={index} className='text-and-langid'>
                     <TextareaAutoResize
                         className='text-part-trans'
                         value={value[0]}
@@ -224,11 +230,12 @@ export default function TextUnit({
                         keys={transLangIdOpts[index] !== undefined ? transLangIdOpts[index] : []}
                         selectedKey={value[1] as LangIdType}
                     />
-            </div>))}
-            <div className='add-button-panel'>
-                <button className='add-trans-button' onClick={addTranslation}>+</button>
+                </div>))}
+                <div className='add-button-panel'>
+                    <button className='add-trans-button' onClick={addTranslation}>+</button>
+                </div>
             </div>
-        </div>
+        }
     </div>
     );
 }

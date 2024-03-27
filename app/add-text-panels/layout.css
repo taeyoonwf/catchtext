@@ -1,0 +1,39 @@
+.text-unit-bg2 {
+  margin: 0px;
+  padding: 0px;
+  background-color: none;
+
+  flex-direction: row;
+  display: flex;
+  border: 0px solid;
+}
+
+.text-part2 {
+  width: calc(50% - 0px);
+  margin: 10px 0px auto 10px;
+  background-color: none;
+}
+
+.translation-part2 {
+  width: calc(50% - 0px);
+  margin: 0px 0px auto 0px;
+}
+
+.text-part-text2 {
+  background-color: none;
+  width: calc(100% - 0px);
+  resize: none;
+  font-size: large;
+  overflow: hidden;
+}
+
+.text-and-langid2 {
+  flex-direction: row;
+  display: flex;
+  margin: 0px 0px 10px;
+}
+
+.sentence-segments {
+  margin: 0px 0px auto 10px;
+  font-size: large;
+}

@@ -20,6 +20,12 @@
     background-color: none;
 }
 
+.text-part-extended {
+    width: 100%;
+    margin: 0px 0px auto 10px;
+    background-color: none;
+}
+
 .text-and-langid {
     flex-direction: row;
     display: flex;

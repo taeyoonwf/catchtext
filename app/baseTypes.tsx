@@ -23,7 +23,6 @@ export type TextUnitData = {
   langId: LangIdType;
   dialectId: DialectIdType;
   translations: string[];
-  // textId: string;
   paragraphKey: string;
   created: number;
   modified: number;
