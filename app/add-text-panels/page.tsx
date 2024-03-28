@@ -14,6 +14,9 @@ export default function AddText() {
 
   function handleTextChange(e: ChangeEvent<HTMLTextAreaElement>): void {
     const { value } = e.currentTarget;
+    if (text === value)
+      return;
+
     setText(value);
     //console.log(segment);
     console.log(segment("en", value));
@@ -37,7 +40,7 @@ export default function AddText() {
         <div className='text-templates'>
           Template: 
           <span>
-            <input type="radio" id="contactChoice1" name="contact" value="normal" />
+            <input type="radio" id="contactChoice1" name="contact" value="normal" checked />
             <label htmlFor="contactChoice1">Normal</label>
           </span>
 
@@ -87,10 +90,10 @@ export default function AddText() {
           <span style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
           <span className="sentence-divider"> </span>
           <span style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
-          <span className="sentence-divider"> </span>
+          <span className="sentence-divider">&nbsp;</span>
 
           <span style={{backgroundColor: 'pink', border: '1px dotted black'}}>Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello!</span>
-          <span className="sentence-divider"> </span>
+          <span className="sentence-divider">&nbsp;{'\n'}</span>
           <span style={{backgroundColor: 'skyblue'}}>
             {`Where should\nI go?`}
           </span>
