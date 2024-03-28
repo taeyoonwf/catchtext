@@ -37,3 +37,9 @@
   margin: 0px 0px auto 10px;
   font-size: large;
 }
+
+.sentence-piece {
+  display: inline;
+  overflow-wrap: break-word;
+  border: 1px dotted transparent;
+}

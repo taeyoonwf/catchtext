@@ -8,6 +8,11 @@ import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 import './layout.css';
 
 export default function AddText() {
+  const op1 = 'nowrap';
+  const op2 = 'inline-block';
+  const op3 = 'wrap';
+  const op4 = 'break-word';
+
   return (
     <SpeechSynthesizer><LanguageIdentifier>
     <div className='text-unit-bg2'>
@@ -28,11 +33,11 @@ export default function AddText() {
           <TextUnit
                   key={0}
                   textId={'imsii-0'}
-                  text={'hello'}
+                  text={'What do you want?'}
                   langId={'en'}
                   translations={[]}
                   speed={1.4}
-                  length={3.5}
+                  break-word   length={3.5}
                   dialectId={undefined}
                   onChange={undefined}
                   visibleTrans={false}
@@ -40,7 +45,24 @@ export default function AddText() {
                 />
 
           <div className='sentence-segments'>
-            <span style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
+
+            <span className='sentence-piece' style={{backgroundColor: 'pink'}}>Hello!</span>
+            <span style={{cursor: 'col-resize'}}> </span>
+            <span className='sentence-piece' style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
+            <span style={{cursor: 'col-resize'}}> </span>
+            <span className='sentence-piece' style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
+            <span style={{cursor: 'col-resize'}}> </span>
+
+            <span className='sentence-piece' style={{backgroundColor: 'pink'}}>Hello!</span>
+            <span style={{cursor: 'col-resize'}}> </span>
+            <span className='sentence-piece' style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
+            <span style={{cursor: 'col-resize'}}> </span>
+            <span className='sentence-piece' style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
+            <span style={{cursor: 'col-resize'}}> </span>
+
+            <span className='sentence-piece' style={{backgroundColor: 'pink'}}>Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! </span>
+            <span style={{cursor: 'col-resize'}}> </span>
+
           </div>
       </div>
   </div>
