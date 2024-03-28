@@ -30,21 +30,8 @@ export default function AddText() {
       </div>
 
       <div className='translation-part2'>
-        <TextUnit
-                  key={0}
-                  textId={'imsii-0'}
-                  text={'What do you want?'}
-                  langId={'en'}
-                  translations={[]}
-                  speed={1.4}
-                  break-word   length={3.5}
-                  dialectId={undefined}
-                  onChange={undefined}
-                  visibleTrans={false}
-                  textareaOption={{backgroundColor: 'skyblue', readOnly: true}}
-                />
-
         <div className='templates'>
+          Template: 
           <input type="radio" id="contactChoice1" name="contact" value="normal" />
           <label htmlFor="contactChoice1">Normal</label>
 
@@ -54,7 +41,7 @@ export default function AddText() {
           <input type="radio" id="contactChoice3" name="contact" value="listeningExam2" />
           <label htmlFor="contactChoice3">Listening Exam 2</label>
         </div>
-          <div className='sentence-segments'>
+        <div className='sentence-segments'>
 
             <span style={{backgroundColor: 'pink'}}>Hello!</span>
             <span style={{cursor: 'col-resize', border: '0px'}}> </span>
@@ -77,7 +64,20 @@ export default function AddText() {
             </span>
             <span style={{cursor: 'col-resize', border: '0px'}}> </span>
 
-          </div>
+        </div>
+        <TextUnit
+                  key={0}
+                  textId={'imsii-0'}
+                  text={'What do you want?'}
+                  langId={'en'}
+                  translations={[]}
+                  speed={1.4}
+                  break-word   length={3.5}
+                  dialectId={undefined}
+                  onChange={undefined}
+                  visibleTrans={false}
+                  textareaOption={{backgroundColor: 'skyblue', readOnly: true}}
+         />
       </div>
   </div>
   </LanguageIdentifier></SpeechSynthesizer>
