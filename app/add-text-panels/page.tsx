@@ -23,11 +23,10 @@ export default function AddText() {
                     className='text-part-text2'
                     value={'asdf'}
                     onChange={undefined}
-                    placeholder='Base Text'
+                    placeholder='Write/Paste text here...'
                 />
                 <DropdownSelector<LangIdType, BlankType> blankKey={Blank} keys={['en', 'fr', 'es']} selectedKey={'en'} />
             </div>
-            <button>{'=>'}</button>
       </div>
 
       <div className='translation-part2'>
@@ -52,8 +51,8 @@ export default function AddText() {
           <input type="radio" id="contactChoice2" name="contact" value="listeningExam1" />
           <label htmlFor="contactChoice2">Listening Exam 1</label>
 
-          <input type="radio" id="contactChoice3" name="contact" value="mail" />
-          <label htmlFor="contactChoice3">Mail</label>
+          <input type="radio" id="contactChoice3" name="contact" value="listeningExam2" />
+          <label htmlFor="contactChoice3">Listening Exam 2</label>
         </div>
           <div className='sentence-segments'>
 
@@ -71,7 +70,7 @@ export default function AddText() {
             <span style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
             <span style={{cursor: 'col-resize', border: '0px'}}> </span>
 
-            <span style={{backgroundColor: 'pink', border: '1px dotted black'}}>Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello!</span>
+            <span style={{backgroundColor: 'pink', border: '2px dotted black'}}>Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello!</span>
             <span style={{cursor: 'col-resize', border: '0px'}}> </span>
             <span style={{backgroundColor: 'skyblue'}}>
               {`Where should\nI go?`}

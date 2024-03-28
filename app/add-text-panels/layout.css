@@ -41,6 +41,7 @@
   margin: 10px 10px 0px;
   padding: 7px;
   border: 1px solid black;
+  border-bottom: 0px;
 }
 
 .templates label {
@@ -51,7 +52,7 @@
   margin: 0px 10px auto 10px;
   padding: 5px;
   font-size: large;
-  line-height: calc(120% + 1px);
+  line-height: calc(120% + 2px);
   border: 1px solid black;
 }
 
