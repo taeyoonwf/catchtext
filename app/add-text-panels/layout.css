@@ -8,6 +8,10 @@
   border: 0px solid;
 }
 
+.text-unit-bg {
+  margin-bottom: 10px;
+}
+
 .text-part2 {
   width: calc(50% - 0px);
   margin: 10px 0px auto 10px;
@@ -33,13 +37,27 @@
   margin: 0px 0px 10px;
 }
 
-.sentence-segments {
-  margin: 0px 0px auto 10px;
-  font-size: large;
+.templates {
+  margin: 10px 10px 0px;
+  padding: 7px;
+  border: 1px solid black;
 }
 
-.sentence-piece {
+.templates label {
+  margin-right: 5px;
+}
+
+.sentence-segments {
+  margin: 0px 10px auto 10px;
+  padding: 5px;
+  font-size: large;
+  line-height: calc(120% + 1px);
+  border: 1px solid black;
+}
+
+.sentence-segments span {
   display: inline;
   overflow-wrap: break-word;
   border: 1px dotted transparent;
+  white-space: pre-line;
 }

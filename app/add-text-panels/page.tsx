@@ -27,10 +27,11 @@ export default function AddText() {
                 />
                 <DropdownSelector<LangIdType, BlankType> blankKey={Blank} keys={['en', 'fr', 'es']} selectedKey={'en'} />
             </div>
+            <button>{'=>'}</button>
       </div>
 
       <div className='translation-part2'>
-          <TextUnit
+        <TextUnit
                   key={0}
                   textId={'imsii-0'}
                   text={'What do you want?'}
@@ -44,24 +45,38 @@ export default function AddText() {
                   textareaOption={{backgroundColor: 'skyblue', readOnly: true}}
                 />
 
+        <div className='templates'>
+          <input type="radio" id="contactChoice1" name="contact" value="normal" />
+          <label htmlFor="contactChoice1">Normal</label>
+
+          <input type="radio" id="contactChoice2" name="contact" value="listeningExam1" />
+          <label htmlFor="contactChoice2">Listening Exam 1</label>
+
+          <input type="radio" id="contactChoice3" name="contact" value="mail" />
+          <label htmlFor="contactChoice3">Mail</label>
+        </div>
           <div className='sentence-segments'>
 
-            <span className='sentence-piece' style={{backgroundColor: 'pink'}}>Hello!</span>
-            <span style={{cursor: 'col-resize'}}> </span>
-            <span className='sentence-piece' style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
-            <span style={{cursor: 'col-resize'}}> </span>
-            <span className='sentence-piece' style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
-            <span style={{cursor: 'col-resize'}}> </span>
+            <span style={{backgroundColor: 'pink'}}>Hello!</span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
+            <span style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
+            <span style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
 
-            <span className='sentence-piece' style={{backgroundColor: 'pink'}}>Hello!</span>
-            <span style={{cursor: 'col-resize'}}> </span>
-            <span className='sentence-piece' style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
-            <span style={{cursor: 'col-resize'}}> </span>
-            <span className='sentence-piece' style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
-            <span style={{cursor: 'col-resize'}}> </span>
+            <span style={{backgroundColor: 'pink'}}>Hello!</span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
+            <span style={{backgroundColor: 'skyblue'}}>{'What do you want?'}</span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
+            <span style={{backgroundColor: 'coral'}}>Happy Happy Joy Joy</span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
 
-            <span className='sentence-piece' style={{backgroundColor: 'pink'}}>Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! </span>
-            <span style={{cursor: 'col-resize'}}> </span>
+            <span style={{backgroundColor: 'pink', border: '1px dotted black'}}>Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello! Hello!</span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
+            <span style={{backgroundColor: 'skyblue'}}>
+              {`Where should\nI go?`}
+            </span>
+            <span style={{cursor: 'col-resize', border: '0px'}}> </span>
 
           </div>
       </div>
