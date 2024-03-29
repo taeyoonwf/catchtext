@@ -1,12 +1,11 @@
 'use client'
+import './layout.css';
 import { ChangeEvent, useContext, useState } from 'react';
 import { Blank, BlankType, LangIdType, LangIds, colorSeries } from '../baseTypes';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
-import { LanguageIdentifier, LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
-import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
+import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import TextUnit from '../text-unit/textUnit';
 import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
-import './layout.css';
 import segment from 'sentencex';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
 
@@ -14,7 +13,7 @@ export default function AddTextMain() {
   const [text, setText] = useState('');
   const [langId, setLangId] = useState<LangIdType|BlankType>(Blank);
   const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>([]);
-  const [divText, setDivText] = useState([<></>]);
+  const [divText, setDivText] = useState<JSX.Element[]>([]);
   const languageIdentifier = useContext(LanguageIdentifierContext);
 
   const refreshSegmentedText = (langId: string, value: string) => {
@@ -48,10 +47,10 @@ export default function AddTextMain() {
     for (let i = 0; i < sentences.length; i++) {
       let whiteSpace = (dividers[i].indexOf(' ') < 0 ? " " + dividers[i] : dividers[i])
         .replaceAll(' ', '\u00A0');
-      newDivText.push(<span className={i > 0 ? "sentence-divider" : ""}>{whiteSpace}</span>);
+      newDivText.push(<span key={i * 2} className={i > 0 ? "sentence-divider" : ""}>{whiteSpace}</span>);
       const s = sentences[i];
       const color = colorSeries[i % colorSeries.length];
-      newDivText.push(<span style={{backgroundColor: color}}>{s}</span>);
+      newDivText.push(<span key={i * 2 + 1} style={{backgroundColor: color}}>{s}</span>);
     }
     setDivText(newDivText);
   }
@@ -62,7 +61,7 @@ export default function AddTextMain() {
       return;
 
     setText(value);
-    //console.log(segment);
+    console.log('handleTextChange : ' + value);
     languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
       const newLangIdCands: LangIdType[] =
         langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType))
@@ -99,7 +98,7 @@ export default function AddTextMain() {
         <div className='text-templates'>
           Template: 
           <span>
-            <input type="radio" id="contactChoice1" name="contact" value="normal" checked />
+            <input type="radio" id="contactChoice1" name="contact" value="normal" onChange={() => {}} checked />
             <label htmlFor="contactChoice1">Normal</label>
           </span>
 
@@ -137,7 +136,7 @@ export default function AddTextMain() {
         </div>
 
         <div className='sentence-segments'>
-          {divText}
+          {divText.length > 0 && divText}
         </div>
 
         <TextUnit
