@@ -21,6 +21,7 @@ function SpeechSynthesizer({
   let isPlaying = false;
   let playStartTime: Date = new Date();
   let stopCallbackReg: StopCallbackFunc|null = null;
+  let autoResumeTimeout: NodeJS.Timeout; // https://stackoverflow.com/questions/21947730
 
   useEffect(() => {
     console.log(`speech synthesizer useEffect`);
@@ -96,6 +97,12 @@ function SpeechSynthesizer({
     //const voice: SpeechSynthesisVoice = (voiceId.length == 2) ? voices[voiceId as LangIdType]! : voices[voiceId as DialectIdType]!;
     stopCallbackReg = stopCallback;
 
+    function autoResumeTimer() {
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+      autoResumeTimeout = setTimeout(autoResumeTimer, 10000);
+    }
+
     const utterThis = new SpeechSynthesisUtterance(text);
     utterThis.voice = voice;
     utterThis.rate = (speed < 1.0) ? speed : Math.pow(speed, 1.0 / speedConst);
@@ -112,6 +119,7 @@ function SpeechSynthesizer({
       //console.log(playingUtterance);
       //console.log('end2 : ');
       //console.log(curTarget);
+      clearTimeout(autoResumeTimeout);
       if (playingUtterance.current === curTarget) {
           //console.log('finished!');
           playingUtterance.current = undefined;
@@ -125,9 +133,17 @@ function SpeechSynthesizer({
       }
       isPlaying = false;
     }
-    utterThis.onerror = (ev: SpeechSynthesisErrorEvent) => {
+    utterThis.onpause = (ev: SpeechSynthesisEvent) => {
+      console.log('onpause');
       console.log(ev);
     }
+    utterThis.onerror = (ev: SpeechSynthesisErrorEvent) => {
+      console.log('onerror');
+      console.log(ev);
+    }
+    //console.log(utterThis);
+    window.speechSynthesis.cancel();
+    autoResumeTimeout = setTimeout(autoResumeTimer, 10000);
     window.speechSynthesis.speak(utterThis);
   }
 
