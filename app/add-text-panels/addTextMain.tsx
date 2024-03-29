@@ -1,10 +1,10 @@
 'use client'
 import './layout.css';
 import { ChangeEvent, useContext, useState } from 'react';
-import { Blank, BlankType, LangIdType, LangIds, colorSeries } from '../baseTypes';
+import { Blank, BlankType, DefaultDialect, LangIdType, LangIds, colorSeries } from '../baseTypes';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
-import TextUnit from '../text-unit/textUnit';
+import TextUnit, { TextUnitProps } from '../text-unit/textUnit';
 import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 import segment from 'sentencex';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
@@ -15,9 +15,10 @@ export default function AddTextMain() {
   const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>([]);
   const [divText, setDivText] = useState<JSX.Element[]>([]);
   const languageIdentifier = useContext(LanguageIdentifierContext);
+  const [textUnitProps, setTextUnitProps] = useState<TextUnitProps>({text: ' '});
 
-  const refreshSegmentedText = (langId: string, value: string) => {
-    const sentences: string[] = segment(langId, value)
+  const refreshSegmentedText = (langId: LangIdType|BlankType, value: string) => {
+    const sentences: string[] = segment(langId !== Blank ? langId : 'en', value)
       .map((s, index) => s.trim())
       .filter((s, index) => s.length > 0);
     let value_index = 0;
@@ -53,6 +54,15 @@ export default function AddTextMain() {
       newDivText.push(<span key={i * 2 + 1} style={{backgroundColor: color}}>{s}</span>);
     }
     setDivText(newDivText);
+
+    setTextUnitProps((prev) => ({...prev,
+      visibleTrans: false,
+      text: sentences.length > 0 ? sentences[0] : ' ',
+      langId: langId as any,
+      dialectId: DefaultDialect[langId as LangIdType],
+      length: 0,
+      textareaOption: {backgroundColor: sentences.length > 0 ? colorSeries[0] : 'transparent'}
+    }));
   }
 
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -64,13 +74,22 @@ export default function AddTextMain() {
     console.log('handleTextChange : ' + value);
     languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
       const newLangIdCands: LangIdType[] =
-        langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType))
+        langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType) && e.value > 0)
           .map((e) => e.language as LangIdType);
+      console.log(`newLangIdCands`);
+      console.log(newLangIdCands);
+      console.log(langAndProbs);
       setLangIdOptions(newLangIdCands);
       if (newLangIdCands.length > 0) {
         const newLangId = newLangIdCands[0];
         setLangId(newLangId);
         refreshSegmentedText(newLangId, value);
+      }
+      else {
+        console.log(`use Blank 0`);
+        setLangId(Blank);
+        console.log(`use Blank 1`);
+        refreshSegmentedText(Blank, value);
       }
     });
   }
@@ -140,17 +159,12 @@ export default function AddTextMain() {
         </div>
 
         <TextUnit
-          key={0}
-          textId={'imsii-0'}
-          text={""}
-          langId={'en'}
-          translations={[]}
-          speed={1.4}
-          length={3.5}
-          dialectId={'en-US'}
-          onChange={undefined}
+          {...textUnitProps}
           visibleTrans={false}
-          //textareaOption={{backgroundColor: 'skyblue', readOnly: true}}
+          textareaOption={{
+            ...textUnitProps.textareaOption,
+            readOnly: true,
+          }}
         />
       </div>
     </div>

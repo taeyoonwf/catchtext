@@ -57,8 +57,18 @@ export default function TextUnit({
         // For example, you can make an API call, update local storage, etc.
         //console.log('State has been updated:', state);
         console.log(`textUnit useEffect! ${textIdProp}`);
-        updateChanges();    
+        updateChanges();
     }, [text, langId, dialectId, trans, speed]);
+
+    useEffect(() => {
+        console.log(`textUnit useEffect for Props. ${textProp} ${langIdProp} ${speedProp}`);
+        if (textProp !== undefined)
+            setText(textProp);
+        if (langIdProp !== undefined)
+            setLangId(langIdProp);
+        if (dialectIdProp !== undefined)
+            setDialectId(dialectIdProp);
+    }, [textProp, langIdProp, dialectIdProp, speedProp, textareaOptionProp]);
 
     const updateChanges = (newLength?: number) => {
         if (textIdProp === undefined)
@@ -103,6 +113,7 @@ export default function TextUnit({
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = e.currentTarget;
         if (value !== text) {
+            console.log(`setText h1`);
             setText(value);
             setLength(0.0);
             languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
