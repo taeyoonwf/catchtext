@@ -33,49 +33,19 @@ export default function AddTextMain() {
   const [divText, setDivText] = useState<divTextArgs[]>([]);
   const languageIdentifier = useContext(LanguageIdentifierContext);
   const [textUnitProps, setTextUnitProps] = useState<TextUnitProps>({text: ' '});
-  //const [dividers, setDividers] = useState<string[]>([]);
-  //const [sentences, setSentences] = useState<string[]>([]);
-  //const [selColors, setSelColors] = useState<string[]>([]);
-  //const [selDivTextIndex, setSelDivTextIndex] = useState(-1);
-
-  const selection = useRef('');
-  //let isMovingDivider = false;
-  //const [selColor, setSelColor] = useState('#555555');
-        
-  const handleSelection = () => {
-    const sel = document.getSelection();
-    if (sel !== null) {
-      const text = sel.toString();
-      //console.log('in handleSelection');
-      //console.log(text);
-      if (text) {
-        selection.current = text;
-      }  
-    }
-  }
  
-  const onAllMouseUp = (e: any) => {
-    //if (moveDividerStage == MoveDivider.CheckedStartIndex) {
-      moveDividerDone(e)
-    //}
-  }
+  const onAllMouseUp = (e: any) => moveDividerDone(e);
 
   useEffect(() => {
-    document.addEventListener('selectionchange', handleSelection);
     document.addEventListener('mouseup', onAllMouseUp);
     return () => {
-      document.removeEventListener('selectionchange', handleSelection);
       document.removeEventListener('mouseup', onAllMouseUp);
     };
   });
 
-  //let checkAnchor = false;
   const moveDividerBegin = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     console.log('moving start');
     moveDividerStage = MoveDivider.MoveStarted;
-    //moveDividerStage = 1;
-    //isMovingDivider = true;
-    //checkAnchor = true;
   }
 
   const moveDividerWrongStartingPoint = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
@@ -109,22 +79,11 @@ export default function AddTextMain() {
             divSelColor: (i < divIndex) ? colorNext : ((i == divIndex) ? TRANSP : colorPrev),
             senSelColor: (i < divIndex) ? colorNext : colorPrev,
           };
-          //divText[i].divSelColor = colorNext;
-          //divText[i].senSelColor = colorNext;
         }
         setDivText(newDivText);
-        //divText[divIndex].senSelColor = colorPrev;
-        //for (let i = divIndex + 1; i < divText.length; i++) {
-          //divText[i].divSelColor = colorPrev;
-          //divText[i].senSelColor = colorPrev;
-        //}
         console.log('anchor check finish ' + moveDividerStage);
       }
     }
-    /*else {
-      console.log('moveDividerStage ' + moveDividerStage);
-    }*/
-    //console.log(e.buttons);
   }
 
   const divideDivText = (index: number, offset: number) => {
@@ -149,8 +108,7 @@ export default function AddTextMain() {
       ...divText.slice(index + 1)
     ];
   }
-  //sel.focusOffset);
-  //const 
+
   const mergePartOfDivTextArr = (fromIndex: number, toIndex: number, mergeColorFromIndex: boolean, arr: divTextArgs[]) => {
     if (fromIndex === toIndex)
       return;
@@ -177,9 +135,6 @@ export default function AddTextMain() {
 
   const moveDividerDone = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     console.log("moving done");
-    //console.log(e.currentTarget);
-    //console.log(window.getSelection());
-    //console.log(window.getSelection());
     const sel = window.getSelection();
     console.log(sel);
     //console.log(moveDividerStage);
@@ -231,55 +186,11 @@ export default function AddTextMain() {
             mergePartOfDivTextArr(startIndex - 1, endIndex + 1, false, arr);
           }
         }
-        /* const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
-        const endIndex = Math.floor(focusNodeIndex * 0.5);
-        if (endIndex < startIndex && sel.focusOffset == 0)
-          mergePartOfDivText(endIndex, startIndex + 1, true);
-        console.log("startIndex endIndex " + startIndex + ", " + endIndex);
-        console.log(sel.focusOffset + " ~ " + divText[endIndex].sentence.length + ", " + (sel.focusOffset === divText[endIndex].sentence.length));
-        if (startIndex <= endIndex && sel.focusOffset === divText[endIndex].sentence.length) {
-          console.log("startIndex endIndex " + startIndex + ", " + endIndex);
-          mergePartOfDivText(startIndex - 1, endIndex + 1, false);
-        }
-        */
       }
-      // console.log(anchorNodeIndex + ", " + focusNodeIndex);
-      //const colorIndex = Math.floor((anchorNodeIndex - 1) * 0.5);
-      //setSelColor(colorSeries[colorIndex % colorSeries.length]);
-      //console.log(colorSeries[colorIndex % colorSeries.length]);
 
       moveDividerStage = MoveDivider.NoAction;
       sel.empty();
-      /*
-      const newDivText: divTextArgs[] = [];
-      for (let i = 0; i < divText.length; i++) {
-        newDivText[i] = {
-          divider: divText[i].divider,
-          sentence: divText[i].sentence,
-          senBgColor: divText[i].senBgColor,
-          divSelColor: 'transparent',
-          senSelColor: 'transparent',
-        };
-      }
-      setDivText(newDivText);
-      */
-
-      /*
-      console.log(sel.anchorNode?.nodeValue);
-      console.log(sel.anchorNode?.nodeType);
-      console.log(sel.anchorNode?.nodeName);
-      console.log(sel.anchorNode?.ownerDocument);
-      console.log(sel.anchorNode?.getRootNode());
-      console.log(sel.anchorNode?.parentElement);
-      console.log(sel.anchorNode?.parentNode);
-      console.log(sel.anchorNode?.parentElement?.parentElement);
-      console.log(sel.anchorNode?.parentNode?.parentNode);
-      console.log(sel.anchorNode?.parentElement?.children);
-      */
     }
-    //isMovingDivider = false;
-    //console.log(window.getSelection().);
-    //e.currentTarget.DOCUMENT_POSITION_PRECEDING
   }
 
   const refreshSegmentedText = (langId: LangIdType|BlankType, value: string) => {
@@ -300,44 +211,22 @@ export default function AddTextMain() {
 
     console.log(dividers);
     console.log(sentences);
-    /*for (let i = 0; i < dividers.length; i++) {
-      console.log(dividers[i]);
-      if (i + 1 < dividers.length)
-        console.log(sentences[i]);
-    }*/
     
-    //<span style={{backgroundColor: 'pink'}}>Hello!</span>
-    //<span className="sentence-divider"> </span>
-    
-    const newDivText: divTextArgs[] = [];
-    for (let i = 0; i < sentences.length; i++) {
-      //let whiteSpace = (dividers[i].indexOf(' ') < 0 ? " " + dividers[i] : dividers[i])
-      //  .replaceAll(' ', '\u00A0');
-      //newDivText.push(<span onMouseDown={moveDividerBegin} onMouseUp={moveDividerDone} onMouseMove={moveDivider}
-      //  key={i * 2} className={i > 0 ? "sentence-divider" : ""}>
-      //    {whiteSpace}
-      //</span>);
-      //const s = sentences[i];
-      //const color = colorSeries[i % colorSeries.length];
-      //newDivText.push(<span onMouseUp={moveDividerDone} onMouseMove={moveDivider}
-      //  key={i * 2 + 1} style={{...{"--selection-color": selColor} as React.CSSProperties, backgroundColor: color}}>{s}</span>);
-      newDivText.push({
-        divider: dividers[i],
-        sentence: sentences[i],
-        senBgColor: colorSeries[i % colorSeries.length],
-        divSelColor: TRANSP,
-        senSelColor: TRANSP,
-      });
-    }
-    setDivText(newDivText);
+    setDivText(sentences.map((s, index) => ({
+      divider: dividers[index],
+      sentence: s,
+      senBgColor: colorSeries[index % colorSeries.length],
+      divSelColor: TRANSP,
+      senSelColor: TRANSP
+    } as divTextArgs)));
 
     setTextUnitProps((prev) => ({...prev,
       visibleTrans: false,
-      text: newDivText.length > 0 ? newDivText[0].sentence : ' ',
+      text: sentences.length > 0 ? sentences[0] : ' ',
       langId: langId as any,
       dialectId: DefaultDialect[langId as LangIdType],
       length: 0,
-      textareaOption: {backgroundColor: newDivText.length > 0 ? newDivText[0].senBgColor : TRANSP}
+      textareaOption: {backgroundColor: sentences.length > 0 ? sentences[0] : TRANSP}
     }));
   }
 
@@ -432,10 +321,6 @@ export default function AddTextMain() {
 
         <div className='sentence-segments'>
           {divText.map((s, idx) => {
-      //const color = colorSeries[i % colorSeries.length];
-      //newDivText.push(<span onMouseUp={moveDividerDone} onMouseMove={moveDivider}
-      //  key={i * 2 + 1} style={{...{"--selection-color": selColor} as React.CSSProperties, backgroundColor: color}}>{s}</span>);
-
             return (<>
               <span onMouseDown={idx > 0 ? moveDividerBegin : moveDividerWrongStartingPoint} onMouseMove={moveDivider} key={idx * 2}
                 style={{...{"--selection-color": s.divSelColor} as CSSProperties}}
