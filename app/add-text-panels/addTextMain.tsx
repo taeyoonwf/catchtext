@@ -21,6 +21,7 @@ enum MoveDivider {
   NoAction,
   MoveStarted,
   CheckedStartIndex,
+  WrongStartingPoint,
 }
 let moveDividerStage: MoveDivider = MoveDivider.NoAction;
 const TRANSP = 'transparent';
@@ -54,9 +55,9 @@ export default function AddTextMain() {
   }
  
   const onAllMouseUp = (e: any) => {
-    if (moveDividerStage == MoveDivider.CheckedStartIndex) {
+    //if (moveDividerStage == MoveDivider.CheckedStartIndex) {
       moveDividerDone(e)
-    }
+    //}
   }
 
   useEffect(() => {
@@ -66,15 +67,19 @@ export default function AddTextMain() {
       document.removeEventListener('selectionchange', handleSelection);
       document.removeEventListener('mouseup', onAllMouseUp);
     };
-   });
+  });
 
-   //let checkAnchor = false;
-   const moveDividerBegin = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+  //let checkAnchor = false;
+  const moveDividerBegin = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     console.log('moving start');
-    moveDividerStage = MoveDivider.MoveStarted
+    moveDividerStage = MoveDivider.MoveStarted;
     //moveDividerStage = 1;
     //isMovingDivider = true;
     //checkAnchor = true;
+  }
+
+  const moveDividerWrongStartingPoint = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    moveDividerStage = MoveDivider.WrongStartingPoint;
   }
 
   const moveDivider = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
@@ -122,25 +127,49 @@ export default function AddTextMain() {
     //console.log(e.buttons);
   }
 
-  const mergePartOfDivText = (fromIndex: number, toIndex: number, mergeColorFromIndex: boolean) => {
+  const divideDivText = (index: number, offset: number) => {
+    const s = divText[index].sentence;
+    const len = s.length;
+    const prev = s.substring(0, offset).trim();
+    const next = s.substring(offset).trim();
+    const divStr = s.substring(prev.length, offset)
+      + s.substring(offset, len - next.length);
+    return [
+      ...divText.slice(0, index),
+      {
+        ...divText[index],
+        divider: divText[index].divider,
+        sentence: prev,
+      },
+      {
+        ...divText[index],
+        divider: divStr,
+        sentence: next,
+      },
+      ...divText.slice(index + 1)
+    ];
+  }
+  //sel.focusOffset);
+  //const 
+  const mergePartOfDivTextArr = (fromIndex: number, toIndex: number, mergeColorFromIndex: boolean, arr: divTextArgs[]) => {
     if (fromIndex === toIndex)
       return;
     console.log(`fromIndex: ${fromIndex}, toIndex: ${toIndex}`);
-    const mergedSentenceList = [divText[fromIndex].sentence,
-      ...divText.slice(fromIndex + 1, toIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
+    const mergedSentenceList = [arr[fromIndex].sentence,
+      ...arr.slice(fromIndex + 1, toIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
     const mergedSentence = mergedSentenceList.join('');
-    setDivText((prev) => [
-      ...prev.slice(0, fromIndex).map((e, _) => (
+    setDivText([
+      ...arr.slice(0, fromIndex).map((e, _) => (
         {...e, divSelColor: TRANSP, senSelColor: TRANSP}
       )),
       {
-        divider: prev[fromIndex].divider,
+        divider: arr[fromIndex].divider,
         sentence: mergedSentence,
-        senBgColor: mergeColorFromIndex ? prev[fromIndex].senSelColor : prev[toIndex - 1].senSelColor,
+        senBgColor: mergeColorFromIndex ? arr[fromIndex].senSelColor : arr[toIndex - 1].senSelColor,
         divSelColor: TRANSP,
         senSelColor: TRANSP
       },
-      ...prev.slice(toIndex, prev.length).map((e, _) => (
+      ...arr.slice(toIndex, arr.length).map((e, _) => (
         {...e, divSelColor: TRANSP, senSelColor: TRANSP}
       ))
     ]);
@@ -152,9 +181,14 @@ export default function AddTextMain() {
     //console.log(window.getSelection());
     //console.log(window.getSelection());
     const sel = window.getSelection();
-    console.log(sel);
-    console.log(moveDividerStage);
-    if (sel !== null && moveDividerStage == MoveDivider.CheckedStartIndex) {
+    //console.log(sel);
+    //console.log(moveDividerStage);
+    if (sel !== null && moveDividerStage == MoveDivider.WrongStartingPoint) {
+      moveDividerStage = MoveDivider.NoAction;
+      sel.empty();
+      console.log(window.getSelection());
+    }
+    else if (sel !== null && moveDividerStage == MoveDivider.CheckedStartIndex) {
       console.log(sel.anchorNode);
       console.log(sel.focusNode);
       const anchorNodeIndex = Array.prototype.indexOf.call(sel.anchorNode?.parentNode?.parentNode?.childNodes, sel.anchorNode?.parentNode);
@@ -167,7 +201,7 @@ export default function AddTextMain() {
         // console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
         let fromIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
         let toIndex = (endIndex < startIndex) ? startIndex + 1 : endIndex;
-        mergePartOfDivText(fromIndex, toIndex, endIndex < startIndex);
+        mergePartOfDivTextArr(fromIndex, toIndex, endIndex < startIndex, divText);
       }
       else {
         if (focusNodeIndex < anchorNodeIndex || focusNodeIndex == anchorNodeIndex && sel.focusOffset <= sel.anchorOffset) {
@@ -175,7 +209,13 @@ export default function AddTextMain() {
           console.log(`went back`);
           const endIndex = Math.floor(focusNodeIndex * 0.5);
           if (sel.focusOffset == 0)
-            mergePartOfDivText(endIndex, startIndex + 1, true);
+            mergePartOfDivTextArr(endIndex, startIndex + 1, true, divText);
+          else {
+            const arr = divideDivText(endIndex, sel.focusOffset);
+            console.log(arr);
+            mergePartOfDivTextArr(endIndex + 1, startIndex + 2, true, arr);
+            //divideAndMergePartOfDivTextBack(endIndex, startIndex + 1, true);
+          }
         }
         else {
           const startIndex = Math.floor(anchorNodeIndex * 0.5);
@@ -183,7 +223,11 @@ export default function AddTextMain() {
           const endIndex = Math.floor(focusNodeIndex * 0.5);
           console.log(`endIndex : ${endIndex}, divText[endIndex].sentence.length: ${divText[endIndex].sentence.length}`);
           if (sel.focusOffset === divText[endIndex].sentence.length)
-            mergePartOfDivText(startIndex - 1, endIndex + 1, false);
+            mergePartOfDivTextArr(startIndex - 1, endIndex + 1, false, divText);
+          else {
+            const arr = divideDivText(endIndex, sel.focusOffset);
+            mergePartOfDivTextArr(startIndex - 1, endIndex + 1, false, arr);
+          }
         }
         /* const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
         const endIndex = Math.floor(focusNodeIndex * 0.5);
@@ -198,11 +242,12 @@ export default function AddTextMain() {
         */
       }
       // console.log(anchorNodeIndex + ", " + focusNodeIndex);
-      const colorIndex = Math.floor((anchorNodeIndex - 1) * 0.5);
+      //const colorIndex = Math.floor((anchorNodeIndex - 1) * 0.5);
       //setSelColor(colorSeries[colorIndex % colorSeries.length]);
       //console.log(colorSeries[colorIndex % colorSeries.length]);
 
-      moveDividerStage = MoveDivider.NoAction
+      moveDividerStage = MoveDivider.NoAction;
+      sel.empty();
       /*
       const newDivText: divTextArgs[] = [];
       for (let i = 0; i < divText.length; i++) {
@@ -230,7 +275,6 @@ export default function AddTextMain() {
       console.log(sel.anchorNode?.parentElement?.children);
       */
     }
-    window.getSelection()?.empty();
     //isMovingDivider = false;
     //console.log(window.getSelection().);
     //e.currentTarget.DOCUMENT_POSITION_PRECEDING
@@ -391,14 +435,14 @@ export default function AddTextMain() {
       //  key={i * 2 + 1} style={{...{"--selection-color": selColor} as React.CSSProperties, backgroundColor: color}}>{s}</span>);
 
             return (<>
-              <span onMouseDown={idx > 0 ? moveDividerBegin : () => {}} onMouseMove={moveDivider} key={idx * 2}
+              <span onMouseDown={idx > 0 ? moveDividerBegin : moveDividerWrongStartingPoint} onMouseMove={moveDivider} key={idx * 2}
                 style={{...{"--selection-color": s.divSelColor} as CSSProperties}}
                 className={idx > 0 ? "sentence-divider" : ""}>
                   {((idx > 0 && s.divider.indexOf(' ') < 0) ? " " + s.divider : s.divider)
                     .replaceAll(' ', '\u00A0')
                   }
               </span>
-              <span onMouseMove={moveDivider} key={idx * 2 + 1}
+              <span onMouseDown={moveDividerWrongStartingPoint} onMouseMove={moveDivider} key={idx * 2 + 1}
                 style={{...{"--selection-color": s.senSelColor} as CSSProperties,
                 backgroundColor: s.senBgColor}}>
                   {s.sentence}
