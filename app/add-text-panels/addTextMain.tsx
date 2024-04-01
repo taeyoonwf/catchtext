@@ -1,6 +1,6 @@
 'use client'
 import './layout.css';
-import { CSSProperties, ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
+import { CSSProperties, ChangeEvent, useContext, useEffect, useState } from 'react';
 import { Blank, BlankType, DefaultDialect, LangIdType, LangIds, colorSeries } from '../baseTypes';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
