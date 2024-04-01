@@ -140,51 +140,26 @@ export default function AddTextMain() {
       if (focusNodeIndex % 2 == 0) {
         const endIndex = focusNodeIndex / 2;
         console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
-        let smallIndex = -1;
-        let largeIndex = -1;
-        if (endIndex < startIndex) {
-          smallIndex = endIndex;
-          const mergedSentenceList = [divText[endIndex].sentence,
-            ...divText.slice(endIndex + 1, startIndex + 1).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
-          const mergedSentence = mergedSentenceList.join('');
-          setDivText((prev) => [
-            ...prev.slice(0, endIndex).map((e, _) => (
-              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
-            )),
-            {
-              divider: prev[endIndex].divider,
-              sentence: mergedSentence,
-              senBgColor: prev[endIndex].senSelColor, // prev[endIndex].senBgColor,
-              divSelColor: TRANSP,
-              senSelColor: TRANSP,
-            },
-            ...prev.slice(startIndex + 1, prev.length).map((e, _) => (
-              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
-            ))
-          ]);
-        }
-        else if (startIndex < endIndex) {
-          //smallIndex = startIndex - 1;
-          const mergedSentenceList = [divText[startIndex - 1].sentence,
-            ...divText.slice(startIndex, endIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
-          const mergedSentence = mergedSentenceList.join('');
-          console.log(mergedSentence);
-          setDivText((prev) => [
-            ...prev.slice(0, startIndex - 1).map((e, _) => (
-              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
-            )),
-            {
-              divider: prev[startIndex - 1].divider,
-              sentence: mergedSentence,
-              senBgColor: prev[endIndex].senSelColor, // prev[startIndex - 1].senBgColor,
-              divSelColor: TRANSP,
-              senSelColor: TRANSP
-            },
-            ...prev.slice(endIndex, prev.length).map((e, _) => (
-              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
-            ))
-          ]);
-        }
+        let smallIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
+        let largeIndex = (endIndex < startIndex) ? startIndex + 1 : endIndex;
+        const mergedSentenceList = [divText[smallIndex].sentence,
+          ...divText.slice(smallIndex + 1, largeIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
+        const mergedSentence = mergedSentenceList.join('');
+        setDivText((prev) => [
+          ...prev.slice(0, smallIndex).map((e, _) => (
+            {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+          )),
+          {
+            divider: prev[smallIndex].divider,
+            sentence: mergedSentence,
+            senBgColor: prev[endIndex].senSelColor, // prev[startIndex - 1].senBgColor,
+            divSelColor: TRANSP,
+            senSelColor: TRANSP
+          },
+          ...prev.slice(largeIndex, prev.length).map((e, _) => (
+            {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+          ))
+        ]);
       }
       else {
 
