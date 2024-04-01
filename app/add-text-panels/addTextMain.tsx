@@ -136,7 +136,7 @@ export default function AddTextMain() {
       {
         divider: prev[fromIndex].divider,
         sentence: mergedSentence,
-        senBgColor: mergeColorFromIndex ? prev[fromIndex].senSelColor : prev[toIndex].senSelColor,
+        senBgColor: mergeColorFromIndex ? prev[fromIndex].senSelColor : prev[toIndex - 1].senSelColor,
         divSelColor: TRANSP,
         senSelColor: TRANSP
       },
@@ -160,11 +160,9 @@ export default function AddTextMain() {
       const anchorNodeIndex = Array.prototype.indexOf.call(sel.anchorNode?.parentNode?.parentNode?.childNodes, sel.anchorNode?.parentNode);
       const focusNodeIndex = Array.prototype.indexOf.call(sel.focusNode?.parentNode?.parentNode?.childNodes, sel.focusNode?.parentNode);
       console.log("anchorNodeIndex focusNodeIndex " + anchorNodeIndex + ", " + focusNodeIndex);
-      const startIndex = (anchorNodeIndex <= focusNodeIndex) ?
-        Math.floor(anchorNodeIndex * 0.5) :
-        Math.floor((anchorNodeIndex + 1) * 0.5);
 
       if (focusNodeIndex % 2 == 0) {
+        const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
         const endIndex = focusNodeIndex / 2;
         // console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
         let fromIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
@@ -172,7 +170,22 @@ export default function AddTextMain() {
         mergePartOfDivText(fromIndex, toIndex, endIndex < startIndex);
       }
       else {
-        //const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+        if (focusNodeIndex < anchorNodeIndex || focusNodeIndex == anchorNodeIndex && sel.focusOffset <= sel.anchorOffset) {
+          const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+          console.log(`went back`);
+          const endIndex = Math.floor(focusNodeIndex * 0.5);
+          if (sel.focusOffset == 0)
+            mergePartOfDivText(endIndex, startIndex + 1, true);
+        }
+        else {
+          const startIndex = Math.floor(anchorNodeIndex * 0.5);
+          console.log(`went forward`);
+          const endIndex = Math.floor(focusNodeIndex * 0.5);
+          console.log(`endIndex : ${endIndex}, divText[endIndex].sentence.length: ${divText[endIndex].sentence.length}`);
+          if (sel.focusOffset === divText[endIndex].sentence.length)
+            mergePartOfDivText(startIndex - 1, endIndex + 1, false);
+        }
+        /* const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
         const endIndex = Math.floor(focusNodeIndex * 0.5);
         if (endIndex < startIndex && sel.focusOffset == 0)
           mergePartOfDivText(endIndex, startIndex + 1, true);
@@ -182,6 +195,7 @@ export default function AddTextMain() {
           console.log("startIndex endIndex " + startIndex + ", " + endIndex);
           mergePartOfDivText(startIndex - 1, endIndex + 1, false);
         }
+        */
       }
       // console.log(anchorNodeIndex + ", " + focusNodeIndex);
       const colorIndex = Math.floor((anchorNodeIndex - 1) * 0.5);
