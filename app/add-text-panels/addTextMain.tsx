@@ -12,6 +12,7 @@ import { LanguageIdentifierResultType } from '../linguaWrapper';
 interface divTextArgs {
   divider: string;
   sentence: string;
+  senBgColor: string;
   divSelColor: string;
   senSelColor: string;
 } 
@@ -22,6 +23,7 @@ enum MoveDivider {
   CheckedStartIndex,
 }
 let moveDividerStage: MoveDivider = MoveDivider.NoAction;
+const TRANSP = 'transparent';
 
 export default function AddTextMain() {
   const [text, setText] = useState('');
@@ -37,7 +39,7 @@ export default function AddTextMain() {
 
   const selection = useRef('');
   //let isMovingDivider = false;
-  const [selColor, setSelColor] = useState('#555555');
+  //const [selColor, setSelColor] = useState('#555555');
         
   const handleSelection = () => {
     const sel = document.getSelection();
@@ -91,14 +93,15 @@ export default function AddTextMain() {
         //setSelDivTextIndex(Math.floor((anchorNodeIndex + 1) * 0.5));
         
         const divIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
-        const colorPrev = colorSeries[(divIndex - 1) % colorSeries.length];
-        const colorNext = colorSeries[divIndex % colorSeries.length];
+        const colorPrev = divText[divIndex - 1].senBgColor;
+        const colorNext = divText[divIndex].senBgColor;
         const newDivText: divTextArgs[] = [];
         for (let i = 0; i < divText.length; i++) {
           newDivText[i] = {
             divider: divText[i].divider,
             sentence: divText[i].sentence,
-            divSelColor: (i < divIndex) ? colorNext : ((i == divIndex) ? 'transparent' : colorPrev),
+            senBgColor: divText[i].senBgColor,
+            divSelColor: (i < divIndex) ? colorNext : ((i == divIndex) ? TRANSP : colorPrev),
             senSelColor: (i < divIndex) ? colorNext : colorPrev,
           };
           //divText[i].divSelColor = colorNext;
@@ -132,29 +135,79 @@ export default function AddTextMain() {
       console.log(sel.focusNode);
       const anchorNodeIndex = Array.prototype.indexOf.call(sel.anchorNode?.parentNode?.parentNode?.childNodes, sel.anchorNode?.parentNode);
       const focusNodeIndex = Array.prototype.indexOf.call(sel.focusNode?.parentNode?.parentNode?.childNodes, sel.focusNode?.parentNode);
-      const divIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+      const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
 
       if (focusNodeIndex % 2 == 0) {
+        const endIndex = focusNodeIndex / 2;
+        console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
+        let smallIndex = -1;
+        let largeIndex = -1;
+        if (endIndex < startIndex) {
+          smallIndex = endIndex;
+          const mergedSentenceList = [divText[endIndex].sentence,
+            ...divText.slice(endIndex + 1, startIndex + 1).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
+          const mergedSentence = mergedSentenceList.join('');
+          setDivText((prev) => [
+            ...prev.slice(0, endIndex).map((e, _) => (
+              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+            )),
+            {
+              divider: prev[endIndex].divider,
+              sentence: mergedSentence,
+              senBgColor: prev[endIndex].senSelColor, // prev[endIndex].senBgColor,
+              divSelColor: TRANSP,
+              senSelColor: TRANSP,
+            },
+            ...prev.slice(startIndex + 1, prev.length).map((e, _) => (
+              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+            ))
+          ]);
+        }
+        else if (startIndex < endIndex) {
+          //smallIndex = startIndex - 1;
+          const mergedSentenceList = [divText[startIndex - 1].sentence,
+            ...divText.slice(startIndex, endIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
+          const mergedSentence = mergedSentenceList.join('');
+          console.log(mergedSentence);
+          setDivText((prev) => [
+            ...prev.slice(0, startIndex - 1).map((e, _) => (
+              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+            )),
+            {
+              divider: prev[startIndex - 1].divider,
+              sentence: mergedSentence,
+              senBgColor: prev[endIndex].senSelColor, // prev[startIndex - 1].senBgColor,
+              divSelColor: TRANSP,
+              senSelColor: TRANSP
+            },
+            ...prev.slice(endIndex, prev.length).map((e, _) => (
+              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+            ))
+          ]);
+        }
       }
       else {
 
       }
       console.log(anchorNodeIndex + ", " + focusNodeIndex);
       const colorIndex = Math.floor((anchorNodeIndex - 1) * 0.5);
-      setSelColor(colorSeries[colorIndex % colorSeries.length]);
-      console.log(colorSeries[colorIndex % colorSeries.length]);
+      //setSelColor(colorSeries[colorIndex % colorSeries.length]);
+      //console.log(colorSeries[colorIndex % colorSeries.length]);
 
       moveDividerStage = MoveDivider.NoAction
+      /*
       const newDivText: divTextArgs[] = [];
       for (let i = 0; i < divText.length; i++) {
         newDivText[i] = {
           divider: divText[i].divider,
           sentence: divText[i].sentence,
+          senBgColor: divText[i].senBgColor,
           divSelColor: 'transparent',
           senSelColor: 'transparent',
         };
       }
       setDivText(newDivText);
+      */
 
       /*
       console.log(sel.anchorNode?.nodeValue);
@@ -217,19 +270,20 @@ export default function AddTextMain() {
       newDivText.push({
         divider: dividers[i],
         sentence: sentences[i],
-        divSelColor: 'transparent',
-        senSelColor: 'transparent',
+        senBgColor: colorSeries[i % colorSeries.length],
+        divSelColor: TRANSP,
+        senSelColor: TRANSP,
       });
     }
     setDivText(newDivText);
 
     setTextUnitProps((prev) => ({...prev,
       visibleTrans: false,
-      text: sentences.length > 0 ? sentences[0] : ' ',
+      text: newDivText.length > 0 ? newDivText[0].sentence : ' ',
       langId: langId as any,
       dialectId: DefaultDialect[langId as LangIdType],
       length: 0,
-      textareaOption: {backgroundColor: sentences.length > 0 ? colorSeries[0] : 'transparent'}
+      textareaOption: {backgroundColor: newDivText.length > 0 ? newDivText[0].senBgColor : TRANSP}
     }));
   }
 
@@ -338,7 +392,7 @@ export default function AddTextMain() {
               </span>
               <span onMouseMove={moveDivider} key={idx * 2 + 1}
                 style={{...{"--selection-color": s.senSelColor} as CSSProperties,
-                backgroundColor: colorSeries[idx % colorSeries.length]}}>
+                backgroundColor: s.senBgColor}}>
                   {s.sentence}
               </span>
             </>);
