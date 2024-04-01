@@ -122,6 +122,30 @@ export default function AddTextMain() {
     //console.log(e.buttons);
   }
 
+  const mergePartOfDivText = (fromIndex: number, toIndex: number, mergeColorFromIndex: boolean) => {
+    if (fromIndex === toIndex)
+      return;
+    console.log(`fromIndex: ${fromIndex}, toIndex: ${toIndex}`);
+    const mergedSentenceList = [divText[fromIndex].sentence,
+      ...divText.slice(fromIndex + 1, toIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
+    const mergedSentence = mergedSentenceList.join('');
+    setDivText((prev) => [
+      ...prev.slice(0, fromIndex).map((e, _) => (
+        {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+      )),
+      {
+        divider: prev[fromIndex].divider,
+        sentence: mergedSentence,
+        senBgColor: mergeColorFromIndex ? prev[fromIndex].senSelColor : prev[toIndex].senSelColor,
+        divSelColor: TRANSP,
+        senSelColor: TRANSP
+      },
+      ...prev.slice(toIndex, prev.length).map((e, _) => (
+        {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+      ))
+    ]);
+  }
+
   const moveDividerDone = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     console.log("moving done");
     //console.log(e.currentTarget);
@@ -135,36 +159,31 @@ export default function AddTextMain() {
       console.log(sel.focusNode);
       const anchorNodeIndex = Array.prototype.indexOf.call(sel.anchorNode?.parentNode?.parentNode?.childNodes, sel.anchorNode?.parentNode);
       const focusNodeIndex = Array.prototype.indexOf.call(sel.focusNode?.parentNode?.parentNode?.childNodes, sel.focusNode?.parentNode);
-      const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+      console.log("anchorNodeIndex focusNodeIndex " + anchorNodeIndex + ", " + focusNodeIndex);
+      const startIndex = (anchorNodeIndex <= focusNodeIndex) ?
+        Math.floor(anchorNodeIndex * 0.5) :
+        Math.floor((anchorNodeIndex + 1) * 0.5);
 
       if (focusNodeIndex % 2 == 0) {
         const endIndex = focusNodeIndex / 2;
-        console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
-        let smallIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
-        let largeIndex = (endIndex < startIndex) ? startIndex + 1 : endIndex;
-        const mergedSentenceList = [divText[smallIndex].sentence,
-          ...divText.slice(smallIndex + 1, largeIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
-        const mergedSentence = mergedSentenceList.join('');
-        setDivText((prev) => [
-          ...prev.slice(0, smallIndex).map((e, _) => (
-            {...e, divSelColor: TRANSP, senSelColor: TRANSP}
-          )),
-          {
-            divider: prev[smallIndex].divider,
-            sentence: mergedSentence,
-            senBgColor: prev[endIndex].senSelColor, // prev[startIndex - 1].senBgColor,
-            divSelColor: TRANSP,
-            senSelColor: TRANSP
-          },
-          ...prev.slice(largeIndex, prev.length).map((e, _) => (
-            {...e, divSelColor: TRANSP, senSelColor: TRANSP}
-          ))
-        ]);
+        // console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
+        let fromIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
+        let toIndex = (endIndex < startIndex) ? startIndex + 1 : endIndex;
+        mergePartOfDivText(fromIndex, toIndex, endIndex < startIndex);
       }
       else {
-
+        //const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+        const endIndex = Math.floor(focusNodeIndex * 0.5);
+        if (endIndex < startIndex && sel.focusOffset == 0)
+          mergePartOfDivText(endIndex, startIndex + 1, true);
+        console.log("startIndex endIndex " + startIndex + ", " + endIndex);
+        console.log(sel.focusOffset + " ~ " + divText[endIndex].sentence.length + ", " + (sel.focusOffset === divText[endIndex].sentence.length));
+        if (startIndex <= endIndex && sel.focusOffset === divText[endIndex].sentence.length) {
+          console.log("startIndex endIndex " + startIndex + ", " + endIndex);
+          mergePartOfDivText(startIndex - 1, endIndex + 1, false);
+        }
       }
-      console.log(anchorNodeIndex + ", " + focusNodeIndex);
+      // console.log(anchorNodeIndex + ", " + focusNodeIndex);
       const colorIndex = Math.floor((anchorNodeIndex - 1) * 0.5);
       //setSelColor(colorSeries[colorIndex % colorSeries.length]);
       //console.log(colorSeries[colorIndex % colorSeries.length]);
@@ -358,10 +377,10 @@ export default function AddTextMain() {
       //  key={i * 2 + 1} style={{...{"--selection-color": selColor} as React.CSSProperties, backgroundColor: color}}>{s}</span>);
 
             return (<>
-              <span onMouseDown={moveDividerBegin} onMouseMove={moveDivider} key={idx * 2}
+              <span onMouseDown={idx > 0 ? moveDividerBegin : () => {}} onMouseMove={moveDivider} key={idx * 2}
                 style={{...{"--selection-color": s.divSelColor} as CSSProperties}}
                 className={idx > 0 ? "sentence-divider" : ""}>
-                  {(s.divider.indexOf(' ') < 0 ? " " + s.divider : s.divider)
+                  {((idx > 0 && s.divider.indexOf(' ') < 0) ? " " + s.divider : s.divider)
                     .replaceAll(' ', '\u00A0')
                   }
               </span>
