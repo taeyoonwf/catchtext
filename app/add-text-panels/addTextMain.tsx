@@ -181,7 +181,7 @@ export default function AddTextMain() {
     //console.log(window.getSelection());
     //console.log(window.getSelection());
     const sel = window.getSelection();
-    //console.log(sel);
+    console.log(sel);
     //console.log(moveDividerStage);
     if (sel !== null && moveDividerStage == MoveDivider.WrongStartingPoint) {
       moveDividerStage = MoveDivider.NoAction;
@@ -196,12 +196,14 @@ export default function AddTextMain() {
       console.log("anchorNodeIndex focusNodeIndex " + anchorNodeIndex + ", " + focusNodeIndex);
 
       if (focusNodeIndex % 2 == 0) {
-        const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
-        const endIndex = focusNodeIndex / 2;
-        // console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
-        let fromIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
-        let toIndex = (endIndex < startIndex) ? startIndex + 1 : endIndex;
-        mergePartOfDivTextArr(fromIndex, toIndex, endIndex < startIndex, divText);
+        if (anchorNodeIndex != focusNodeIndex) {
+          const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+          const endIndex = focusNodeIndex / 2;
+          // console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
+          let fromIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
+          let toIndex = (endIndex < startIndex) ? startIndex + 1 : endIndex;
+          mergePartOfDivTextArr(fromIndex, toIndex, endIndex < startIndex, divText);
+        }
       }
       else {
         if (focusNodeIndex < anchorNodeIndex || focusNodeIndex == anchorNodeIndex && sel.focusOffset <= sel.anchorOffset) {
@@ -210,7 +212,7 @@ export default function AddTextMain() {
           const endIndex = Math.floor(focusNodeIndex * 0.5);
           if (sel.focusOffset == 0)
             mergePartOfDivTextArr(endIndex, startIndex + 1, true, divText);
-          else {
+          else if (focusNodeIndex != anchorNodeIndex || sel.focusOffset != sel.anchorOffset) {
             const arr = divideDivText(endIndex, sel.focusOffset);
             console.log(arr);
             mergePartOfDivTextArr(endIndex + 1, startIndex + 2, true, arr);
@@ -224,7 +226,7 @@ export default function AddTextMain() {
           console.log(`endIndex : ${endIndex}, divText[endIndex].sentence.length: ${divText[endIndex].sentence.length}`);
           if (sel.focusOffset === divText[endIndex].sentence.length)
             mergePartOfDivTextArr(startIndex - 1, endIndex + 1, false, divText);
-          else {
+          else if (focusNodeIndex != anchorNodeIndex || sel.focusOffset != sel.anchorOffset) {
             const arr = divideDivText(endIndex, sel.focusOffset);
             mergePartOfDivTextArr(startIndex - 1, endIndex + 1, false, arr);
           }
