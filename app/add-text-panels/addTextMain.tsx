@@ -226,7 +226,7 @@ export default function AddTextMain() {
       langId: langId as any,
       dialectId: DefaultDialect[langId as LangIdType],
       length: 0,
-      textareaOption: {backgroundColor: sentences.length > 0 ? sentences[0] : TRANSP}
+      textareaOption: {backgroundColor: sentences.length > 0 ? colorSeries[0] : TRANSP}
     }));
   }
 
