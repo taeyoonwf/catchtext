@@ -53,6 +53,7 @@
   border: 1px solid black;
 }
 
+
 .sentence-segments span {
   display: inline;
   overflow-wrap: break-word;
@@ -60,7 +61,14 @@
   white-space: pre-line;
 }
 
+.sentence-segments span::selection {
+  background: var(--selection-color);
+}
+
 .sentence-divider {
   border: 0px !important;
   cursor: col-resize;
+}
+
+.sentence-divider::selection {
 }
