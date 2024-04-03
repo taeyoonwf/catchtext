@@ -7,8 +7,11 @@ let DropdownMenuJustClosed = false;
 
 interface DropdownMenuProps<Items extends string> {
   items: readonly Items[];
-  onSelected?: (item: Items, index: number) => void;
-  maxMenuWidth?: number;
+  onSelected?: (item: Items, index: number, clickedTextOffset: number) => void;
+  onMouseDown?: (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void;
+  onMouseMove?: (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void;
+  addStyle?: {};
+  menuWidth: number;
   children: React.ReactNode;
 }
 
@@ -23,13 +26,17 @@ export default function SpanWithSelColor({
 export default function DropdownMenu<Items extends string>({
   items: itemsProp,
   onSelected: onSelectedProp,
-  maxMenuWidth: maxMenuWidthProp,
+  menuWidth: menuWidthProp,
+  addStyle: addStyleProp,
+  onMouseDown: onMouseDownProp,
+  onMouseMove: onMouseMoveProp,
   children
 }: DropdownMenuProps<Items>) {
   //const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined ? selectedKeyProp : blankKeyProp);
   const [itemOptions, setItemOptions] = useState<readonly Items[]>(itemsProp);
   const [itemsOpened, setItemsOpened] = useState(false);
   const [menuPosOffset, setMenuPosOffset] = useState<number>(0);
+  const [clickedTextOffset, setClickedTextOffset] = useState<number>(0);
   //const [stop, setStop] = useState(false);
   const selDropdownRef = useRef<HTMLSpanElement>(null);
 
@@ -96,7 +103,7 @@ export default function DropdownMenu<Items extends string>({
         //setKey(newKey);
         setItemsOpened(false);
         //DropdownSelectorJustClosed = true;
-        onSelectedProp?.call(null, selItem, itemOptions.indexOf(selItem));
+        onSelectedProp?.call(null, selItem, itemOptions.indexOf(selItem), clickedTextOffset);
     };
 
     return (
@@ -109,15 +116,20 @@ export default function DropdownMenu<Items extends string>({
             setBtnHover(false);
             setStop(false);
         }} */
+        style={{...addStyleProp}}
         ref={selDropdownRef}
+        onMouseDown={onMouseDownProp}
+        onMouseMove={onMouseMoveProp}
         onContextMenu={(e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
           e.preventDefault();
           e.currentTarget.dispatchEvent(new MouseEvent('click', {button: 0}));
           //console.log(`stop: ${stop}`);
           console.log(e);
-          //console.log(window.getSelection());
-          const maxWidth = maxMenuWidthProp !== undefined ? maxMenuWidthProp : 150;
-          const x: number = e.nativeEvent.offsetX < maxWidth ? e.nativeEvent.offsetX : e.nativeEvent.offsetX - maxWidth;
+          console.log(window.getSelection());
+          const x: number = e.nativeEvent.offsetX < menuWidthProp ? e.nativeEvent.offsetX : e.nativeEvent.offsetX - menuWidthProp;
+          const sel = window.getSelection();
+          if (sel !== null)
+            setClickedTextOffset(sel.focusOffset);
           setMenuPosOffset(x);
           setItemsOpened(true && DropdownMenuJustClosed != true);
           //setBtnHover(!stop); // && DropdownSelectorJustClosed != true);

@@ -8,6 +8,7 @@ import TextUnit, { TextUnitProps } from '../text-unit/textUnit';
 import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 import segment from 'sentencex';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
+import DropdownMenu from '../dropdown-menu/dropdownMenu';
 
 interface divTextArgs {
   divider: string;
@@ -329,11 +330,14 @@ export default function AddTextMain() {
                     .replaceAll(' ', '\u00A0')
                   }
               </span>
-              <span onMouseDown={moveDividerWrongStartingPoint} onMouseMove={moveDivider} key={idx * 2 + 1}
-                style={{...{"--selection-color": s.senSelColor} as CSSProperties,
-                backgroundColor: s.senBgColor}}>
+              <DropdownMenu onMouseDown={moveDividerWrongStartingPoint} onMouseMove={moveDivider} key={idx * 2 + 1}
+                addStyle={{...{"--selection-color": s.senSelColor} as CSSProperties,
+                backgroundColor: s.senBgColor}}
+                menuWidth={57}
+                items={['a', 'bb', 'ccc', 'dddd']}
+                onSelected={(e, index, offset) => alert(index + ", " + offset)}>
                   {s.sentence}
-              </span>
+              </DropdownMenu>
             </>);
           })}
         </div>
