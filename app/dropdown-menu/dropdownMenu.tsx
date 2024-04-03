@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import './layout.css';
 
 let DropdownMenuJustClosed = false;
@@ -8,6 +8,7 @@ let DropdownMenuJustClosed = false;
 interface DropdownMenuProps<Items extends string> {
   items: readonly Items[];
   onSelected?: (item: Items, index: number) => void;
+  maxMenuWidth?: number;
   children: React.ReactNode;
 }
 
@@ -22,16 +23,19 @@ export default function SpanWithSelColor({
 export default function DropdownMenu<Items extends string>({
   items: itemsProp,
   onSelected: onSelectedProp,
+  maxMenuWidth: maxMenuWidthProp,
   children
 }: DropdownMenuProps<Items>) {
   //const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined ? selectedKeyProp : blankKeyProp);
   const [itemOptions, setItemOptions] = useState<readonly Items[]>(itemsProp);
   const [itemsOpened, setItemsOpened] = useState(false);
+  const [menuPosOffset, setMenuPosOffset] = useState<number>(0);
   //const [stop, setStop] = useState(false);
   const selDropdownRef = useRef<HTMLSpanElement>(null);
 
-    const onAllMouseDown = (e: any) => {
+    const onAllMouseDown = (e: MouseEvent) => {
     //console.log('onAllMouseDown');
+      let isThisCtrlEvent = false; //(curr === e.target);
       console.log(e);
       console.log(selDropdownRef);
       const curr: Node = selDropdownRef.current as Node;
@@ -42,7 +46,6 @@ export default function DropdownMenu<Items extends string>({
         console.log(curr.childNodes[0]);
         console.log(curr.childNodes[1]);
         console.log(curr.childNodes[1].childNodes);
-        let isThisCtrlEvent = false; //(curr === e.target);
         // ||
         curr.childNodes[1].childNodes.forEach((node) => {
           isThisCtrlEvent = (isThisCtrlEvent || node === e.target);
@@ -97,7 +100,7 @@ export default function DropdownMenu<Items extends string>({
     };
 
     return (
-    <span className="sel-dropdown"
+    <span className="dd-menu-sel-dropdown"
         /* onMouseMove={() => {
             setBtnHover(!stop && DropdownSelectorJustClosed != true);
             DropdownSelectorJustClosed = false;
@@ -107,19 +110,27 @@ export default function DropdownMenu<Items extends string>({
             setStop(false);
         }} */
         ref={selDropdownRef}
-        onContextMenu={(e) => {
+        onContextMenu={(e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
           e.preventDefault();
           e.currentTarget.dispatchEvent(new MouseEvent('click', {button: 0}));
           //console.log(`stop: ${stop}`);
           console.log(e);
-          console.log(window.getSelection());
+          //console.log(window.getSelection());
+          const maxWidth = maxMenuWidthProp !== undefined ? maxMenuWidthProp : 150;
+          const x: number = e.nativeEvent.offsetX < maxWidth ? e.nativeEvent.offsetX : e.nativeEvent.offsetX - maxWidth;
+          setMenuPosOffset(x);
           setItemsOpened(true && DropdownMenuJustClosed != true);
           //setBtnHover(!stop); // && DropdownSelectorJustClosed != true);
           //DropdownSelectorJustClosed = false;
         }}
     >
             {children}
-        <div className={`${(itemsOpened) ? "display-block" : "display-none"} sel-dropdown-content`}>
+        <div
+          className={`${(itemsOpened) ? "dd-menu-display-block" : "display-none"} sel-dropdown-content`}
+          style={{...{
+            "--menu-pos-offset-x": menuPosOffset + 'px',
+          } as CSSProperties}}
+        >
             {itemOptions.map((theItem: Items) => (
                 <button key={theItem} onClick={selectItem}>{theItem}</button>
             ))}

@@ -14,7 +14,10 @@ export default function Home() {
 
   return (<>
     <div>
-      <DropdownMenu items={testIds} onSelected={(e, idx) => alert(`You selected #${idx}: ${e}`)}>The dropdown menu</DropdownMenu>
+      <DropdownMenu items={testIds} onSelected={(e, idx) => alert(`You selected #${idx}: ${e}`)} maxMenuWidth={150}>
+       The dropdown menu. This can be very long.
+       Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined. Also, it can be multi-lined.
+      </DropdownMenu>
       <span>~~</span>
       <DropdownSelector blankKey={blank} keys={langIds.slice(0, 5)} selectedKey='id' />
     </div>

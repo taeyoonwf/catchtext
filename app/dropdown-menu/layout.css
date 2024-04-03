@@ -7,11 +7,10 @@
     margin: 0px;
   }
   
-  .sel-dropdown {
+  .dd-menu-sel-dropdown {
     position: relative;
-    display: inline-block;
+    display: inline;
     background-color: brown;
-    height: 29px;
   }
   
   .sel-dropdown-content {
@@ -25,8 +24,9 @@
     display: none;
   }
 
-  .display-block {
+  .dd-menu-display-block {
     display: block;
+    margin-left: var(--menu-pos-offset-x);
   }
 
   .comment {
