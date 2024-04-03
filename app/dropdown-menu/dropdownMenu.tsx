@@ -5,38 +5,44 @@ import './layout.css';
 let DropdownMenuJustClosed = false;
 //let dropdownHovered = false;
 
-interface DropdownMenuProps<Keys extends string, Blank extends string> {
-    blankKey: Blank;
-    selectedKey?: Keys|Blank;
-    keys: readonly Keys[];
-    onChange?: (newKey: Keys) => void;
+interface DropdownMenuProps<Items extends string> {
+  items: readonly Items[];
+  onSelected?: (item: Items, index: number) => void;
+  children: React.ReactNode;
 }
 
-export default function DropdownMenu<Keys extends string, Blank extends string>({
-    blankKey: blankKeyProp,
-    selectedKey: selectedKeyProp,
-    keys: keysProp,
-    onChange: onChangeProp
-}: DropdownMenuProps<Keys, Blank>) {
-    const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined ? selectedKeyProp : blankKeyProp);
-    const [keyOptions, setKeyOptions] = useState<readonly Keys[]>(keysProp);
-    const [btnHover, setBtnHover] = useState(false);
-    //const [stop, setStop] = useState(false);
-    const selDropdownRef = useRef<HTMLSpanElement>(null);
+/*export interface SpanWithSelColorProps {
+  selColor?: string;
+} 
+
+export default function SpanWithSelColor({
+  selColor: selColorProp,
+*/
+
+export default function DropdownMenu<Items extends string>({
+  items: itemsProp,
+  onSelected: onSelectedProp,
+  children
+}: DropdownMenuProps<Items>) {
+  //const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined ? selectedKeyProp : blankKeyProp);
+  const [itemOptions, setItemOptions] = useState<readonly Items[]>(itemsProp);
+  const [itemsOpened, setItemsOpened] = useState(false);
+  //const [stop, setStop] = useState(false);
+  const selDropdownRef = useRef<HTMLSpanElement>(null);
 
     const onAllMouseDown = (e: any) => {
-      //console.log('onAllMouseDown');
+    //console.log('onAllMouseDown');
       console.log(e);
       console.log(selDropdownRef);
       const curr: Node = selDropdownRef.current as Node;
-      if (btnHover && curr !== undefined) {
+      if (itemsOpened && curr !== undefined) {
         console.log("compare!");
         console.log(e.target);
         console.log(curr);
         console.log(curr.childNodes[0]);
         console.log(curr.childNodes[1]);
         console.log(curr.childNodes[1].childNodes);
-        let isThisCtrlEvent = (curr === e.target);
+        let isThisCtrlEvent = false; //(curr === e.target);
         // ||
         curr.childNodes[1].childNodes.forEach((node) => {
           isThisCtrlEvent = (isThisCtrlEvent || node === e.target);
@@ -47,7 +53,7 @@ export default function DropdownMenu<Keys extends string, Blank extends string>(
           //&& curr.childNodes[0] !== e.target
           //&& curr.childNodes[1] !== e.target) {
           console.log(`setBtnHover false`);
-          setBtnHover(false);
+          setItemsOpened(false);
           DropdownMenuJustClosed = true;
         }
       }
@@ -71,23 +77,23 @@ export default function DropdownMenu<Keys extends string, Blank extends string>(
   
     useEffect(() => {
         console.log(`useEffect in dropdownSelector`);
-        console.log(`btnHover : ${btnHover}`);
+        console.log(`itemsOpened : ${itemsOpened}`);
         //console.log(`stop : ${stop}`);
-        console.log(`keysProp : ${keysProp}`);
-        if (selectedKeyProp !== undefined) {
-            setKey(selectedKeyProp);
-        }
-        setKeyOptions(keysProp);
-    }, [keysProp, selectedKeyProp]);
+        console.log(`itemsProp : ${itemsProp}`);
+        //if (selectedKeyProp !== undefined) {
+        //    setKey(selectedKeyProp);
+        //}
+        setItemOptions(itemsProp);
+    }, [itemsProp]);
 
-    const changeLangId = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const newKey: Keys = e.currentTarget.innerHTML as Keys;
+    const selectItem = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const selItem: Items = e.currentTarget.innerHTML as Items;
         //console.log(`oldKey : ${key}`);
         //console.log(`newKey : ${newKey}`);
-        setKey(newKey);
-        setBtnHover(false);
+        //setKey(newKey);
+        setItemsOpened(false);
         //DropdownSelectorJustClosed = true;
-        onChangeProp?.call(null, newKey);
+        onSelectedProp?.call(null, selItem, itemOptions.indexOf(selItem));
     };
 
     return (
@@ -107,15 +113,15 @@ export default function DropdownMenu<Keys extends string, Blank extends string>(
           //console.log(`stop: ${stop}`);
           console.log(e);
           console.log(window.getSelection());
-          setBtnHover(true && DropdownMenuJustClosed != true);
+          setItemsOpened(true && DropdownMenuJustClosed != true);
           //setBtnHover(!stop); // && DropdownSelectorJustClosed != true);
           //DropdownSelectorJustClosed = false;
         }}
     >
-            {key}
-        <div className={`${(btnHover) ? "display-block" : "display-none"} sel-dropdown-content`}>
-            {keyOptions.map((theId: Keys|Blank) => (theId !== blankKeyProp &&
-                <button key={theId} onClick={changeLangId}>{theId}</button>
+            {children}
+        <div className={`${(itemsOpened) ? "display-block" : "display-none"} sel-dropdown-content`}>
+            {itemOptions.map((theItem: Items) => (
+                <button key={theItem} onClick={selectItem}>{theItem}</button>
             ))}
         </div>
     </span>);
