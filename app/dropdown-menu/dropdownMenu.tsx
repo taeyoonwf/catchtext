@@ -119,30 +119,7 @@ export default function DropdownMenu<Items extends string>({
           bb.top - 1e-4 < y && y < bb.bottom + 1e-4)
           return i;
       }
-      let start = 0;
-      let end = textLen - 1;
-      let mid = 0;
-      while (start <= end) {
-        mid = Math.floor((start + end) * 0.5);
-        range.setStart(textNode, mid);
-        range.setEnd(textNode, mid + 1);
-        const chrRect = range.getBoundingClientRect();
-        if (x < chrRect.top) {
-          end = mid - 1;
-        }
-        else if (y > chrRect.bottom) {
-          start = mid + 1;
-        }
-        else if (x < chrRect.left) {
-          end = mid - 1;
-        }
-        else if (x > chrRect.right) {
-          start = mid + 1;
-        }
-        else
-          break;
-      }
-      return mid;
+      return 0;
     }
 
     return (

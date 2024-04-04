@@ -60,16 +60,16 @@ export default function AddTextMain() {
       console.log("moving divider");
       const sel = window.getSelection();
       if (sel !== null) { // && checkAnchor) {
-        console.log(sel.anchorNode);
-        console.log(sel.focusNode);
-        const anchorNodeIndex = Array.prototype.indexOf.call(sel.anchorNode?.parentNode?.parentNode?.childNodes, sel.anchorNode?.parentNode);
-        console.log("anchorNodeIndex : " + anchorNodeIndex);
+        //console.log(sel.anchorNode);
+        //console.log(sel.focusNode);
+        //const anchorNodeIndex = Array.prototype.indexOf.call(sel.anchorNode?.parentNode?.parentNode?.childNodes, sel.anchorNode?.parentNode);
+        //console.log("anchorNodeIndex : " + anchorNodeIndex);
   
         moveDividerStage = MoveDivider.CheckedStartIndex;
         //checkAnchor = false;
         //setSelDivTextIndex(Math.floor((anchorNodeIndex + 1) * 0.5));
         
-        const divIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+        const divIndex = selectionStartIndex(sel); // Math.floor((anchorNodeIndex + 1) * 0.5);
         const colorPrev = divText[divIndex - 1].senBgColor;
         const colorNext = divText[divIndex].senBgColor;
         const newDivText: divTextArgs[] = [];
@@ -119,7 +119,7 @@ export default function AddTextMain() {
     const mergedSentenceList = [arr[fromIndex].sentence,
       ...arr.slice(fromIndex + 1, toIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
     const mergedSentence = mergedSentenceList.join('');
-    setDivText([
+    const newDivText = [
       ...arr.slice(0, fromIndex).map((e, _) => (
         {...e, divSelColor: TRANSP, senSelColor: TRANSP}
       )),
@@ -133,7 +133,17 @@ export default function AddTextMain() {
       ...arr.slice(toIndex, arr.length).map((e, _) => (
         {...e, divSelColor: TRANSP, senSelColor: TRANSP}
       ))
-    ]);
+    ];
+    console.log(newDivText);
+    setDivText(newDivText);
+  }
+
+  const selectionStartIndex = (sel: Selection) => {
+    const anchorNodeIndex = Array.prototype.indexOf.call(sel.anchorNode?.parentNode?.parentNode?.childNodes, sel.anchorNode?.parentNode);
+    const focusNodeIndex = Array.prototype.indexOf.call(sel.focusNode?.parentNode?.parentNode?.childNodes, sel.focusNode?.parentNode);
+    if (focusNodeIndex < anchorNodeIndex || focusNodeIndex == anchorNodeIndex && sel.focusOffset <= sel.anchorOffset)
+      return Math.floor((anchorNodeIndex + 1) * 0.5);
+    return Math.floor(anchorNodeIndex * 0.5);
   }
 
   const moveDividerDone = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
@@ -171,7 +181,7 @@ export default function AddTextMain() {
       }
       else {
         if (focusNodeIndex < anchorNodeIndex || focusNodeIndex == anchorNodeIndex && sel.focusOffset <= sel.anchorOffset) {
-          const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+          const startIndex = selectionStartIndex(sel);
           console.log(`went back`);
           const endIndex = Math.floor(focusNodeIndex * 0.5);
           if (sel.focusOffset == 0)
@@ -189,7 +199,7 @@ export default function AddTextMain() {
           }
         }
         else {
-          const startIndex = Math.floor(anchorNodeIndex * 0.5);
+          const startIndex = selectionStartIndex(sel);
           console.log(`went forward`);
           const endIndex = Math.floor(focusNodeIndex * 0.5);
           console.log(`endIndex : ${endIndex}, divText[endIndex].sentence.length: ${divText[endIndex].sentence.length}`);
@@ -303,8 +313,9 @@ export default function AddTextMain() {
     if (item == '/') {
       const off = Math.max(1, textOffset);
       const divDivText = divideDivText(divTextIndex, off);
-      const colIdx = colorSeries.indexOf(divText[divTextIndex].senBgColor);
-      divDivText[divTextIndex + 1].senBgColor = colorSeries[colIdx + colorSeries.length * 0.5];
+      let colIdx = colorSeries.indexOf(divText[divTextIndex].senBgColor);
+      colIdx = (colIdx + colorSeries.length * 0.5) % colorSeries.length;
+      divDivText[divTextIndex + 1].senBgColor = colorSeries[colIdx];
       setDivText(divDivText);
     }
   }
