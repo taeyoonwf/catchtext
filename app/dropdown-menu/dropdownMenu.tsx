@@ -7,7 +7,7 @@ let DropdownMenuJustClosed = false;
 
 interface DropdownMenuProps<Items extends string> {
   items: readonly Items[];
-  onSelected?: (item: Items, index: number, clickedTextOffset: number) => void;
+  onSelected?: (item: Items, index: number, textOffset: number) => void;
   onMouseDown?: (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void;
   onMouseMove?: (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void;
   addStyle?: {};
@@ -22,12 +22,13 @@ interface DropdownMenuProps<Items extends string> {
 export default function SpanWithSelColor({
   selColor: selColorProp,
 */
+const menuTopOffset = 8; // 8px
 
 export default function DropdownMenu<Items extends string>({
   items: itemsProp,
   onSelected: onSelectedProp,
-  menuWidth: menuWidthProp,
   addStyle: addStyleProp,
+  menuWidth: menuWidthProp,
   onMouseDown: onMouseDownProp,
   onMouseMove: onMouseMoveProp,
   children
@@ -35,7 +36,7 @@ export default function DropdownMenu<Items extends string>({
   //const [key, setKey] = useState<Keys|Blank>(selectedKeyProp !== undefined ? selectedKeyProp : blankKeyProp);
   const [itemOptions, setItemOptions] = useState<readonly Items[]>(itemsProp);
   const [itemsOpened, setItemsOpened] = useState(false);
-  const [menuPosOffset, setMenuPosOffset] = useState<number>(0);
+  const [menuPosOffset, setMenuPosOffset] = useState<[number, number]>([0, 0]);
   const [clickedTextOffset, setClickedTextOffset] = useState<number>(0);
   //const [stop, setStop] = useState(false);
   const selDropdownRef = useRef<HTMLSpanElement>(null);
@@ -106,6 +107,34 @@ export default function DropdownMenu<Items extends string>({
         onSelectedProp?.call(null, selItem, itemOptions.indexOf(selItem), clickedTextOffset);
     };
 
+    const getTextOffsetFromMousePos = (textNode: ChildNode, textLen: number, x: number, y: number) => {
+      const range = document.createRange();
+      let start = 0;
+      let end = textLen - 1;
+      let mid = 0;
+      while (start <= end) {
+        mid = Math.floor((start + end) * 0.5);
+        range.setStart(textNode, mid);
+        range.setEnd(textNode, mid + 1);
+        const chrRect = range.getBoundingClientRect();
+        if (x < chrRect.top) {
+          end = mid - 1;
+        }
+        else if (y > chrRect.bottom) {
+          start = mid + 1;
+        }
+        else if (x < chrRect.left) {
+          end = mid - 1;
+        }
+        else if (x > chrRect.right) {
+          start = mid + 1;
+        }
+        else
+          break;
+      }
+      return mid;
+    }
+
     return (
     <span className="dd-menu-sel-dropdown"
         /* onMouseMove={() => {
@@ -122,15 +151,39 @@ export default function DropdownMenu<Items extends string>({
         onMouseMove={onMouseMoveProp}
         onContextMenu={(e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
           e.preventDefault();
-          e.currentTarget.dispatchEvent(new MouseEvent('click', {button: 0}));
+          //e.currentTarget.dispatchEvent(new MouseEvent('click', {button: 0}));
           //console.log(`stop: ${stop}`);
           console.log(e);
-          console.log(window.getSelection());
           const x: number = e.nativeEvent.offsetX < menuWidthProp ? e.nativeEvent.offsetX : e.nativeEvent.offsetX - menuWidthProp;
+          let y: number = 0;
+
+          const textNode = e.currentTarget.firstChild;
+          const textContent = textNode?.textContent;
+          if (textNode !== null && typeof textContent === 'string') {
+            const textOff = getTextOffsetFromMousePos(textNode, textContent.length, e.clientX, e.clientY)
+            setClickedTextOffset(textOff);
+
+            const range = document.createRange();
+            range.setStart(textNode, 0);
+            range.setEnd(textNode, textContent.length);
+            const rect = range.getBoundingClientRect();
+            console.log(rect);
+            console.log(e.nativeEvent.clientY);
+            y = e.nativeEvent.clientY - rect.bottom;
+            //console.log(menuNode?.);
+            //console.log(menuNode.eleme);
+                  //console.log(`text offset: ${textOff}`);
+            //range.setStart(textNode, 0);
+            //range.setEnd(textNode, Math.floor(textContent.length * 0.75));
+            //console.log(textContent);
+            // console.log(range.getBoundingClientRect());
+          }
+          /* console.log(window.getSelection());
           const sel = window.getSelection();
           if (sel !== null)
-            setClickedTextOffset(sel.focusOffset);
-          setMenuPosOffset(x);
+            setClickedTextOffset(sel.focusOffset); */
+
+          setMenuPosOffset([x, y + menuTopOffset]);
           setItemsOpened(true && DropdownMenuJustClosed != true);
           //setBtnHover(!stop); // && DropdownSelectorJustClosed != true);
           //DropdownSelectorJustClosed = false;
@@ -140,7 +193,8 @@ export default function DropdownMenu<Items extends string>({
         <div
           className={`${(itemsOpened) ? "dd-menu-display-block" : "display-none"} sel-dropdown-content`}
           style={{...{
-            "--menu-pos-offset-x": menuPosOffset + 'px',
+            "--menu-pos-offset-x": menuPosOffset[0] + 'px',
+            "--menu-pos-offset-y": menuPosOffset[1] + 'px',
           } as CSSProperties}}
         >
             {itemOptions.map((theItem: Items) => (

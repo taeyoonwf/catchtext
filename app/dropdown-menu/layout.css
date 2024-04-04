@@ -27,6 +27,7 @@
   .dd-menu-display-block {
     display: block;
     margin-left: var(--menu-pos-offset-x);
+    margin-top: var(--menu-pos-offset-y);
   }
 
   .comment {

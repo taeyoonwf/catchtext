@@ -34,8 +34,9 @@ export default function AddTextMain() {
   const [divText, setDivText] = useState<divTextArgs[]>([]);
   const languageIdentifier = useContext(LanguageIdentifierContext);
   const [textUnitProps, setTextUnitProps] = useState<TextUnitProps>({text: ' '});
- 
+
   const onAllMouseUp = (e: any) => moveDividerDone(e);
+  const menuForDivText = ['▶', '/', 'x']
 
   useEffect(() => {
     document.addEventListener('mouseup', onAllMouseUp);
@@ -333,8 +334,8 @@ export default function AddTextMain() {
               <DropdownMenu onMouseDown={moveDividerWrongStartingPoint} onMouseMove={moveDivider} key={idx * 2 + 1}
                 addStyle={{...{"--selection-color": s.senSelColor} as CSSProperties,
                 backgroundColor: s.senBgColor}}
-                menuWidth={57}
-                items={['a', 'bb', 'ccc', 'dddd']}
+                menuWidth={30}
+                items={menuForDivText}
                 onSelected={(e, index, offset) => alert(index + ", " + offset)}>
                   {s.sentence}
               </DropdownMenu>
