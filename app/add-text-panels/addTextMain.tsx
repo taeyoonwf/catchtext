@@ -112,8 +112,9 @@ export default function AddTextMain() {
   }
 
   const mergePartOfDivTextArr = (fromIndex: number, toIndex: number, mergeColorFromIndex: boolean, arr: divTextArgs[]) => {
-    if (fromIndex === toIndex)
+    if (fromIndex === toIndex) {
       return;
+    }
     console.log(`fromIndex: ${fromIndex}, toIndex: ${toIndex}`);
     const mergedSentenceList = [arr[fromIndex].sentence,
       ...arr.slice(fromIndex + 1, toIndex).reduce((acc: string[], curr, _) => (acc.push(curr.divider + curr.sentence), acc), [])];
@@ -162,6 +163,11 @@ export default function AddTextMain() {
           let toIndex = (endIndex < startIndex) ? startIndex + 1 : endIndex;
           mergePartOfDivTextArr(fromIndex, toIndex, endIndex < startIndex, divText);
         }
+        else {
+          setDivText((prev) => prev.map((e) => (
+            {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+          )));
+        }
       }
       else {
         if (focusNodeIndex < anchorNodeIndex || focusNodeIndex == anchorNodeIndex && sel.focusOffset <= sel.anchorOffset) {
@@ -175,6 +181,11 @@ export default function AddTextMain() {
             console.log(arr);
             mergePartOfDivTextArr(endIndex + 1, startIndex + 2, true, arr);
             //divideAndMergePartOfDivTextBack(endIndex, startIndex + 1, true);
+          }
+          else {
+            setDivText((prev) => prev.map((e) => (
+              {...e, divSelColor: TRANSP, senSelColor: TRANSP}
+            )));
           }
         }
         else {
@@ -273,8 +284,8 @@ export default function AddTextMain() {
     console.log(item);
     console.log(index);
     console.log(textOffset);
+    const divTextIndex = Number.parseInt(menuId);
     if (item == 'x') {
-      const divTextIndex = Number.parseInt(menuId);
       if (divTextIndex + 1 < divText.length) {
         setDivText((prev) => [
           ...prev.slice(0, divTextIndex),
@@ -282,12 +293,19 @@ export default function AddTextMain() {
             ...prev[divTextIndex + 1],
             divider: prev[divTextIndex].divider + prev[divTextIndex + 1].divider
           },
-          ...prev.slice(divTextIndex + 2, prev.length)
+          ...prev.slice(divTextIndex + 2)
         ]);  
       }
       else {
         setDivText((prev) => [...prev.slice(0, divTextIndex)]);
       }
+    }
+    if (item == '/') {
+      const off = Math.max(1, textOffset);
+      const divDivText = divideDivText(divTextIndex, off);
+      const colIdx = colorSeries.indexOf(divText[divTextIndex].senBgColor);
+      divDivText[divTextIndex + 1].senBgColor = colorSeries[colIdx + colorSeries.length * 0.5];
+      setDivText(divDivText);
     }
   }
   

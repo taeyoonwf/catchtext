@@ -111,6 +111,14 @@ export default function DropdownMenu<Items extends string>({
 
     const getTextOffsetFromMousePos = (textNode: ChildNode, textLen: number, x: number, y: number) => {
       const range = document.createRange();
+      for (let i = 0; i < textLen; i++) {
+        range.setStart(textNode, i);
+        range.setEnd(textNode, i + 1);
+        const bb = range.getBoundingClientRect();
+        if (bb.left - 1e-4 < x && x < bb.right + 1e-4 &&
+          bb.top - 1e-4 < y && y < bb.bottom + 1e-4)
+          return i;
+      }
       let start = 0;
       let end = textLen - 1;
       let mid = 0;
