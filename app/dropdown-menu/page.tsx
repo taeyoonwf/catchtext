@@ -17,7 +17,7 @@ export default function Home() {
       <span>
         OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
       </span>
-      <DropdownMenu items={testIds} onSelected={(e, idx) => alert(`You selected #${idx}: ${e}`)} menuWidth={150}
+      <DropdownMenu menuId={'0'} items={testIds} onSelected={(e, idx) => alert(`You selected #${idx}: ${e}`)} menuWidth={150}
         onMouseDown={() => console.log(`mouseDown on the dd-menu`)}
         addStyle={
           {...{"selection-color": '#987654'} as CSSProperties,
@@ -27,14 +27,14 @@ export default function Home() {
        The dropdown menu. This can be very long.
        Also, it can be Also, it can be multi-lined. Also, it can be multi-lined.
       </DropdownMenu>
-      <DropdownMenu items={['a', 'bb', 'ccc']} menuWidth={50}>
+      <DropdownMenu menuId={'1'} items={['a', 'bb', 'ccc']} menuWidth={50}>
         --Test--
       </DropdownMenu>
       <span>~~</span>
       <DropdownSelector blankKey={blank} keys={langIds.slice(0, 5)} selectedKey='id' />
     </div>
     <div>
-      <DropdownMenu items={dialectIds} menuWidth={85}>---------</DropdownMenu>
+      <DropdownMenu menuId={'2'} items={dialectIds} menuWidth={85}>---------</DropdownMenu>
     </div>
   </>);
 }

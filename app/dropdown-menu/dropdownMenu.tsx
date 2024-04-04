@@ -7,7 +7,8 @@ let DropdownMenuJustClosed = false;
 
 interface DropdownMenuProps<Items extends string> {
   items: readonly Items[];
-  onSelected?: (item: Items, index: number, textOffset: number) => void;
+  menuId: string;
+  onSelected?: (menuId: string, item: Items, index: number, textOffset: number) => void;
   onMouseDown?: (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void;
   onMouseMove?: (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void;
   addStyle?: {};
@@ -26,6 +27,7 @@ const menuTopOffset = 8; // 8px
 
 export default function DropdownMenu<Items extends string>({
   items: itemsProp,
+  menuId: menuIdProp,
   onSelected: onSelectedProp,
   addStyle: addStyleProp,
   menuWidth: menuWidthProp,
@@ -44,16 +46,16 @@ export default function DropdownMenu<Items extends string>({
     const onAllMouseDown = (e: MouseEvent) => {
     //console.log('onAllMouseDown');
       let isThisCtrlEvent = false; //(curr === e.target);
-      console.log(e);
-      console.log(selDropdownRef);
+      //console.log(e);
+      //console.log(selDropdownRef);
       const curr: Node = selDropdownRef.current as Node;
       if (itemsOpened && curr !== undefined) {
-        console.log("compare!");
+        /* console.log("compare!");
         console.log(e.target);
         console.log(curr);
         console.log(curr.childNodes[0]);
         console.log(curr.childNodes[1]);
-        console.log(curr.childNodes[1].childNodes);
+        console.log(curr.childNodes[1].childNodes); */
         // ||
         curr.childNodes[1].childNodes.forEach((node) => {
           isThisCtrlEvent = (isThisCtrlEvent || node === e.target);
@@ -87,10 +89,10 @@ export default function DropdownMenu<Items extends string>({
     });
   
     useEffect(() => {
-        console.log(`useEffect in dropdownSelector`);
-        console.log(`itemsOpened : ${itemsOpened}`);
+        //console.log(`useEffect in dropdownSelector`);
+        //console.log(`itemsOpened : ${itemsOpened}`);
         //console.log(`stop : ${stop}`);
-        console.log(`itemsProp : ${itemsProp}`);
+        //console.log(`itemsProp : ${itemsProp}`);
         //if (selectedKeyProp !== undefined) {
         //    setKey(selectedKeyProp);
         //}
@@ -104,7 +106,7 @@ export default function DropdownMenu<Items extends string>({
         //setKey(newKey);
         setItemsOpened(false);
         //DropdownSelectorJustClosed = true;
-        onSelectedProp?.call(null, selItem, itemOptions.indexOf(selItem), clickedTextOffset);
+        onSelectedProp?.call(null, menuIdProp, selItem, itemOptions.indexOf(selItem), clickedTextOffset);
     };
 
     const getTextOffsetFromMousePos = (textNode: ChildNode, textLen: number, x: number, y: number) => {

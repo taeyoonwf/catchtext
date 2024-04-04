@@ -154,7 +154,8 @@ export default function AddTextMain() {
 
       if (focusNodeIndex % 2 == 0) {
         if (anchorNodeIndex != focusNodeIndex) {
-          const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
+          const startIndex = Math.floor((anchorNodeIndex + (focusNodeIndex < anchorNodeIndex ? 1 : 0)) * 0.5);
+          //const startIndex = Math.floor((anchorNodeIndex + 1) * 0.5);
           const endIndex = focusNodeIndex / 2;
           // console.log(`endIndex: ${endIndex}, startIndex: ${startIndex}`);
           let fromIndex = (endIndex < startIndex) ? endIndex : startIndex - 1;
@@ -264,8 +265,32 @@ export default function AddTextMain() {
   const handleLangId = (newKey: LangIdType) => {
     setLangId(newKey);
     //throw new Error('Function not implemented.');
+    refreshSegmentedText(newKey, text);
   }
 
+  const dropdownSelected = (menuId: string, item: string, index: Number, textOffset: number) => {
+    console.log(menuId);
+    console.log(item);
+    console.log(index);
+    console.log(textOffset);
+    if (item == 'x') {
+      const divTextIndex = Number.parseInt(menuId);
+      if (divTextIndex + 1 < divText.length) {
+        setDivText((prev) => [
+          ...prev.slice(0, divTextIndex),
+          {
+            ...prev[divTextIndex + 1],
+            divider: prev[divTextIndex].divider + prev[divTextIndex + 1].divider
+          },
+          ...prev.slice(divTextIndex + 2, prev.length)
+        ]);  
+      }
+      else {
+        setDivText((prev) => [...prev.slice(0, divTextIndex)]);
+      }
+    }
+  }
+  
   return (
     <div className='add-text-bg'>
       <div className='user-text-side'>
@@ -335,8 +360,9 @@ export default function AddTextMain() {
                 addStyle={{...{"--selection-color": s.senSelColor} as CSSProperties,
                 backgroundColor: s.senBgColor}}
                 menuWidth={30}
+                menuId={idx.toString()}
                 items={menuForDivText}
-                onSelected={(e, index, offset) => alert(index + ", " + offset)}>
+                onSelected={dropdownSelected}>
                   {s.sentence}
               </DropdownMenu>
             </>);
