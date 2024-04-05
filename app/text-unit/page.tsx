@@ -27,7 +27,7 @@ const tmpData: TextUnitData = {
 }; */
 
 const tmpData: TextUnitAbbrData =   {
-  "spd": 1,
+  "spd": 1.4,
   "len": 0,
   "txt": "'Well, When I was four years old, I had a dream about a spoon falling off a table and making a loud sound on the floor,' Jen said.",
   "lid": "en", 
