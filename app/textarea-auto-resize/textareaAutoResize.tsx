@@ -23,8 +23,8 @@ export default function TextareaAutoResize({
     const [backgroundColor, setBackgroundColor] = useState(backgroundColorProp);
 
     useEffect(() => {
-        console.log(`value readOnlyProp backgroundColorProp`);
-        console.log(`${value} ${readOnlyProp} ${backgroundColorProp}`);
+        //console.log(`value readOnlyProp backgroundColorProp`);
+        //console.log(`${value} ${readOnlyProp} ${backgroundColorProp}`);
         if (value !== undefined && value !== text)
             setText(value);
         setReadOnly(readOnlyProp === true);
