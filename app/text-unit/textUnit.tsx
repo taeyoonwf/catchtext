@@ -72,15 +72,17 @@ export default function TextUnit({
             setLangId(langIdProp);
         if (dialectIdProp !== undefined)
             setDialectId(dialectIdProp);
+    }, [textProp, langIdProp, dialectIdProp, speedProp, textareaOptionProp]);
+
+    useEffect(() => {
+        const speedParam = (speedProp !== undefined) ? speedProp : speed;
+        let dialectParam = (dialectId !== Blank) ? dialectId : dialectIdProp;
         if (autoPlayProp === true && !isPlaying)
-            playSound();
+            playSound(textProp, langIdProp, dialectParam !== undefined ? dialectParam : Blank, speedParam);
+        if (autoPlayProp !== true && isPlaying)
+            playSound(); // to stop
         console.log(`autoPlayProp: ${autoPlayProp}, isPlaying: ${isPlaying}`);
-        return () => {
-            console.log('return useEffect ' + isPlaying);
-            if (isPlaying)
-                playSound();
-        };
-    }, [textProp, langIdProp, dialectIdProp, speedProp, textareaOptionProp, autoPlayProp, isPlaying]);
+    }, [autoPlayProp]);
 
     const updateChanges = (newLength?: number) => {
         if (textIdProp === undefined)
@@ -96,7 +98,12 @@ export default function TextUnit({
         });
     }
 
-    const playSound = (e?: MouseEvent<HTMLButtonElement>) => {
+    const playSound = (
+        theText: string = text,
+        theLangId: LangIdType|BlankType = langId,
+        theDialectId: DialectIdType|BlankType = dialectId,
+        theSpeed: number = speed
+    ) => {
         console.log(speechSynthesizer.PlayText);
         console.log(speechSynthesizer.Stop);
         console.log(speechSynthesizer.IsPlaying);
@@ -109,9 +116,9 @@ export default function TextUnit({
             return;
         }
 
-        const voiceId = (dialectId !== Blank) ? dialectId : langId;
+        const voiceId = (theDialectId !== Blank) ? theDialectId : theLangId;
         setIsPlaying(true);
-        speechSynthesizer.PlayText(text, voiceId, speed, (forcedStop, playingTime) => {
+        speechSynthesizer.PlayText(theText, voiceId, theSpeed, (forcedStop, playingTime) => {
             if (!forcedStop) {
                 const relativeError = Math.abs(length - playingTime) / playingTime;
                 console.log(`length: ${length}, playingTime: ${playingTime}, relativeError: ${relativeError}`);
@@ -208,7 +215,7 @@ export default function TextUnit({
 
     return (
     <div className='text-unit-bg'>
-        <button onClick={playSound}
+        <button onClick={() => playSound()}
                         className='play-btn'>
                         {(!isPlaying && text.length > 0) ? '▶' : '■'}
                     </button>

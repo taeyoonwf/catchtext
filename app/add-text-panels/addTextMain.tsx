@@ -34,6 +34,7 @@ export default function AddTextMain() {
   const [divText, setDivText] = useState<divTextArgs[]>([]);
   const languageIdentifier = useContext(LanguageIdentifierContext);
   const [textUnitProps, setTextUnitProps] = useState<TextUnitProps>({text: ' '});
+  const [playingQueue, setPlayingQueue] = useState<number[]>([]);
 
   const onAllMouseUp = (e: any) => moveDividerDone(e);
   const menuForDivText = ['▶', '/', 'x']
@@ -44,6 +45,38 @@ export default function AddTextMain() {
       document.removeEventListener('mouseup', onAllMouseUp);
     };
   });
+
+  useEffect(() => {
+    //console.log("playing queue changed!");
+    if (textUnitProps.autoPlay) {
+      setTextUnitProps((prev) => ({...prev, autoPlay: false}))
+    }
+    if (playingQueue.length === 0) {
+      return;
+    }
+
+    const e = divText[playingQueue[0]];
+    const currPlayingQueue = JSON.stringify(playingQueue);
+    //console.log(`play #${playingQueue[0]} sound`);
+    setTimeout(
+      () => setTextUnitProps((prev) => ({
+        ...prev,
+        text: e.sentence,
+        textareaOption: {backgroundColor: e.senBgColor},
+        autoPlay: true,
+        onPlayFinished: () => {
+          if (currPlayingQueue === JSON.stringify(playingQueue)) {
+            //console.log(playingQueue.slice(1));
+            setPlayingQueue((prev) => prev.slice(1));
+          }
+        }
+      }))
+    , 250);
+  }, [playingQueue]);
+
+  useEffect(() => {
+    setPlayingQueue([]);
+  }, [divText]);
 
   const moveDividerBegin = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     console.log('moving start');
@@ -72,17 +105,13 @@ export default function AddTextMain() {
         const divIndex = selectionStartIndex(sel); // Math.floor((anchorNodeIndex + 1) * 0.5);
         const colorPrev = divText[divIndex - 1].senBgColor;
         const colorNext = divText[divIndex].senBgColor;
-        const newDivText: divTextArgs[] = [];
-        for (let i = 0; i < divText.length; i++) {
-          newDivText[i] = {
-            divider: divText[i].divider,
-            sentence: divText[i].sentence,
-            senBgColor: divText[i].senBgColor,
-            divSelColor: (i < divIndex) ? colorNext : ((i == divIndex) ? TRANSP : colorPrev),
-            senSelColor: (i < divIndex) ? colorNext : colorPrev,
-          };
-        }
-        setDivText(newDivText);
+        setDivText((prev) => prev.map((e, idx) => (
+          {
+            ...e,
+            divSelColor: (idx < divIndex) ? colorNext : ((idx == divIndex) ? TRANSP : colorPrev),
+            senSelColor: (idx < divIndex) ? colorNext : colorPrev,
+          }
+        )));
         console.log('anchor check finish ' + moveDividerStage);
       }
     }
@@ -289,12 +318,22 @@ export default function AddTextMain() {
     refreshSegmentedText(newKey, text);
   }
 
+  const playAll = () => {
+    if (playingQueue.length > 0)
+      setPlayingQueue([]);
+    else
+      setPlayingQueue(Array.from(Array(divText.length).keys()));
+  }
+
   const dropdownSelected = (menuId: string, item: string, index: Number, textOffset: number) => {
     console.log(menuId);
     console.log(item);
     console.log(index);
     console.log(textOffset);
     const divTextIndex = Number.parseInt(menuId);
+    if (item === '▶') { // play
+      setPlayingQueue([divTextIndex]);
+    }
     if (item == 'x') {
       if (divTextIndex + 1 < divText.length) {
         setDivText((prev) => [
@@ -406,6 +445,11 @@ export default function AddTextMain() {
             readOnly: true,
           }}
         />
+        <div className='play-all'>
+          <button key={0} onClick={playAll}>
+            {playingQueue.length > 0 ? '■' : '▶'}
+          </button>
+        </div>
       </div>
     </div>
   );

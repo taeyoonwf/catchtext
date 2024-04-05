@@ -100,7 +100,7 @@ function SpeechSynthesizer({
     function autoResumeTimer() {
       window.speechSynthesis.pause();
       window.speechSynthesis.resume();
-      autoResumeTimeout = setTimeout(autoResumeTimer, 500);
+      autoResumeTimeout = setTimeout(autoResumeTimer, 1000);
     }
 
     const utterThis = new SpeechSynthesisUtterance(text);
