@@ -9,6 +9,7 @@ import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
 import segment from 'sentencex';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
 import DropdownMenu from '../dropdown-menu/dropdownMenu';
+import TextTemplates from './text-templates/textTemplates';
 
 interface divTextArgs {
   divider: string;
@@ -395,19 +396,7 @@ export default function AddTextMain() {
       </div>
 
       <div className='text-refine-side'>
-        <div className='text-templates'>
-          Template: 
-          <span>
-            <input type="radio" id="contactChoice1" name="contact" value="normal" onChange={() => {}} />
-            <label htmlFor="contactChoice1">Normal</label>
-          </span>
-
-          <span>
-            <input type="radio" id="contactChoice2" name="contact" value="listeningExamD2P" />
-            <label htmlFor="contactChoice2">Listening Exam (Dialog 2P)</label>
-          </span>
-        </div>
-
+        <TextTemplates langId={langId}/>
         <div className='sentence-segments'>
           {divText.map((s, idx) => {
             return (<>
