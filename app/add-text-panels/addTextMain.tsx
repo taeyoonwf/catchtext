@@ -165,6 +165,12 @@ export default function AddTextMain() {
     ];
     console.log(newDivText);
     setDivText(newDivText);
+
+    setTextUnitProps((prev) => ({...prev,
+      text: newDivText[0].sentence,
+      length: 0,
+      textareaOption: {backgroundColor: newDivText[0].senBgColor}
+    }));
   }
 
   const selectionStartIndex = (sel: Selection) => {
@@ -273,6 +279,7 @@ export default function AddTextMain() {
       senSelColor: TRANSP
     } as divTextArgs)));
 
+    console.log(`dialectId : ${DefaultDialect[langId as LangIdType]}`);
     setTextUnitProps((prev) => ({...prev,
       visibleTrans: false,
       text: sentences.length > 0 ? sentences[0] : ' ',
@@ -334,6 +341,8 @@ export default function AddTextMain() {
     if (item === '▶') { // play
       setPlayingQueue([divTextIndex]);
     }
+
+    let newDivText = divText;
     if (item == 'x') {
       if (divTextIndex + 1 < divText.length) {
         setDivText((prev) => [
@@ -343,7 +352,10 @@ export default function AddTextMain() {
             divider: prev[divTextIndex].divider + prev[divTextIndex + 1].divider
           },
           ...prev.slice(divTextIndex + 2)
-        ]);  
+        ]);
+        if (divTextIndex === 0) {
+          newDivText = newDivText.slice(1);
+        }
       }
       else {
         setDivText((prev) => [...prev.slice(0, divTextIndex)]);
@@ -351,11 +363,20 @@ export default function AddTextMain() {
     }
     if (item == '/') {
       const off = Math.max(1, textOffset);
-      const divDivText = divideDivText(divTextIndex, off);
+      // const divDivText = divideDivText(divTextIndex, off);
+      newDivText = divideDivText(divTextIndex, off);
       let colIdx = colorSeries.indexOf(divText[divTextIndex].senBgColor);
       colIdx = (colIdx + colorSeries.length * 0.5) % colorSeries.length;
-      divDivText[divTextIndex + 1].senBgColor = colorSeries[colIdx];
-      setDivText(divDivText);
+      newDivText[divTextIndex + 1].senBgColor = colorSeries[colIdx];
+      setDivText(newDivText);
+    }
+
+    if (item == 'x' || item == '/') {
+      setTextUnitProps((prev) => ({...prev,
+        text: newDivText[0].sentence,
+        length: 0,
+        textareaOption: {backgroundColor: newDivText[0].senBgColor}
+      }));
     }
   }
   
@@ -377,40 +398,13 @@ export default function AddTextMain() {
         <div className='text-templates'>
           Template: 
           <span>
-            <input type="radio" id="contactChoice1" name="contact" value="normal" onChange={() => {}} checked />
+            <input type="radio" id="contactChoice1" name="contact" value="normal" onChange={() => {}} />
             <label htmlFor="contactChoice1">Normal</label>
           </span>
 
           <span>
-            <input type="radio" id="contactChoice2" name="contact" value="listeningExam1" />
-            <label htmlFor="contactChoice2">Listening Exam 1</label>
-          </span>
-
-          <span>
-          <input type="radio" id="contactChoice3" name="contact" value="listeningExam2" />
-          <label htmlFor="contactChoice3">Listening Exam 2</label>
-          </span>
-
-
-          <span>
-          <input type="radio" id="contactChoice4" name="contact" value="listeningExam3" />
-          <label htmlFor="contactChoice4">Listening Exam 3</label>
-          </span>
-
-          <span>
-          <input type="radio" id="contactChoice5" name="contact" value="listeningExam4" />
-          <label htmlFor="contactChoice5">Listening Exam 4</label>
-          </span>
-
-
-          <span>
-          <input type="radio" id="contactChoice6" name="contact" value="listeningExam5" />
-          <label htmlFor="contactChoice6">Listening Exam 5</label>
-          </span>
-
-          <span>
-          <input type="radio" id="contactChoice7" name="contact" value="listeningExam6" />
-          <label htmlFor="contactChoice7">Listening Exam 6</label>
+            <input type="radio" id="contactChoice2" name="contact" value="listeningExamD2P" />
+            <label htmlFor="contactChoice2">Listening Exam (Dialog 2P)</label>
           </span>
         </div>
 

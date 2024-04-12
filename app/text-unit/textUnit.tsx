@@ -68,8 +68,11 @@ export default function TextUnit({
         console.log(`textUnit useEffect for Props. ${textProp} ${langIdProp} ${speedProp}`);
         if (textProp !== undefined)
             setText(textProp);
-        if (langIdProp !== undefined)
+        if (langIdProp !== undefined) {
             setLangId(langIdProp);
+            const defaultValue = DefaultDialect[langIdProp];
+            setDialectId(defaultValue !== undefined ? defaultValue : Blank);
+        }
         if (dialectIdProp !== undefined)
             setDialectId(dialectIdProp);
     }, [textProp, langIdProp, dialectIdProp, speedProp, textareaOptionProp]);
