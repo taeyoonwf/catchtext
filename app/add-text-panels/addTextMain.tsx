@@ -10,6 +10,7 @@ import segment from 'sentencex';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
 import DropdownMenu from '../dropdown-menu/dropdownMenu';
 import TextTemplates from './text-templates/textTemplates';
+import { NormalProcessor, TemplateProcessor } from './text-templates/templates/normal';
 
 interface divTextArgs {
   divider: string;
@@ -27,6 +28,7 @@ enum MoveDivider {
 }
 let moveDividerStage: MoveDivider = MoveDivider.NoAction;
 const TRANSP = 'transparent';
+let templateProc: TemplateProcessor = NormalProcessor;
 
 export default function AddTextMain() {
   const [text, setText] = useState('');
@@ -36,6 +38,7 @@ export default function AddTextMain() {
   const languageIdentifier = useContext(LanguageIdentifierContext);
   const [textUnitProps, setTextUnitProps] = useState<TextUnitProps>({text: ' '});
   const [playingQueue, setPlayingQueue] = useState<number[]>([]);
+  //const [templateProc, setTemplateProc] = useState(null);
 
   const onAllMouseUp = (e: any) => moveDividerDone(e);
   const menuForDivText = ['▶', '/', 'x']
@@ -183,9 +186,9 @@ export default function AddTextMain() {
   }
 
   const moveDividerDone = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    console.log("moving done");
+    //console.log("moving done");
     const sel = window.getSelection();
-    console.log(sel);
+    //console.log(sel);
     //console.log(moveDividerStage);
     if (sel !== null && moveDividerStage == MoveDivider.WrongStartingPoint) {
       moveDividerStage = MoveDivider.NoAction;
@@ -254,23 +257,32 @@ export default function AddTextMain() {
   }
 
   const refreshSegmentedText = (langId: LangIdType|BlankType, value: string) => {
-    const sentences: string[] = segment(langId !== Blank ? langId : 'en', value)
+    const sentencesRaw: string[] = segment(langId !== Blank ? langId : 'en', value)
       .map((s, index) => s.trim())
       .filter((s, index) => s.length > 0);
     let value_index = 0;
     //let sent_index = 0;
-    const dividers: string[] = [];
+    const dividersRaw: string[] = [];
 
     //while (true) {
-    for (let sent_index = 0; sent_index < sentences.length; sent_index++) {
-      const curr = value.indexOf(sentences[sent_index], value_index);
-      dividers.push(value.substring(value_index, curr));
-      value_index = curr + sentences[sent_index].length;
+    for (let sent_index = 0; sent_index < sentencesRaw.length; sent_index++) {
+      const curr = value.indexOf(sentencesRaw[sent_index], value_index);
+      dividersRaw.push(value.substring(value_index, curr));
+      value_index = curr + sentencesRaw[sent_index].length;
     }
     //dividers.push(value.substring(value_index, value.length));
 
-    console.log(dividers);
+    //if ()
+    console.log(sentencesRaw);
+    console.log(dividersRaw);
+    console.log(templateProc);
+    //const ret = (templateProcParam !== undefined) ? 
+    //  templateProcParam(sentencesRaw, dividersRaw) : NormalProcessor(sentencesRaw, dividersRaw);
+    const ret = templateProc(sentencesRaw, dividersRaw);
+    const sentences = ret[0];
+    const dividers = ret[1];
     console.log(sentences);
+    console.log(dividers);
     
     setDivText(sentences.map((s, index) => ({
       divider: dividers[index],
@@ -381,6 +393,14 @@ export default function AddTextMain() {
     }
   }
   
+  const handleTemplateChange = (value: string, processor: TemplateProcessor) => {
+    console.log(`handleTemplateChange`);
+    console.log(processor);
+    //setTemplateProc(processor);
+    templateProc = processor;
+    refreshSegmentedText(langId, text);
+  }
+
   return (
     <div className='add-text-bg'>
       <div className='user-text-side'>
@@ -396,7 +416,7 @@ export default function AddTextMain() {
       </div>
 
       <div className='text-refine-side'>
-        <TextTemplates langId={langId}/>
+        <TextTemplates langId={langId} onChange={handleTemplateChange}/>
         <div className='sentence-segments'>
           {divText.map((s, idx) => {
             return (<>

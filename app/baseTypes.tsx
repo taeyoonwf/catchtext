@@ -1,3 +1,5 @@
+import { GetRandomInt } from "./baseUtils";
+
 export const Blank = '---' as const;
 export const DialectIds = ['en-US', 'en-GB-0', 'en-GB-1', 'es-ES', 'es-US', 'zh-CN', 'zh-HK', 'zh-TW'] as const;
 export type LangIdType = typeof LangIds[number];
@@ -73,3 +75,10 @@ export const colorSeries: string[] = [
   "#ff7f0e",
   "#aec7e8",
   "#1f77b4"];
+
+export const Ears = "👂👂🏻👂🏼👂🏽👂🏾👂🏿";
+const EarsIndice = [0, 2, 6, 10, 14, 18, 22];
+export const AnyEar = () => {
+  const idx = GetRandomInt(EarsIndice.length - 1);
+  return Ears.substring(EarsIndice[idx], EarsIndice[idx + 1]);
+};
