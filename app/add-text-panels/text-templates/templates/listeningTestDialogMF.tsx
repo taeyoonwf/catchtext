@@ -1,5 +1,6 @@
 import { AnyEar } from "@/app/baseTypes";
-import { TemplateInterface } from "./normal";
+import { TemplateAnnotation, TemplateInterface } from "./normal";
+import { TemplateListeningTestDialogFM } from "./listeningTestDialogFM";
 
 export const TemplateListeningTestDialogMF: TemplateInterface = {
   activeLangIds: ['en', 'es'],
@@ -12,7 +13,7 @@ F : ...
 
 1. ...?
 (A) ... (B) ... (C) ...
-Answer : A`,
+A. (C)`,
   longDesc:
 `M : ...
 F : ...
@@ -22,18 +23,25 @@ M : ...
 
 1. ...?
 (A) ... (B) ... (C) ...
-Answer : A
+A. (A)
 
 2. ...?
 (A) ...
 (B) ...
 .
 .
-Answer : B
+A. (B)
 
 3. ...?
-Answer : ...
+A. ...
 `,
 
-  processor: (s, d) => [s, d],
+  processor: (s, d) => {
+    const [newS, newD, newA] = TemplateListeningTestDialogFM.processor(s, d);
+    return [newS, newD, newA?.map((e) => {
+      if (e.isMale !== undefined)
+        return {isFemale: e.isMale, isMale: e.isFemale} as TemplateAnnotation;
+      return e;
+    })];
+  },
 }
