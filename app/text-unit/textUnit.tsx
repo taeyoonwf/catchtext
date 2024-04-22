@@ -82,10 +82,12 @@ export default function TextUnit({
 
     useEffect(() => {
         const speedParam = (speedProp !== undefined) ? speedProp : speed;
-        let dialectParam = (dialectId !== Blank) ? dialectId : dialectIdProp;
+        //let dialectParam = (dialectId !== Blank) ? dialectId : dialectIdProp;
+        let newDialect = (dialectIdProp !== undefined) ? dialectIdProp : dialectId;
         if (autoPlayProp === true && !isPlaying) {
-            const newDialect = dialectParam !== undefined ? dialectParam : Blank;
-            //setDialectId(newDialect);
+            // const newDialect = dialectParam !== undefined ? dialectParam : Blank;
+            //const newDialect = (dialectIdProp !== undefined) ? dialectIdProp : dialectParam;
+            setDialectId(newDialect);
             playSound(textProp, langIdProp, newDialect, speedParam);
         }
         if (autoPlayProp !== true && isPlaying)

@@ -290,7 +290,7 @@ export default function AddTextMain() {
     console.log(dividers);
     console.log(annots);
     const femDial = langId === 'es' ? 'es-US' : 'en-US';
-    const mDial = langId === 'es' ? 'es-ES' : 'en-GB-0';
+    const mDial = langId === 'es' ? 'es-ES' : 'en-GB-1';
 
     setDivText(sentences.map((s, index) => ({
       divider: dividers[index],
