@@ -71,7 +71,10 @@ export default function TextUnit({
         if (langIdProp !== undefined) {
             setLangId(langIdProp);
             const defaultValue = DefaultDialect[langIdProp];
-            setDialectId(defaultValue !== undefined ? defaultValue : Blank);
+            const newDialect = defaultValue !== undefined ? defaultValue : Blank;
+            // console.log(`newDialect: ${newDialect}`);
+            // console.log(`dialectIdProp: ${dialectIdProp}`);
+            setDialectId(newDialect);
         }
         if (dialectIdProp !== undefined)
             setDialectId(dialectIdProp);
@@ -80,8 +83,11 @@ export default function TextUnit({
     useEffect(() => {
         const speedParam = (speedProp !== undefined) ? speedProp : speed;
         let dialectParam = (dialectId !== Blank) ? dialectId : dialectIdProp;
-        if (autoPlayProp === true && !isPlaying)
-            playSound(textProp, langIdProp, dialectParam !== undefined ? dialectParam : Blank, speedParam);
+        if (autoPlayProp === true && !isPlaying) {
+            const newDialect = dialectParam !== undefined ? dialectParam : Blank;
+            //setDialectId(newDialect);
+            playSound(textProp, langIdProp, newDialect, speedParam);
+        }
         if (autoPlayProp !== true && isPlaying)
             playSound(); // to stop
         console.log(`autoPlayProp: ${autoPlayProp}, isPlaying: ${isPlaying}`);

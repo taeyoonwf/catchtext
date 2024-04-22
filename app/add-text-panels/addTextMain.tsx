@@ -1,7 +1,7 @@
 'use client'
 import './layout.css';
 import { CSSProperties, ChangeEvent, useContext, useEffect, useState } from 'react';
-import { Blank, BlankType, DefaultDialect, LangIdType, LangIds, colorSeries } from '../baseTypes';
+import { Blank, BlankType, DefaultDialect, DialectIdType, LangIdType, LangIds, colorSeries } from '../baseTypes';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import TextUnit, { TextUnitProps } from '../text-unit/textUnit';
@@ -18,7 +18,8 @@ interface divTextArgs {
   senBgColor: string;
   divSelColor: string;
   senSelColor: string;
-} 
+  dialect?: DialectIdType;
+}
 
 enum MoveDivider {
   NoAction,
@@ -68,6 +69,7 @@ export default function AddTextMain() {
         text: e.sentence,
         textareaOption: {backgroundColor: e.senBgColor},
         autoPlay: true,
+        ...(e.dialect !== undefined ? {dialectId: e.dialect} : {}),
         onPlayFinished: () => {
           if (currPlayingQueue === JSON.stringify(playingQueue)) {
             //console.log(playingQueue.slice(1));
@@ -161,7 +163,8 @@ export default function AddTextMain() {
         sentence: mergedSentence,
         senBgColor: mergeColorFromIndex ? arr[fromIndex].senSelColor : arr[toIndex - 1].senSelColor,
         divSelColor: TRANSP,
-        senSelColor: TRANSP
+        senSelColor: TRANSP,
+        dialect: arr[fromIndex].dialect,
       },
       ...arr.slice(toIndex, arr.length).map((e, _) => (
         {...e, divSelColor: TRANSP, senSelColor: TRANSP}
@@ -281,15 +284,19 @@ export default function AddTextMain() {
     const ret = templateProc(sentencesRaw, dividersRaw);
     const sentences = ret[0];
     const dividers = ret[1];
+    const annots = ret[2];
     console.log(sentences);
     console.log(dividers);
-    
+    const femDial = langId === 'es' ? 'es-US' : 'en-US';
+    const mDial = langId === 'es' ? 'es-ES' : 'es-GB-0';
+
     setDivText(sentences.map((s, index) => ({
       divider: dividers[index],
       sentence: s,
       senBgColor: colorSeries[index % colorSeries.length],
       divSelColor: TRANSP,
-      senSelColor: TRANSP
+      senSelColor: TRANSP,
+      dialect: (annots !== undefined && annots[index].isFemale !== undefined) ? (annots[index].isFemale ? femDial : mDial) : undefined
     } as divTextArgs)));
 
     console.log(`dialectId : ${DefaultDialect[langId as LangIdType]}`);

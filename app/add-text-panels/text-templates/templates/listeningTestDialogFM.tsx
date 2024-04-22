@@ -139,9 +139,9 @@ A. ...
       }
 
       if (isQuestion)
-        newA.push({questionNum: qNum});
+        newA.push({questionNum: qNum, isFemale: isFsTurn, isMale: !isFsTurn});
       else
-        newA.push({answerNum: qNum});
+        newA.push({answerNum: qNum, isFemale: isFsTurn, isMale: !isFsTurn});
     }
 
     console.log(newD);
