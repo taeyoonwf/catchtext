@@ -32,6 +32,10 @@ export default function TextTemplates({
     if (templates.find((e) => (e.activeLangIds.includes(langIdProp as LangIdType) && e.value === selected)) === undefined) {
       setSelected(templates[0].value);
       setShowShortDesc(true);
+      onChangeProp?.call(null,
+        templates[0].value,
+        NormalProcessor
+      );
     }
   }, [langIdProp]);
   

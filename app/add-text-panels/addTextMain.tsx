@@ -63,6 +63,7 @@ export default function AddTextMain() {
     const e = divText[playingQueue[0]];
     const currPlayingQueue = JSON.stringify(playingQueue);
     //console.log(`play #${playingQueue[0]} sound`);
+    console.log(e);
     setTimeout(
       () => setTextUnitProps((prev) => ({
         ...prev,
@@ -287,8 +288,9 @@ export default function AddTextMain() {
     const annots = ret[2];
     console.log(sentences);
     console.log(dividers);
+    console.log(annots);
     const femDial = langId === 'es' ? 'es-US' : 'en-US';
-    const mDial = langId === 'es' ? 'es-ES' : 'es-GB-0';
+    const mDial = langId === 'es' ? 'es-ES' : 'en-GB-0';
 
     setDivText(sentences.map((s, index) => ({
       divider: dividers[index],
