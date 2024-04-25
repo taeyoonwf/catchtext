@@ -1,37 +1,19 @@
-import './layout.css';
+import AddTextMain, { DivTextArgs } from '../add-text-panels/addTextMain';
+import { TextUnitDataUpdate } from '../baseTypes';
+import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
+import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
+import { TextUnitProps } from '../text-unit/textUnit';
 
 export default function AddText() {
-    return (<>
-        Hey
-        <h1>Add Text 1</h1>
-        <h2>Add Text 1</h2>
-        <h3>Add Text 1</h3>
-        <h4>Add Text 1</h4>
-        <h5>Add Text 1</h5>
+  const saveAllSentences = (
+    textSet: DivTextArgs[],
+    textUnitValues?: TextUnitDataUpdate,
+  ) => {
+    console.log(textSet);
+    console.log(textUnitValues);
+  };
 
-        <h1>Add Text 2</h1>
-        <h2>Add Text 2</h2>
-        <h3>Add Text 2</h3>
-        <h4>Add Text 2</h4>
-        <h5>Add Text 2</h5>
-
-        <h1>Add Text 3</h1>
-        <h2>Add Text 3</h2>
-        <h3>Add Text 3</h3>
-        <h4>Add Text 3</h4>
-        <h5>Add Text 3</h5>
-
-        <h1>Add Text 4</h1>
-        <h2>Add Text 4</h2>
-        <h3>Add Text 4</h3>
-        <h4>Add Text 4</h4>
-        <h5>Add Text 4</h5>
-
-        <h1>Add Text 5</h1>
-        <h2>Add Text 5</h2>
-        <h3>Add Text 5</h3>
-        <h4>Add Text 5</h4>
-        <h5>Add Text 5</h5>
-
-    </>);
+  return (<SpeechSynthesizer><LanguageIdentifier>
+    <AddTextMain onSave={saveAllSentences}/>
+  </LanguageIdentifier></SpeechSynthesizer>);
 }

@@ -1,7 +1,7 @@
 'use client'
 import './layout.css';
 import { CSSProperties, ChangeEvent, useContext, useEffect, useState } from 'react';
-import { Blank, BlankType, DefaultDialect, DialectIdType, LangIdType, LangIds, colorSeries } from '../baseTypes';
+import { Blank, BlankType, DefaultDialect, DialectIdType, DialectIds, DialectWithGender, LangIdType, LangIds, TextUnitDataUpdate, colorSeries } from '../baseTypes';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import TextUnit, { TextUnitProps } from '../text-unit/textUnit';
@@ -10,15 +10,15 @@ import segment from 'sentencex';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
 import DropdownMenu from '../dropdown-menu/dropdownMenu';
 import TextTemplates from './text-templates/textTemplates';
-import { NormalProcessor, TemplateProcessor } from './text-templates/templates/normal';
+import { NormalProcessor, TemplateAnnotation, TemplateProcessor } from './text-templates/templates/normal';
 
-interface divTextArgs {
+export interface DivTextArgs {
   divider: string;
   sentence: string;
   senBgColor: string;
   divSelColor: string;
   senSelColor: string;
-  dialect?: DialectIdType;
+  annotation?: TemplateAnnotation;
 }
 
 enum MoveDivider {
@@ -31,14 +31,23 @@ let moveDividerStage: MoveDivider = MoveDivider.NoAction;
 const TRANSP = 'transparent';
 let templateProc: TemplateProcessor = NormalProcessor;
 
-export default function AddTextMain() {
+export interface AddTextMainProps {
+  onSave?: (textSet: DivTextArgs[],
+    textUnitValues?: TextUnitDataUpdate,
+  ) => void;
+}
+
+export default function AddTextMain({
+  onSave: onSaveProp,
+}: AddTextMainProps) {
   const [text, setText] = useState('');
   const [langId, setLangId] = useState<LangIdType|BlankType>(Blank);
   const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>([]);
-  const [divText, setDivText] = useState<divTextArgs[]>([]);
+  const [divText, setDivText] = useState<DivTextArgs[]>([]);
   const languageIdentifier = useContext(LanguageIdentifierContext);
   const [textUnitProps, setTextUnitProps] = useState<TextUnitProps>({text: ' '});
   const [playingQueue, setPlayingQueue] = useState<number[]>([]);
+  const [textUnitValues, setTextUnitValues] = useState<TextUnitDataUpdate>();
   //const [templateProc, setTemplateProc] = useState(null);
 
   const onAllMouseUp = (e: any) => moveDividerDone(e);
@@ -70,7 +79,7 @@ export default function AddTextMain() {
         text: e.sentence,
         textareaOption: {backgroundColor: e.senBgColor},
         autoPlay: true,
-        ...(e.dialect !== undefined ? {dialectId: e.dialect} : {}),
+        ...(typeof e.annotation?.isFemale === 'boolean' ? {dialectId: DialectWithGender(langId, e.annotation.isFemale)} : {}),
         onPlayFinished: () => {
           if (currPlayingQueue === JSON.stringify(playingQueue)) {
             //console.log(playingQueue.slice(1));
@@ -147,7 +156,7 @@ export default function AddTextMain() {
     ];
   }
 
-  const mergePartOfDivTextArr = (fromIndex: number, toIndex: number, mergeColorFromIndex: boolean, arr: divTextArgs[]) => {
+  const mergePartOfDivTextArr = (fromIndex: number, toIndex: number, mergeColorFromIndex: boolean, arr: DivTextArgs[]) => {
     if (fromIndex === toIndex) {
       return;
     }
@@ -165,7 +174,7 @@ export default function AddTextMain() {
         senBgColor: mergeColorFromIndex ? arr[fromIndex].senSelColor : arr[toIndex - 1].senSelColor,
         divSelColor: TRANSP,
         senSelColor: TRANSP,
-        dialect: arr[fromIndex].dialect,
+        annotation: arr[fromIndex].annotation,
       },
       ...arr.slice(toIndex, arr.length).map((e, _) => (
         {...e, divSelColor: TRANSP, senSelColor: TRANSP}
@@ -289,8 +298,6 @@ export default function AddTextMain() {
     console.log(sentences);
     console.log(dividers);
     console.log(annots);
-    const femDial = langId === 'es' ? 'es-US' : 'en-US';
-    const mDial = langId === 'es' ? 'es-ES' : 'en-GB-1';
 
     setDivText(sentences.map((s, index) => ({
       divider: dividers[index],
@@ -298,8 +305,8 @@ export default function AddTextMain() {
       senBgColor: colorSeries[index % colorSeries.length],
       divSelColor: TRANSP,
       senSelColor: TRANSP,
-      dialect: (annots !== undefined && annots[index].isFemale !== undefined) ? (annots[index].isFemale ? femDial : mDial) : undefined
-    } as divTextArgs)));
+      annotation: annots?.[index] ?? undefined,
+    } as DivTextArgs)));
 
     console.log(`dialectId : ${DefaultDialect[langId as LangIdType]}`);
     setTextUnitProps((prev) => ({...prev,
@@ -352,6 +359,10 @@ export default function AddTextMain() {
       setPlayingQueue([]);
     else
       setPlayingQueue(Array.from(Array(divText.length).keys()));
+  }
+
+  const saveAll = () => {
+    onSaveProp?.call(null, divText, textUnitValues);
   }
 
   const dropdownSelected = (menuId: string, item: string, index: Number, textOffset: number) => {
@@ -450,16 +461,23 @@ export default function AddTextMain() {
         </div>
 
         <TextUnit
+          textId='AddTextMain'
           {...textUnitProps}
           visibleTrans={false}
           textareaOption={{
             ...textUnitProps.textareaOption,
             readOnly: true,
           }}
+          onChange={(values) => setTextUnitValues(values)}
         />
         <div className='play-all'>
           <button key={0} onClick={playAll}>
             {playingQueue.length > 0 ? '■' : '▶'}
+          </button>
+        </div>
+        <div className='save-all'>
+          <button key={0} onClick={saveAll}>
+            Save
           </button>
         </div>
       </div>

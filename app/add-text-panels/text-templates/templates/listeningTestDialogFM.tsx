@@ -133,7 +133,7 @@ A. ...
       else if (newD[i].match(/\s*A\.\s*/))
         isQuestion = false;
       else if (newS[i].startsWith('(A)')) {
-        newA.push({isOption: true});
+        newA.push({questionNum: qNum, isOption: true});
         isQuestion = false;
         continue;
       }
@@ -141,7 +141,7 @@ A. ...
       if (isQuestion)
         newA.push({questionNum: qNum, isFemale: isFsTurn, isMale: !isFsTurn});
       else
-        newA.push({answerNum: qNum, isFemale: isFsTurn, isMale: !isFsTurn});
+        newA.push({questionNum: qNum, isAnswer: true, isFemale: isFsTurn, isMale: !isFsTurn});
     }
 
     console.log(newD);

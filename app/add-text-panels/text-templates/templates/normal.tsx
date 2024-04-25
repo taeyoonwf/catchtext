@@ -9,7 +9,7 @@ export interface TemplateInterface {
   processor: TemplateProcessor,
 }
 
-export const AnnoKeys = ['questionNum', 'isOption', 'answerNum', 'isFemale', 'isMale'] as const;
+export const AnnoKeys = ['questionNum', 'isOption', 'isAnswer', 'isFemale', 'isMale'] as const;
 export type AnnoKeyType = typeof AnnoKeys[number];
 export type TemplateAnnotation = {[key in AnnoKeyType]?: number|boolean}
 export type TemplateProcessor = {
