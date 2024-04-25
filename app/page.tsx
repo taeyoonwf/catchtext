@@ -3,7 +3,7 @@ import './layout/layout.css';
 import AddText from './layout/addText';
 import Library from './layout/library';
 import Header from './layout/header';
-import LoginPanel from './layout/loginPanel';
+import LoginPanel, { LoginPanelProps } from './layout/loginPanel';
 import Dictionary from './layout/dictionary';
 import Etc from './layout/etc';
 import Quiz from './layout/quiz';
@@ -22,6 +22,14 @@ export default function Home() {
         <Quiz key='quiz' />,
         <Dictionary key='dictionary' />,
         <Etc key='etc' />
+    ];
+    const loginPos: LoginPanelProps[] = [
+        {},
+        {position: 'absolute', top: 11, right: 11},
+        {},
+        {},
+        {},
+        {},
     ];
 
     useEffect(() => {
@@ -62,7 +70,10 @@ export default function Home() {
         </div>
         <div className="right-part">
             {headerToggle && <Header />}
-            <LoginPanel />
+            <LoginPanel position={loginPos[getPageIndex(currentHash)].position}
+                top={loginPos[getPageIndex(currentHash)].top}
+                right={loginPos[getPageIndex(currentHash)].right}
+            />
             <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
                 <DataStorage>
                     {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]}

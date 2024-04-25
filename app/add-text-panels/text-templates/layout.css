@@ -1,8 +1,10 @@
 .text-templates {
   margin: 10px 10px 0px;
   padding: 7px;
+  padding-right: 64px;
   border: 1px solid black;
   border-bottom: 0px;
+  min-height: 57px;
 }
 
 .text-templates span {
