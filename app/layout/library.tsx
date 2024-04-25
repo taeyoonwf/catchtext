@@ -8,13 +8,13 @@ import { DataStorageContext } from '../data-storage/dataStorage';
 
 export default function Library() {
     const [textUnits, setTextUnits] = useState<TextUnitAbbrData[]>([]);
-    const { GetSignIn, AddTextUnit, UpdateTextUnit, SetTextUnitsByUrlParam, GetTextUnits } = useContext(DataStorageContext);
+    const {GetSignIn, AddTextUnit, UpdateTextUnit, SetStorageDataByUrlParam, GetTextUnits} = useContext(DataStorageContext);
     const [storageLoadingCount, setStorageLoadingCount] = useState<number>(0);
 
     useEffect(() => {
       if (!GetSignIn()) {
         (async function() {
-          await SetTextUnitsByUrlParam().then(() => {
+          await SetStorageDataByUrlParam().then(() => {
             const textUnitsOfStorage = GetTextUnits();
             console.log(textUnitsOfStorage);
             setStorageLoadingCount((prev) => (prev + textUnitsOfStorage.length));

@@ -32,15 +32,19 @@ const TRANSP = 'transparent';
 let templateProc: TemplateProcessor = NormalProcessor;
 
 export interface AddTextMainProps {
+  text?: string,
+  onTextChange?: (value: string) => void;
   onSave?: (textSet: DivTextArgs[],
     textUnitValues?: TextUnitDataUpdate,
   ) => void;
 }
 
 export default function AddTextMain({
+  text: textProp,
+  onTextChange: onTextChangeProp,
   onSave: onSaveProp,
 }: AddTextMainProps) {
-  const [text, setText] = useState('');
+  const [text, setText] = useState(textProp ?? '');
   const [langId, setLangId] = useState<LangIdType|BlankType>(Blank);
   const [langIdOptions, setLangIdOptions] = useState<LangIdType[]>([]);
   const [divText, setDivText] = useState<DivTextArgs[]>([]);
@@ -52,6 +56,34 @@ export default function AddTextMain({
 
   const onAllMouseUp = (e: any) => moveDividerDone(e);
   const menuForDivText = ['▶', '/', 'x']
+
+  useEffect(() => {
+    console.log(`textProp in AddTextMain: ${textProp}`);
+    if (textProp !== undefined) {
+      setText(textProp);
+      // TODO: languageIdentifier check
+      /* languageIdentifier.Query!(textProp, (langAndProbs: LanguageIdentifierResultType) => {
+        const newLangIdCands: LangIdType[] =
+          langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType) && e.value > 0)
+            .map((e) => e.language as LangIdType);
+        console.log(`newLangIdCands`);
+        console.log(newLangIdCands);
+        console.log(langAndProbs);
+        setLangIdOptions(newLangIdCands);
+        if (newLangIdCands.length > 0) {
+          const newLangId = newLangIdCands[0];
+          setLangId(newLangId);
+          refreshSegmentedText(newLangId, textProp);
+        }
+        else {
+          console.log(`use Blank 0`);
+          setLangId(Blank);
+          console.log(`use Blank 1`);
+          refreshSegmentedText(Blank, textProp);
+        }
+      }); */
+    }
+  }, [textProp]);
 
   useEffect(() => {
     document.addEventListener('mouseup', onAllMouseUp);
@@ -321,10 +353,14 @@ export default function AddTextMain({
 
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.currentTarget;
+  //const handleTextChange = (value: string) => {
+    console.log(`handleTextChange 0`);
     if (text === value)
       return;
+    console.log(`handleTextChange 1`);
 
     setText(value);
+    onTextChangeProp?.call(null, value);
     console.log('handleTextChange : ' + value);
     languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
       const newLangIdCands: LangIdType[] =

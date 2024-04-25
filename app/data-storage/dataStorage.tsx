@@ -6,9 +6,11 @@ import { useSearchParams } from "next/navigation";
 interface DataStorageContextType {
   GetSignIn: () => boolean;
   SetSignIn: (newSignIn: boolean) => void;
+  GetTextForAddText: () => string;
+  SetTextForAddText: (data: string) => Promise<void>;
   GetTextUnits: () => TextUnitData[];
   SetTextUnits: (data: TextUnitData[]) => void;
-  SetTextUnitsByUrlParam: () => Promise<void>;
+  SetStorageDataByUrlParam: () => Promise<void>;
   UpdateTextUnit: (data: TextUnitDataUpdate) => Promise<void>;
   AddTextUnit: () => Promise<string>;  // textId
   AddParagraph: () => string; // paragraphKey
@@ -17,9 +19,11 @@ interface DataStorageContextType {
 const DataStorageContext = createContext<DataStorageContextType>({
   GetSignIn: () => false,
   SetSignIn: () => {},
+  GetTextForAddText: () => "",
+  SetTextForAddText: async () => {},
   GetTextUnits: () => [],
   SetTextUnits: () => {},
-  SetTextUnitsByUrlParam: async () => {},
+  SetStorageDataByUrlParam: async () => {},
   UpdateTextUnit: async () => {},
   AddTextUnit: async () => "",
   AddParagraph: () => "",
@@ -28,6 +32,7 @@ const DataStorageContext = createContext<DataStorageContextType>({
 const DATA_PARAM = '?d=';
 const UPDATE_APPLY_DELAY = 1000; // ms
 
+let textForAddText: string = "";
 let textUnits: TextUnitData[] = [];
 let paragraphKeyToIndex: { [key in string]: number } = {};
 
@@ -42,6 +47,13 @@ function DataStorage({
   const [urlParamData, setUrlParamData] = useState(searchParams.get('d'));
 
   const GetSignIn = () => signIn;
+  const GetTextForAddText = () => textForAddText;
+
+  const SetTextForAddText = async (data: string) => {
+    textForAddText = data;
+    await UpdateStorage();
+  }
+
   const GetTextUnits = () => {
     console.log(`GetTextUnits called`);
     console.log(textUnits);
@@ -58,24 +70,28 @@ function DataStorage({
     }
   }
 
-  const SetTextUnitsByUrlParam = async () => { //urlBase64Data: string) => {
+  const SetStorageDataByUrlParam = async () => { //urlBase64Data: string) => {
     if (urlParamData === null) {
       SetTextUnits([]);
       return;
     }
     const urlBase64Data = urlParamData!;
-    console.log(`SetTextUnitsByUrlParam Done0 ${urlBase64Data}`);
+    console.log(`SetStorageDataByUrlParam Done0 ${urlBase64Data}`);
     const data = urlBase64Data.replace(/-/g, '+').replace(/_/g, '/');
-    console.log(`SetTextUnitsByUrlParam Done0-1 ${data}`);
-    const newTextUnits = await compb64toobj(data, 'deflate');
+    console.log(`SetStorageDataByUrlParam Done0-1 ${data}`);
+    const savedData: {[key: string]: any} = await compb64toobj(data, 'deflate');
+
+    const newTextUnits = savedData["textUnits"];
     //newTextUnits.the
-    console.log(`SetTextUnitsByUrlParam Done0-2`);
+    console.log(`SetStorageDataByUrlParam Done0-2`);
     console.log(newTextUnits);
     SetTextUnits(newTextUnits);
-    console.log(`SetTextUnitsByUrlParam Done1 ${data}`);
+    console.log(`SetStorageDataByUrlParam Done1 ${data}`);
     console.log(newTextUnits);
     console.log(textUnits);
     console.log(`SetTextUnitsByUrlParam Done2`);
+
+    textForAddText = savedData["textForAddText"];
   }
 
   const GetOrganizedTextUnits = () => {
@@ -110,7 +126,10 @@ function DataStorage({
         const curTime = new Date().getTime() + (new Date().getTimezoneOffset() * 60);
         if (curTime > lastModifiedTime + UPDATE_APPLY_DELAY * 0.9) {
           const orgTextUnits = GetOrganizedTextUnits();
-          const b64textUnits = (await obj2compb64(orgTextUnits, 'deflate'))
+          const b64textUnits = (await obj2compb64({
+            textForAddText: textForAddText,
+            textUnits: orgTextUnits,
+          }, 'deflate'))
             .replace(/\+/g, '-')
             .replace(/\//g, '_')
             .replace(/=/g, '');
@@ -192,9 +211,11 @@ function DataStorage({
     <DataStorageContext.Provider value={{
       GetSignIn,
       SetSignIn: setSignIn,
+      GetTextForAddText,
+      SetTextForAddText,
       GetTextUnits,
       SetTextUnits,
-      SetTextUnitsByUrlParam,
+      SetStorageDataByUrlParam,
       UpdateTextUnit,
       AddTextUnit,
       AddParagraph,
