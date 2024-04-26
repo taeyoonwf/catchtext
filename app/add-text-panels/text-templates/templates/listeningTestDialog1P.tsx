@@ -1,5 +1,6 @@
-import { AnyEar, LangIds } from "@/app/baseTypes";
+import { LangIds } from "@/app/baseTypes";
 import { TemplateInterface } from "./normal";
+import { AnyEar } from "@/app/baseUtils";
 
 export const TemplateListeningTestDialog1P: TemplateInterface = {
   activeLangIds: LangIds,

@@ -12,7 +12,9 @@ interface DataStorageContextType {
   SetTextUnits: (data: TextUnitData[]) => void;
   SetStorageDataByUrlParam: () => Promise<void>;
   UpdateTextUnit: (data: TextUnitDataUpdate) => Promise<void>;
+  UpdateTextUnits: (data: TextUnitDataUpdate[]) => Promise<void>;
   AddTextUnit: () => Promise<string>;  // textId
+  AddTextUnits: (paragraphKey: string, unitCount: number) => Promise<void>;
   AddParagraph: () => string; // paragraphKey
 }
 
@@ -25,7 +27,9 @@ const DataStorageContext = createContext<DataStorageContextType>({
   SetTextUnits: () => {},
   SetStorageDataByUrlParam: async () => {},
   UpdateTextUnit: async () => {},
+  UpdateTextUnits: async () => {},
   AddTextUnit: async () => "",
+  AddTextUnits: async () => {},
   AddParagraph: () => "",
 });
 
@@ -123,8 +127,51 @@ function DataStorage({
 
     }
     else {
+      /*const angelMowersPromise = new Promise<string>((resolve, reject) => {
+        // Simulate an asynchronous operation, e.g., mowing the lawn
+        setTimeout(() => {
+            // After the operation completes, resolve the promise
+            resolve('We finished mowing the lawn');
+            // Note: You should not reject the promise here.
+            // If there's an error during the operation, handle it within this setTimeout callback.
+        }, 100000); // Resolves after 100,000ms (roughly 1 minute and 40 seconds)
+    }); */
+
       lastModifiedTime = new Date().getTime() + (new Date().getTimezoneOffset() * 60);
-      setTimeout(async () => {
+      const pushStatePromise = new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          const curTime = new Date().getTime() + (new Date().getTimezoneOffset() * 60);
+          if (curTime > lastModifiedTime + UPDATE_APPLY_DELAY * 0.9) {
+            const orgTextUnits = GetOrganizedTextUnits();
+            const b64textUnits = obj2compb64({
+              textForAddText: textForAddText,
+              textUnits: orgTextUnits,
+            }, 'deflate').then((e) => {
+              const b64 = e.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+              setUrlParamData(b64);
+              window.history.pushState({}, '', DATA_PARAM + b64 + window.location.hash);
+              resolve();
+            });
+              //.replace(/\+/g, '-')
+              //.replace(/\//g, '_')
+              //.replace(/=/g, '');
+            //setUrlParamData(b64textUnits);
+            //window.history.pushState({}, '', DATA_PARAM + b64textUnits + window.location.hash);
+ 
+            //resolve();
+            /*const data = b64textUnits.replace(/-/g, '+').replace(/_/g, '/');
+            const obj = await compb64toobj(data, 'deflate');
+            console.log(`return(obj)`);
+            console.log(obj); */
+          }
+        }, UPDATE_APPLY_DELAY);
+      });
+      //await pushStatePromise;
+      /*.then(() => {
+        
+      })
+      .catch(err => console.log(err)); */
+      /*setTimeout(async () => {
         const curTime = new Date().getTime() + (new Date().getTimezoneOffset() * 60);
         if (curTime > lastModifiedTime + UPDATE_APPLY_DELAY * 0.9) {
           const orgTextUnits = GetOrganizedTextUnits();
@@ -137,40 +184,37 @@ function DataStorage({
             .replace(/=/g, '');
           setUrlParamData(b64textUnits);
           window.history.pushState({}, '', DATA_PARAM + b64textUnits + window.location.hash);
-
-          /*const data = b64textUnits.replace(/-/g, '+').replace(/_/g, '/');
-          const obj = await compb64toobj(data, 'deflate');
-          console.log(`return(obj)`);
-          console.log(obj); */
         }
-      }, UPDATE_APPLY_DELAY);
+      }, UPDATE_APPLY_DELAY); */
     }
   }
 
   const ConvPairsIntoArr = (e: string[][]) => e.reduce((acc: string[], curr, index) => (acc.push(...curr), acc), []);
   const UpdateTextUnit = async (data: TextUnitDataUpdate) => {
-    const key = data.paragraphKeyId;
-    console.log(paragraphKeyToIndex);
-    console.log(`find the key ${key}`);
-    if (paragraphKeyToIndex[key] === undefined)
-      return;
-    const index = paragraphKeyToIndex[key];
+    await UpdateTextUnits([data]);
+  }
 
-    const trans = ConvPairsIntoArr(data.translations);
-    textUnits[index] = {
-      speed: data.speed,
-      length: data.length,
-      text: data.text,
-      langId: data.langId,
-      dialectId: data.dialectId,
-      translations: trans,
-      paragraphKey: key.split('-')[0],
-      paragraphId: Number.parseInt(key.split('-')[1]),
-      created: textUnits[index].created,
-      modified: new Date().getTime() + (new Date().getTimezoneOffset() * 60),
-    };
+  const UpdateTextUnits = async (data: TextUnitDataUpdate[]) => {
+    for (const unit of data) {
+      const key = unit.paragraphKeyId;
+      if (paragraphKeyToIndex[key] === undefined)
+        continue;
+      const index = paragraphKeyToIndex[key];
+      const trans = ConvPairsIntoArr(unit.translations);
+      textUnits[index] = {
+        speed: unit.speed,
+        length: unit.length,
+        text: unit.text,
+        langId: unit.langId,
+        dialectId: unit.dialectId,
+        translations: trans,
+        paragraphKey: key.split('-')[0],
+        paragraphId: Number.parseInt(key.split('-')[1]),
+        created: textUnits[index].created,
+        modified: new Date().getTime() + (new Date().getTimezoneOffset() * 60),
+      };
+    }
     await UpdateStorage();
-    console.log(textUnits[index]);
   }
 
   const randomString = (length: number) => {
@@ -204,6 +248,18 @@ function DataStorage({
     return randomPragKey;
   }
 
+  const AddTextUnits = async (paragraphKey: string, unitCount: number) => {
+    for (let i = 0; i < unitCount; i++) {
+      const index = unitCount - i - 1;
+      paragraphKeyToIndex[paragraphKey + '-' + index] = textUnits.length;
+      textUnits.push({
+        paragraphKey,
+        paragraphId: index,
+      } as TextUnitData);
+    }
+    await UpdateStorage();
+  }
+
   const AddParagraph = () => {
     const randomId = getRandomId();
     return randomId;
@@ -219,7 +275,9 @@ function DataStorage({
       SetTextUnits,
       SetStorageDataByUrlParam,
       UpdateTextUnit,
+      UpdateTextUnits,
       AddTextUnit,
+      AddTextUnits,
       AddParagraph,
     }}>
       {children}

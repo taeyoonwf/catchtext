@@ -8,10 +8,10 @@ export const AnyEar = () => {
 };
 
 export const DialectWithGender = (
-  langId: LangIdType|BlankType,
+  langId: LangIdType|BlankType|undefined,
   isFemale: boolean|undefined
 ): DialectIdType|undefined => {
-  if (langId in DefaultDialect) {
+  if (langId !== undefined && langId in DefaultDialect) {
     if (langId === 'es')
       return isFemale ? 'es-US' : 'es-ES';
     else if (langId === 'en')

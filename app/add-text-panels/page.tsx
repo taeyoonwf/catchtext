@@ -5,6 +5,6 @@ import AddTextMain from "./addTextMain"
 
 export default function AddTextTestPage() {
   return (<SpeechSynthesizer><LanguageIdentifier>
-    <AddTextMain />
+    <AddTextMain paragraphKey={"AddTextTestPage"} />
   </LanguageIdentifier></SpeechSynthesizer>)
 }

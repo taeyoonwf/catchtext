@@ -33,6 +33,7 @@ const TRANSP = 'transparent';
 let templateProc: TemplateProcessor = NormalProcessor;
 
 export interface AddTextMainProps {
+  paragraphKey: string,
   text?: string,
   onTextChange?: (value: string) => void;
   onSave?: (textSet: DivTextArgs[],
@@ -41,6 +42,7 @@ export interface AddTextMainProps {
 }
 
 export default function AddTextMain({
+  paragraphKey: paragraphKeyProp,
   text: textProp,
   onTextChange: onTextChangeProp,
   onSave: onSaveProp,
@@ -59,31 +61,9 @@ export default function AddTextMain({
   const menuForDivText = ['▶', '/', 'x']
 
   useEffect(() => {
-    console.log(`textProp in AddTextMain: ${textProp}`);
-    if (textProp !== undefined) {
-      setText(textProp);
-      // TODO: languageIdentifier check
-      languageIdentifier.Query!(textProp, (langAndProbs: LanguageIdentifierResultType) => {
-        const newLangIdCands: LangIdType[] =
-          langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType) && e.value > 0)
-            .map((e) => e.language as LangIdType);
-        console.log(`newLangIdCands`);
-        console.log(newLangIdCands);
-        console.log(langAndProbs);
-        setLangIdOptions(newLangIdCands);
-        if (newLangIdCands.length > 0) {
-          const newLangId = newLangIdCands[0];
-          setLangId(newLangId);
-          refreshSegmentedText(newLangId, textProp);
-        }
-        else {
-          console.log(`use Blank 0`);
-          setLangId(Blank);
-          console.log(`use Blank 1`);
-          refreshSegmentedText(Blank, textProp);
-        }
-      });
-    }
+    console.log(`textProp in AddTextMain: "${textProp}"`);
+    if (textProp !== undefined)
+      handleTextChange(textProp);
   }, [textProp]);
 
   useEffect(() => {
@@ -352,13 +332,11 @@ export default function AddTextMain({
     }));
   }
 
-  const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.currentTarget;
-  //const handleTextChange = (value: string) => {
-    console.log(`handleTextChange 0`);
+  //const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  //  const { value } = e.currentTarget;
+  const handleTextChange = (value: string) => {
     if (text === value)
       return;
-    console.log(`handleTextChange 1`);
 
     setText(value);
     onTextChangeProp?.call(null, value);
@@ -465,7 +443,7 @@ export default function AddTextMain({
                 <TextareaAutoResize
                     className='user-text'
                     value={text}
-                    onChange={handleTextChange}
+                    onChange={(e) => handleTextChange(e.currentTarget.value)}
                     placeholder='Write/Paste text here...'
                 />
                 <DropdownSelector<LangIdType, BlankType> blankKey={Blank} keys={langIdOptions} selectedKey={langId} onChange={handleLangId}/>
@@ -498,7 +476,7 @@ export default function AddTextMain({
         </div>
 
         <TextUnit
-          textId='AddTextMain'
+          textId={paragraphKeyProp}
           {...textUnitProps}
           visibleTrans={false}
           textareaOption={{

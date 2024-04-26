@@ -19,6 +19,7 @@ export default function Home() {
     const [headerToggle, setHeaderToggle] = useState(false);
     const pages = [
         <HomePage key='home' />,
+        //<AddText key='addText' onSaveDone={() => console.log(`Save Done!!!!`)}/>,
         <AddText key='addText' />,
         <Library key='library' />,
         <Quiz key='quiz' />,

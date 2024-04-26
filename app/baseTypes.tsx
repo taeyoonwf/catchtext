@@ -18,6 +18,13 @@ export const LangIds = [
 //export type LangId = typeof langIds[number];
 //export type Blank = typeof blank;
 
+export type MetaInfoForTextUnit = {
+  questionNum?: number;
+  isQuestionOption?: boolean;
+  isAnswer?: boolean;
+  isFemale?: boolean;
+};
+
 export type TextUnitData = {
   speed: number;
   length: number;
@@ -29,6 +36,7 @@ export type TextUnitData = {
   created: number;
   modified: number;
   paragraphId: number;
+  metaInfo?: MetaInfoForTextUnit;
 };
 
 export type TextUnitDataUpdate = {
@@ -39,6 +47,7 @@ export type TextUnitDataUpdate = {
   dialectId: DialectIdType;
   translations: string[][];
   paragraphKeyId: string;
+  metaInfo?: MetaInfoForTextUnit;
 };
 
 export type TextUnitAbbrData = {

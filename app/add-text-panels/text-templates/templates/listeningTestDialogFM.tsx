@@ -1,3 +1,4 @@
+import { AnyEar } from "@/app/baseUtils";
 import { TemplateAnnotation, TemplateInterface } from "./normal";
 
 export const TemplateListeningTestDialogFM: TemplateInterface = {
@@ -132,7 +133,7 @@ A. ...
       else if (newD[i].match(/\s*A\.\s*/))
         isQuestion = false;
       else if (newS[i].startsWith('(A)')) {
-        newA.push({questionNum: qNum, isOption: true});
+        newA.push({questionNum: qNum, isOption: true, isFemale: isFsTurn, isMale: !isFsTurn});
         isQuestion = false;
         continue;
       }
