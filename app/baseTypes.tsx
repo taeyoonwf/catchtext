@@ -77,21 +77,3 @@ export const colorSeries: string[] = [
   "#1f77b4"];
 
 export const Ears = "👂👂🏻👂🏼👂🏽👂🏾👂🏿";
-const EarsIndice = [0, 2, 6, 10, 14, 18, 22];
-export const AnyEar = () => {
-  const idx = GetRandomInt(EarsIndice.length - 1);
-  return Ears.substring(EarsIndice[idx], EarsIndice[idx + 1]);
-};
-
-export const DialectWithGender = (
-  langId: LangIdType|BlankType,
-  isFemale: boolean|undefined
-): DialectIdType|undefined => {
-  if (langId in DefaultDialect) {
-    if (langId === 'es')
-      return isFemale ? 'es-US' : 'es-ES';
-    else if (langId === 'en')
-      return isFemale ? 'en-US' : 'en-GB-1';
-  }
-  return undefined;
-}

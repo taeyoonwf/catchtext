@@ -1,4 +1,3 @@
-import { AnyEar } from "@/app/baseTypes";
 import { TemplateAnnotation, TemplateInterface } from "./normal";
 
 export const TemplateListeningTestDialogFM: TemplateInterface = {

@@ -10,6 +10,8 @@ import Quiz from './layout/quiz';
 import HomePage from './layout/homePage';
 import { useState, useEffect } from 'react';
 import { DataStorage } from './data-storage/dataStorage';
+import { SpeechSynthesizer } from './speech-synthesizer/speechSynthesizer';
+import { LanguageIdentifier } from './language-identifier/languageIdentifier';
 
 export default function Home() {
     const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
@@ -57,7 +59,7 @@ export default function Home() {
 
     const getPageIndex = (hash: string) => menuText.findIndex((e: string) => e.replace(/\s/g, '') === hash.substring(1));
 
-    return (<>
+    return (<SpeechSynthesizer><LanguageIdentifier>
         <div className="left-part">
             <div className='menu'>
                 {menuText.map((e) => (<a
@@ -80,5 +82,5 @@ export default function Home() {
                 </DataStorage>
             </div>
         </div>
-    </>);
+    </LanguageIdentifier></SpeechSynthesizer>);
 }

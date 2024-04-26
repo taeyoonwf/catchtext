@@ -56,7 +56,7 @@ export default function Library() {
       }
     }
 
-    return (<SpeechSynthesizer><LanguageIdentifier>
+    return (<>
               <div className='add-button-panel'>
                   <button onClick={addTextUnit} className='add-button'>+</button>
               </div>
@@ -73,5 +73,5 @@ export default function Library() {
                   onChange={handleChange}
                 />
               )).reverse()}
-    </LanguageIdentifier></SpeechSynthesizer>);
+    </>);
 }

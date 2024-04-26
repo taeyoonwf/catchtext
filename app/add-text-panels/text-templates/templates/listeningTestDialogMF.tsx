@@ -1,6 +1,6 @@
-import { AnyEar } from "@/app/baseTypes";
 import { TemplateAnnotation, TemplateInterface } from "./normal";
 import { TemplateListeningTestDialogFM } from "./listeningTestDialogFM";
+import { AnyEar } from "@/app/baseUtils";
 
 export const TemplateListeningTestDialogMF: TemplateInterface = {
   activeLangIds: ['en', 'es'],

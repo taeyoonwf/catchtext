@@ -50,8 +50,10 @@ function DataStorage({
   const GetTextForAddText = () => textForAddText;
 
   const SetTextForAddText = async (data: string) => {
-    textForAddText = data;
-    await UpdateStorage();
+    if (textForAddText !== data) {
+      textForAddText = data;
+      await UpdateStorage();
+    }
   }
 
   const GetTextUnits = () => {

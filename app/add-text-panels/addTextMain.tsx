@@ -1,7 +1,7 @@
 'use client'
 import './layout.css';
 import { CSSProperties, ChangeEvent, useContext, useEffect, useState } from 'react';
-import { Blank, BlankType, DefaultDialect, DialectIdType, DialectIds, DialectWithGender, LangIdType, LangIds, TextUnitDataUpdate, colorSeries } from '../baseTypes';
+import { Blank, BlankType, DefaultDialect, LangIdType, LangIds, TextUnitDataUpdate, colorSeries } from '../baseTypes';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import TextUnit, { TextUnitProps } from '../text-unit/textUnit';
@@ -11,6 +11,7 @@ import { LanguageIdentifierResultType } from '../linguaWrapper';
 import DropdownMenu from '../dropdown-menu/dropdownMenu';
 import TextTemplates from './text-templates/textTemplates';
 import { NormalProcessor, TemplateAnnotation, TemplateProcessor } from './text-templates/templates/normal';
+import { DialectWithGender } from '../baseUtils';
 
 export interface DivTextArgs {
   divider: string;
@@ -62,7 +63,7 @@ export default function AddTextMain({
     if (textProp !== undefined) {
       setText(textProp);
       // TODO: languageIdentifier check
-      /* languageIdentifier.Query!(textProp, (langAndProbs: LanguageIdentifierResultType) => {
+      languageIdentifier.Query!(textProp, (langAndProbs: LanguageIdentifierResultType) => {
         const newLangIdCands: LangIdType[] =
           langAndProbs.filter((e) => LangIds.includes(e.language as LangIdType) && e.value > 0)
             .map((e) => e.language as LangIdType);
@@ -81,7 +82,7 @@ export default function AddTextMain({
           console.log(`use Blank 1`);
           refreshSegmentedText(Blank, textProp);
         }
-      }); */
+      });
     }
   }, [textProp]);
 

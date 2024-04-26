@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import AddTextMain, { DivTextArgs } from '../add-text-panels/addTextMain';
 import { TextUnitDataUpdate } from '../baseTypes';
-import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
-import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
 import { DataStorageContext } from '../data-storage/dataStorage';
 
 export default function AddText() {
@@ -33,7 +31,7 @@ export default function AddText() {
     await SetTextForAddText(value);
   }
 
-  return (<SpeechSynthesizer><LanguageIdentifier>
+  return (<>
     <AddTextMain text={text} onSave={saveAllSentences} onTextChange={handleTextChange}/>
-  </LanguageIdentifier></SpeechSynthesizer>);
+  </>);
 }
