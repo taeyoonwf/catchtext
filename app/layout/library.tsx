@@ -8,7 +8,7 @@ import { DataStorageContext } from '../data-storage/dataStorage';
 
 export default function Library() {
     const [textUnits, setTextUnits] = useState<TextUnitAbbrData[]>([]);
-    const {GetSignIn, AddTextUnit, UpdateTextUnit, SetStorageDataByUrlParam, GetTextUnits} = useContext(DataStorageContext);
+    const {GetSignIn, AddEmptyTextUnit, UpdateTextUnit, SetStorageDataByUrlParam, GetTextUnits} = useContext(DataStorageContext);
     const [storageLoadingCount, setStorageLoadingCount] = useState<number>(0);
 
     useEffect(() => {
@@ -36,7 +36,7 @@ export default function Library() {
     //const textUnits: TextUnitData = [];
     const addTextUnit = async (e: React.MouseEvent<HTMLButtonElement>) => {
       //console.log(AddTextUnit);
-      const paragraphKey = await AddTextUnit();
+      const paragraphKey = await AddEmptyTextUnit();
       console.log('here0 ' + paragraphKey);
       setTextUnits((prev) => [...prev, {
         prk: paragraphKey,

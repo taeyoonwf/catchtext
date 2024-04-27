@@ -9,7 +9,7 @@ export default function AddText() {
     SetStorageDataByUrlParam,
     GetTextForAddText,
     SetTextForAddText,
-    UpdateTextUnits,
+    //UpdateTextUnits,
     AddTextUnits,
     AddParagraph,
   } = useContext(DataStorageContext);
@@ -34,31 +34,28 @@ export default function AddText() {
   ) => {
     console.log(textSet);
     console.log(textUnitValues);
-    const resultPromise = new Promise<void>((resolve, reject) => {
-      AddTextUnits(paragraphKey, textSet.length).then((e0) => {
-        UpdateTextUnits(textSet.map((e, index) => ({
-          speed: textUnitValues?.speed,
-          text: e.sentence,
-          langId: textUnitValues?.langId,
-          ...(typeof e.annotation?.isFemale === 'boolean' ? {dialectId: DialectWithGender(textUnitValues?.langId, e.annotation.isFemale)} : {}),
-          paragraphKeyId: paragraphKey + "-" + index,
-          translations: [],
-          length: 0,
-          ...(e.annotation !== undefined ? {
-            questionNum: e.annotation.questionNum,
-            isQuestionOption: e.annotation.isOption,
-            isAnswer: e.annotation.isAnswer,
-            isFemale: e.annotation.isFemale,
-          } as MetaInfoForTextUnit : {})
-        } as TextUnitDataUpdate))).then((e1) => {
-          SetTextForAddText("").then((e2) => {
-            console.log(`setText("")`);
-            setText("");
-            resolve();
-          });
-          //resolve();
-        })
-        .catch(err => reject(err));
+    await new Promise<void>((resolve, reject) => {
+      AddTextUnits(paragraphKey, textSet.map((e, index) => ({
+        speed: textUnitValues?.speed,
+        text: e.sentence,
+        langId: textUnitValues?.langId,
+        ...(typeof e.annotation?.isFemale === 'boolean' ? {dialectId: DialectWithGender(textUnitValues?.langId, e.annotation.isFemale)} : {}),
+        paragraphKeyId: paragraphKey + "-" + index,
+        translations: [],
+        length: 0,
+        ...(e.annotation !== undefined ? {
+          questionNum: e.annotation.questionNum,
+          isQuestionOption: e.annotation.isOption,
+          isAnswer: e.annotation.isAnswer,
+          isFemale: e.annotation.isFemale,
+        } as MetaInfoForTextUnit : {})
+      } as TextUnitDataUpdate))).then((e0) => {
+        SetTextForAddText("").then((e2) => {
+          console.log(`setText("")`);
+          setText("");
+          setParagraphKey(AddParagraph());
+          resolve();
+        });
       })
       .catch(err => reject(err));
     });

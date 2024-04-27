@@ -13,8 +13,8 @@ interface DataStorageContextType {
   SetStorageDataByUrlParam: () => Promise<void>;
   UpdateTextUnit: (data: TextUnitDataUpdate) => Promise<void>;
   UpdateTextUnits: (data: TextUnitDataUpdate[]) => Promise<void>;
-  AddTextUnit: () => Promise<string>;  // textId
-  AddTextUnits: (paragraphKey: string, unitCount: number) => Promise<void>;
+  AddEmptyTextUnit: () => Promise<string>;  // textId
+  AddTextUnits: (paragraphKey: string, data: TextUnitDataUpdate[]) => Promise<void>;
   AddParagraph: () => string; // paragraphKey
 }
 
@@ -28,7 +28,7 @@ const DataStorageContext = createContext<DataStorageContextType>({
   SetStorageDataByUrlParam: async () => {},
   UpdateTextUnit: async () => {},
   UpdateTextUnits: async () => {},
-  AddTextUnit: async () => "",
+  AddEmptyTextUnit: async () => "",
   AddTextUnits: async () => {},
   AddParagraph: () => "",
 });
@@ -103,6 +103,7 @@ function DataStorage({
   const GetOrganizedTextUnits = () => {
     const orgTextUnits: TextUnitData[] = [];
     for (const textUnit of textUnits) {
+      console.log(textUnit);
       const transLength = textUnit.translations.length;
       const transList: string[] = [];
       for (let i = 0; i < transLength; i += 2) {
@@ -138,9 +139,11 @@ function DataStorage({
     }); */
 
       lastModifiedTime = new Date().getTime() + (new Date().getTimezoneOffset() * 60);
-      const pushStatePromise = new Promise<void>((resolve, reject) => {
+      console.log(`lastModifiedTime: ${lastModifiedTime}`);
+      await new Promise<void>((resolve, reject) => {
         setTimeout(() => {
           const curTime = new Date().getTime() + (new Date().getTimezoneOffset() * 60);
+          console.log(`curTime, lastModifiedTime: ${curTime} ${lastModifiedTime}`);
           if (curTime > lastModifiedTime + UPDATE_APPLY_DELAY * 0.9) {
             const orgTextUnits = GetOrganizedTextUnits();
             const b64textUnits = obj2compb64({
@@ -148,8 +151,10 @@ function DataStorage({
               textUnits: orgTextUnits,
             }, 'deflate').then((e) => {
               const b64 = e.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-              setUrlParamData(b64);
-              window.history.pushState({}, '', DATA_PARAM + b64 + window.location.hash);
+              if (curTime > lastModifiedTime + UPDATE_APPLY_DELAY * 0.9) {
+                setUrlParamData(b64);
+                window.history.pushState({}, '', DATA_PARAM + b64 + window.location.hash);
+              }
               resolve();
             });
               //.replace(/\+/g, '-')
@@ -214,6 +219,7 @@ function DataStorage({
         modified: new Date().getTime() + (new Date().getTimezoneOffset() * 60),
       };
     }
+    console.log(textUnits);
     await UpdateStorage();
   }
 
@@ -236,28 +242,29 @@ function DataStorage({
     return 'catch';
   }
 
-  const AddTextUnit = async () => {
+  const AddEmptyTextUnit = async () => {
     const randomPragKey = getRandomId();
     paragraphKeyToIndex[randomPragKey + '-0'] = textUnits.length;
     textUnits.push({
       paragraphKey: randomPragKey,
       paragraphId: 0,
     } as TextUnitData);
-    await UpdateStorage();
+    //await UpdateStorage();
 
     return randomPragKey;
   }
 
-  const AddTextUnits = async (paragraphKey: string, unitCount: number) => {
-    for (let i = 0; i < unitCount; i++) {
-      const index = unitCount - i - 1;
+  const AddTextUnits = async (paragraphKey: string, data: TextUnitDataUpdate[]) => {
+    for (let i = 0; i < data.length; i++) {
+      const index = data.length - i - 1;
       paragraphKeyToIndex[paragraphKey + '-' + index] = textUnits.length;
       textUnits.push({
         paragraphKey,
         paragraphId: index,
       } as TextUnitData);
     }
-    await UpdateStorage();
+    await UpdateTextUnits(data);
+    //await UpdateStorage();
   }
 
   const AddParagraph = () => {
@@ -276,7 +283,7 @@ function DataStorage({
       SetStorageDataByUrlParam,
       UpdateTextUnit,
       UpdateTextUnits,
-      AddTextUnit,
+      AddEmptyTextUnit,
       AddTextUnits,
       AddParagraph,
     }}>
