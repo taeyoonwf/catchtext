@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef } from "react";
+import React, { createContext, useEffect } from "react";
 
 type StopCallbackFunc = (forcedStop: boolean, playingTimeInNormalSpeed: number) => void;
 
@@ -10,6 +10,11 @@ interface SpeechSynthesizerContextType {
 
 const SpeechSynthesizerContext = createContext<SpeechSynthesizerContextType>({});
 const voices: {[key in string]?: SpeechSynthesisVoice} = {};
+let stopCallbackReg: StopCallbackFunc|null = null;
+let isPlaying = false;
+let playStartTime: Date = new Date();
+let autoResumeTimeout: NodeJS.Timeout; // https://stackoverflow.com/questions/21947730
+let playingUtterance: SpeechSynthesisUtterance|undefined = undefined;
 
 function SpeechSynthesizer({
   children,
@@ -17,10 +22,6 @@ function SpeechSynthesizer({
   children: React.ReactNode
 }) {
   const speedConst: number = 1.45;
-  const playingUtterance = useRef<SpeechSynthesisUtterance|undefined>(undefined);
-  let isPlaying = false;
-  let playStartTime: Date = new Date();
-  let stopCallbackReg: StopCallbackFunc|null = null;
 
   useEffect(() => {
     console.log(`speech synthesizer useEffect`);
@@ -75,8 +76,8 @@ function SpeechSynthesizer({
       return;
     }
 
-    if (playingUtterance.current !== undefined) {
-      playingUtterance.current = undefined;
+    if (playingUtterance !== undefined) {
+      playingUtterance = undefined;
       stopCallbackReg!.call(null, true, 0);
       // setPlayingUtterence(undefined);
       window.speechSynthesis.cancel();
@@ -96,12 +97,18 @@ function SpeechSynthesizer({
     //const voice: SpeechSynthesisVoice = (voiceId.length == 2) ? voices[voiceId as LangIdType]! : voices[voiceId as DialectIdType]!;
     stopCallbackReg = stopCallback;
 
+    function autoResumeTimer() {
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+      autoResumeTimeout = setTimeout(autoResumeTimer, 1000);
+    }
+
     const utterThis = new SpeechSynthesisUtterance(text);
     utterThis.voice = voice;
     utterThis.rate = (speed < 1.0) ? speed : Math.pow(speed, 1.0 / speedConst);
     utterThis.onstart = (ev: SpeechSynthesisEvent) => {
       const curTarget: SpeechSynthesisUtterance = ev.currentTarget as SpeechSynthesisUtterance;
-      playingUtterance.current = curTarget;
+      playingUtterance = curTarget;
       isPlaying = true;
       playStartTime = new Date();
       console.log(`start ` + playStartTime);
@@ -112,9 +119,10 @@ function SpeechSynthesizer({
       //console.log(playingUtterance);
       //console.log('end2 : ');
       //console.log(curTarget);
-      if (playingUtterance.current === curTarget) {
+      clearTimeout(autoResumeTimeout);
+      if (playingUtterance === curTarget) {
           //console.log('finished!');
-          playingUtterance.current = undefined;
+          playingUtterance = undefined;
           const playEndTime = new Date();
           const duration: number = (playEndTime.getTime() - playStartTime.getTime()) / 1000.0;
           console.log(`Speech duration: ${duration} ms`);
@@ -125,17 +133,25 @@ function SpeechSynthesizer({
       }
       isPlaying = false;
     }
-    utterThis.onerror = (ev: SpeechSynthesisErrorEvent) => {
+    utterThis.onpause = (ev: SpeechSynthesisEvent) => {
+      console.log('onpause');
       console.log(ev);
     }
+    utterThis.onerror = (ev: SpeechSynthesisErrorEvent) => {
+      console.log('onerror');
+      console.log(ev);
+    }
+    //console.log(utterThis);
+    window.speechSynthesis.cancel();
+    autoResumeTimeout = setTimeout(autoResumeTimer, 10000);
     window.speechSynthesis.speak(utterThis);
   }
 
   const IsPlaying = () => isPlaying;
 
   const Stop = () => {
-    if (playingUtterance.current !== undefined) {
-      playingUtterance.current = undefined;
+    if (playingUtterance !== undefined) {
+      playingUtterance = undefined;
       stopCallbackReg!.call(null, true, 0);
       window.speechSynthesis.cancel();
       isPlaying = false;

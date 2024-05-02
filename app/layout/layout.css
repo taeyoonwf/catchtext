@@ -97,12 +97,12 @@
 
 .login-panel {
     background-color: #dde;
-    position: fixed;
+    position: var(--position-prop);
     z-index: 2;
     width: calc(56px * 1);
     height: 56px;
-    right: 0px;
-    top: 0px;
+    right: var(--right-prop);
+    top: var(--top-prop);
     display: flex;
 }
 

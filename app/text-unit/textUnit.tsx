@@ -1,8 +1,8 @@
 "use client"
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, MouseEvent, ChangeEvent } from 'react';
 import './layout.css';
 import DropdownSelector from '../dropdown-selector/dropdownSelector';
-import TextareaAutoResize from '../textarea-auto-resize/textareaAutoResize';
+import TextareaAutoResize, { TextareaAutoResizeProps } from '../textarea-auto-resize/textareaAutoResize';
 import { SpeechSynthesizerContext } from '../speech-synthesizer/speechSynthesizer';
 import { LanguageIdentifierContext } from '../language-identifier/languageIdentifier';
 import { LanguageIdentifierResultType } from '../linguaWrapper';
@@ -20,6 +20,10 @@ export interface TextUnitProps {
     translations?: string[];
     textId?: string;
     onChange?: (value: TextUnitDataUpdate) => void;
+    visibleTrans?: boolean;
+    textareaOption?: TextareaAutoResizeProps;
+    autoPlay?: boolean;
+    onPlayFinished?: (forcedStop: boolean) => void;
 }
 
 export default function TextUnit({
@@ -30,7 +34,11 @@ export default function TextUnit({
     length: lengthProp,
     dialectId: dialectIdProp,
     textId: textIdProp,
-    onChange: onChangeProp
+    onChange: onChangeProp,
+    visibleTrans: visibleTransProp,
+    textareaOption: textareaOptionProp,
+    autoPlay: autoPlayProp,
+    onPlayFinished: onPlayFinishedProp,
 }: TextUnitProps) {
     //const evenIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 0);
     //const oddIndexItems = (e: string[]) => e.filter((value, index) => index % 2 === 1);
@@ -53,8 +61,39 @@ export default function TextUnit({
         // For example, you can make an API call, update local storage, etc.
         //console.log('State has been updated:', state);
         console.log(`textUnit useEffect! ${textIdProp}`);
-        updateChanges();    
+        updateChanges();
     }, [text, langId, dialectId, trans, speed]);
+
+    useEffect(() => {
+        console.log(`textUnit useEffect for Props. ${textProp} ${langIdProp} ${speedProp}`);
+        if (textProp !== undefined)
+            setText(textProp);
+        if (langIdProp !== undefined) {
+            setLangId(langIdProp);
+            const defaultValue = DefaultDialect[langIdProp];
+            const newDialect = defaultValue !== undefined ? defaultValue : Blank;
+            // console.log(`newDialect: ${newDialect}`);
+            // console.log(`dialectIdProp: ${dialectIdProp}`);
+            setDialectId(newDialect);
+        }
+        if (dialectIdProp !== undefined)
+            setDialectId(dialectIdProp);
+    }, [textProp, langIdProp, dialectIdProp, speedProp, textareaOptionProp]);
+
+    useEffect(() => {
+        const speedParam = (speedProp !== undefined) ? speedProp : speed;
+        //let dialectParam = (dialectId !== Blank) ? dialectId : dialectIdProp;
+        let newDialect = (dialectIdProp !== undefined) ? dialectIdProp : dialectId;
+        if (autoPlayProp === true && !isPlaying) {
+            // const newDialect = dialectParam !== undefined ? dialectParam : Blank;
+            //const newDialect = (dialectIdProp !== undefined) ? dialectIdProp : dialectParam;
+            setDialectId(newDialect);
+            playSound(textProp, langIdProp, newDialect, speedParam);
+        }
+        if (autoPlayProp !== true && isPlaying)
+            playSound(); // to stop
+        console.log(`autoPlayProp: ${autoPlayProp}, isPlaying: ${isPlaying}`);
+    }, [autoPlayProp]);
 
     const updateChanges = (newLength?: number) => {
         if (textIdProp === undefined)
@@ -70,21 +109,27 @@ export default function TextUnit({
         });
     }
 
-    const playSound = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const playSound = (
+        theText: string = text,
+        theLangId: LangIdType|BlankType = langId,
+        theDialectId: DialectIdType|BlankType = dialectId,
+        theSpeed: number = speed
+    ) => {
         console.log(speechSynthesizer.PlayText);
         console.log(speechSynthesizer.Stop);
         console.log(speechSynthesizer.IsPlaying);
 
         if (isPlaying) {
-            speechSynthesizer.Stop!();
+            speechSynthesizer.Stop?.call(null);
             return;
         }
-        if (speechSynthesizer.PlayText === undefined)
+        if (speechSynthesizer.PlayText === undefined) {
             return;
+        }
 
-        const voiceId = (dialectId !== Blank) ? dialectId : langId;
+        const voiceId = (theDialectId !== Blank) ? theDialectId : theLangId;
         setIsPlaying(true);
-        speechSynthesizer.PlayText(text, voiceId, speed, (forcedStop, playingTime) => {
+        speechSynthesizer.PlayText(theText, voiceId, theSpeed, (forcedStop, playingTime) => {
             if (!forcedStop) {
                 const relativeError = Math.abs(length - playingTime) / playingTime;
                 console.log(`length: ${length}, playingTime: ${playingTime}, relativeError: ${relativeError}`);
@@ -93,12 +138,14 @@ export default function TextUnit({
                 setLength(playingTime);
             }
             setIsPlaying(false);
+            onPlayFinishedProp?.call(null, forcedStop);
         });
     }
 
-    const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = e.currentTarget;
         if (value !== text) {
+            console.log(`setText h1`);
             setText(value);
             setLength(0.0);
             languageIdentifier.Query!(value, (langAndProbs: LanguageIdentifierResultType) => {
@@ -129,7 +176,7 @@ export default function TextUnit({
         }
     };
 
-    const handleTransTextChange = (index: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleTransTextChange = (index: number) => (e: ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = e.currentTarget;
         const newTrans = [...trans];
         if (newTrans[index][0] !== value) {
@@ -152,11 +199,11 @@ export default function TextUnit({
         //if (value !== )
     };
 
-    const addTranslation = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const addTranslation = (e: MouseEvent<HTMLButtonElement>) => {
         setTrans(oldTrans => [...oldTrans, ['', Blank]]);
     }
 
-    const handleSpeed = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSpeed = (e: ChangeEvent<HTMLInputElement>) => {
         //const { value } = e.target.value;
         setSpeed(Number.parseFloat(e.target.value));
     }
@@ -179,13 +226,14 @@ export default function TextUnit({
 
     return (
     <div className='text-unit-bg'>
-        <button onClick={playSound}
+        <button onClick={() => playSound()}
                         className='play-btn'>
-                        {`${!isPlaying && text.length > 0 ? '▶' : '■'}`}
+                        {(!isPlaying && text.length > 0) ? '▶' : '■'}
                     </button>
-        <div className='text-part'>
+        <div className={visibleTransProp === false ? 'text-part-extended' : 'text-part'}>
             <div className='text-and-langid'>
                 <TextareaAutoResize
+                    {...textareaOptionProp}
                     className='text-part-text'
                     value={text}
                     onChange={handleTextChange}
@@ -211,8 +259,9 @@ export default function TextUnit({
                 </div>
             </div>
         </div>
-        <div className='translation-part'>
-            {trans.map((value, index) => (<div key={index} className='text-and-langid'>
+        {visibleTransProp !== false &&
+            <div className='translation-part'>
+                {trans.map((value, index) => (<div key={index} className='text-and-langid'>
                     <TextareaAutoResize
                         className='text-part-trans'
                         value={value[0]}
@@ -224,11 +273,12 @@ export default function TextUnit({
                         keys={transLangIdOpts[index] !== undefined ? transLangIdOpts[index] : []}
                         selectedKey={value[1] as LangIdType}
                     />
-            </div>))}
-            <div className='add-button-panel'>
-                <button className='add-trans-button' onClick={addTranslation}>+</button>
+                </div>))}
+                <div className='add-button-panel'>
+                    <button className='add-trans-button' onClick={addTranslation}>+</button>
+                </div>
             </div>
-        </div>
+        }
     </div>
     );
 }

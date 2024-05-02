@@ -1,0 +1,106 @@
+.add-text-bg {
+  margin: 0px;
+  padding: 0px;
+  background-color: none;
+
+  flex-direction: row;
+  display: flex;
+  border: 0px solid;
+}
+
+.user-text-side {
+  width: calc(50% - 0px);
+  margin: 10px 0px auto 10px;
+  background-color: none;
+}
+
+.text-refine-side {
+  width: calc(50% - 0px);
+  margin: 0px 0px auto 0px;
+}
+
+.user-text {
+  background-color: none;
+  width: calc(100% - 0px);
+  resize: none;
+  font-size: large;
+  overflow: hidden;
+}
+
+.user-text-and-langid {
+  flex-direction: row;
+  display: flex;
+  margin: 0px 0px 10px;
+}
+
+.text-templates {
+  margin: 10px 10px 0px;
+  padding: 7px;
+  border: 1px solid black;
+  border-bottom: 0px;
+}
+
+.text-templates span {
+  display: inline-block;
+  padding: 1px;
+}
+
+.template-guide {
+  margin: 0px 10px auto;
+  padding: 7px;
+  border: 1px solid black;
+}
+
+.sentence-segments {
+  margin: 0px 10px auto 10px;
+  padding: 5px;
+  font-size: large;
+  line-height: calc(120% + 1px);
+  border: 1px solid black;
+  border-top: 0px;
+}
+
+
+.sentence-segments span {
+  display: inline;
+  overflow-wrap: break-word;
+  border: 1px dotted transparent;
+  white-space: pre-line;
+}
+
+.sentence-segments span::selection {
+  background: var(--selection-color);
+}
+
+.sentence-divider {
+  border: 0px !important;
+  cursor: col-resize;
+}
+
+.play-all {
+  width: calc(100% - 20px);
+  height: 60px;
+  margin: -10px 10px 10px 10px;
+  border: 1px solid black;
+}
+
+.play-all button {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  margin: 5px;
+  font-size: xx-large;
+}
+
+.save-all {
+  width: calc(100% - 20px);
+  height: 50px;
+  margin: 0px 10px 10px 10px;
+  border: 1px solid black;
+}
+
+.save-all button {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  margin: 5px;
+  font-size: large;
+}

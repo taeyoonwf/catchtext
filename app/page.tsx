@@ -3,13 +3,15 @@ import './layout/layout.css';
 import AddText from './layout/addText';
 import Library from './layout/library';
 import Header from './layout/header';
-import LoginPanel from './layout/loginPanel';
+import LoginPanel, { LoginPanelProps } from './layout/loginPanel';
 import Dictionary from './layout/dictionary';
 import Etc from './layout/etc';
 import Quiz from './layout/quiz';
 import HomePage from './layout/homePage';
 import { useState, useEffect } from 'react';
 import { DataStorage } from './data-storage/dataStorage';
+import { SpeechSynthesizer } from './speech-synthesizer/speechSynthesizer';
+import { LanguageIdentifier } from './language-identifier/languageIdentifier';
 
 export default function Home() {
     const menuText = ["Home", "Add Text", "Library", "Quiz", "Dictionary", "etc"];
@@ -17,11 +19,20 @@ export default function Home() {
     const [headerToggle, setHeaderToggle] = useState(false);
     const pages = [
         <HomePage key='home' />,
+        //<AddText key='addText' onSaveDone={() => console.log(`Save Done!!!!`)}/>,
         <AddText key='addText' />,
         <Library key='library' />,
         <Quiz key='quiz' />,
         <Dictionary key='dictionary' />,
         <Etc key='etc' />
+    ];
+    const loginPos: LoginPanelProps[] = [
+        {},
+        {position: 'absolute', top: 11, right: 11},
+        {},
+        {},
+        {},
+        {},
     ];
 
     useEffect(() => {
@@ -49,7 +60,7 @@ export default function Home() {
 
     const getPageIndex = (hash: string) => menuText.findIndex((e: string) => e.replace(/\s/g, '') === hash.substring(1));
 
-    return (<>
+    return (<SpeechSynthesizer><LanguageIdentifier>
         <div className="left-part">
             <div className='menu'>
                 {menuText.map((e) => (<a
@@ -62,12 +73,15 @@ export default function Home() {
         </div>
         <div className="right-part">
             {headerToggle && <Header />}
-            <LoginPanel />
+            <LoginPanel position={loginPos[getPageIndex(currentHash)].position}
+                top={loginPos[getPageIndex(currentHash)].top}
+                right={loginPos[getPageIndex(currentHash)].right}
+            />
             <div className={`main-content ${headerToggle ? 'header-padding' : ''}`}>
                 <DataStorage>
                     {getPageIndex(currentHash) >= 0 && pages[getPageIndex(currentHash)]}
                 </DataStorage>
             </div>
         </div>
-    </>);
+    </LanguageIdentifier></SpeechSynthesizer>);
 }

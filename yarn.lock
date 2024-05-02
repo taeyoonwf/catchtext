@@ -2120,6 +2120,11 @@ semver@^7.5.4:
   dependencies:
     lru-cache "^6.0.0"
 
+sentencex@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/sentencex/-/sentencex-0.4.2.tgz#df26b8c7ecba752e259958d2e22d20893917564c"
+  integrity sha512-Pe/ARSCa2oJcg5ARYQsnQJPBEbAH1/h6ZWc80UuKCJO9w94setiFn4tH8iU2Eiogf5MlBMgc6NvL3ZGsguRkBA==
+
 set-function-length@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/set-function-length/-/set-function-length-1.1.1.tgz#4bc39fafb0307224a33e106a7d35ca1218d659ed"

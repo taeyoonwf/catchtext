@@ -1,9 +1,9 @@
 "use client"
 import React, { useState } from 'react';
-import TextUnit from './textUnit';
 import { SpeechSynthesizer } from '../speech-synthesizer/speechSynthesizer';
 import { LanguageIdentifier } from '../language-identifier/languageIdentifier';
 import { TextUnitAbbrData } from '../baseTypes';
+import TextUnit from '../text-unit/textUnit';
 
 /*
 const tmpData: TextUnitData = {
@@ -27,7 +27,7 @@ const tmpData: TextUnitData = {
 }; */
 
 const tmpData: TextUnitAbbrData =   {
-  "spd": 1.4,
+  "spd": 1,
   "len": 0,
   "txt": "'Well, When I was four years old, I had a dream about a spoon falling off a table and making a loud sound on the floor,' Jen said.",
   "lid": "en", 
@@ -40,19 +40,10 @@ const tmpData: TextUnitAbbrData =   {
 };
 
 export default function Home() {
-  const [textUnits, setTextUnits] = useState<{}[]>([]);
-
-  const addTextUnit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setTextUnits((prev) => [...prev, {}]);
-  };
+  const [autoPlay, setAutoPlay] = useState(false);
 
   return (<SpeechSynthesizer><LanguageIdentifier>
-            <div className='add-button-panel'>
-                <button onClick={addTextUnit} className='add-button'>+</button>
-            </div>
-            {textUnits.map((textUnit, index) => (
-              <TextUnit key={index}/>
-            )).reverse()}
+    <button onClick={() => setAutoPlay((prev) => !prev)}>{autoPlay ? 'Stop' : 'Play'}</button>
     <TextUnit
       text={tmpData.txt}
       langId={tmpData.lid}
@@ -60,6 +51,8 @@ export default function Home() {
       speed={tmpData.spd}
       length={tmpData.len}
       dialectId={tmpData.did}
+      autoPlay={autoPlay}
+      onPlayFinished={() => setAutoPlay(false)}
     />
   </LanguageIdentifier></SpeechSynthesizer>);
 }

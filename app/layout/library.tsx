@@ -8,13 +8,13 @@ import { DataStorageContext } from '../data-storage/dataStorage';
 
 export default function Library() {
     const [textUnits, setTextUnits] = useState<TextUnitAbbrData[]>([]);
-    const { GetSignIn, AddTextUnit, UpdateTextUnit, SetTextUnitsByUrlParam, GetTextUnits } = useContext(DataStorageContext);
+    const {GetSignIn, AddEmptyTextUnit, UpdateTextUnit, SetStorageDataByUrlParam, GetTextUnits} = useContext(DataStorageContext);
     const [storageLoadingCount, setStorageLoadingCount] = useState<number>(0);
 
     useEffect(() => {
       if (!GetSignIn()) {
         (async function() {
-          await SetTextUnitsByUrlParam().then(() => {
+          await SetStorageDataByUrlParam().then(() => {
             const textUnitsOfStorage = GetTextUnits();
             console.log(textUnitsOfStorage);
             setStorageLoadingCount((prev) => (prev + textUnitsOfStorage.length));
@@ -36,7 +36,7 @@ export default function Library() {
     //const textUnits: TextUnitData = [];
     const addTextUnit = async (e: React.MouseEvent<HTMLButtonElement>) => {
       //console.log(AddTextUnit);
-      const paragraphKey = await AddTextUnit();
+      const paragraphKey = await AddEmptyTextUnit();
       console.log('here0 ' + paragraphKey);
       setTextUnits((prev) => [...prev, {
         prk: paragraphKey,
@@ -56,7 +56,7 @@ export default function Library() {
       }
     }
 
-    return (<SpeechSynthesizer><LanguageIdentifier>
+    return (<>
               <div className='add-button-panel'>
                   <button onClick={addTextUnit} className='add-button'>+</button>
               </div>
@@ -73,5 +73,5 @@ export default function Library() {
                   onChange={handleChange}
                 />
               )).reverse()}
-    </LanguageIdentifier></SpeechSynthesizer>);
+    </>);
 }

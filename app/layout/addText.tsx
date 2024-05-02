@@ -1,37 +1,89 @@
-import './layout.css';
+import { useContext, useEffect, useState } from 'react';
+import AddTextMain, { DivTextArgs } from '../add-text-panels/addTextMain';
+import { MetaInfoForTextUnit, TextUnitDataUpdate } from '../baseTypes';
+import { DataStorageContext } from '../data-storage/dataStorage';
+import { DialectWithGender } from '../baseUtils';
 
 export default function AddText() {
-    return (<>
-        Hey
-        <h1>Add Text 1</h1>
-        <h2>Add Text 1</h2>
-        <h3>Add Text 1</h3>
-        <h4>Add Text 1</h4>
-        <h5>Add Text 1</h5>
+  const {GetSignIn,
+    SetStorageDataByUrlParam,
+    GetTextForAddText,
+    SetTextForAddText,
+    //UpdateTextUnits,
+    AddTextUnits,
+    AddParagraph,
+  } = useContext(DataStorageContext);
+  const [text, setText] = useState("");
+  const [paragraphKey, setParagraphKey] = useState(AddParagraph());
 
-        <h1>Add Text 2</h1>
-        <h2>Add Text 2</h2>
-        <h3>Add Text 2</h3>
-        <h4>Add Text 2</h4>
-        <h5>Add Text 2</h5>
+  useEffect(() => {
+    if (!GetSignIn()) {
+      (async function() {
+        await SetStorageDataByUrlParam().then(() => {
+          const txt = GetTextForAddText();
+          console.log(`TextForAddText: ${txt}`);
+          setText(txt);
+        });
+      })();
+    }
+  }, []);
 
-        <h1>Add Text 3</h1>
-        <h2>Add Text 3</h2>
-        <h3>Add Text 3</h3>
-        <h4>Add Text 3</h4>
-        <h5>Add Text 3</h5>
+  const saveAllSentences = async (
+    textSet: DivTextArgs[],
+    textUnitValues?: TextUnitDataUpdate,
+  ) => {
+    console.log(textSet);
+    console.log(textUnitValues);
+    await new Promise<void>((resolve, reject) => {
+      AddTextUnits(paragraphKey, textSet.map((e, index) => ({
+        speed: textUnitValues?.speed,
+        text: e.sentence,
+        langId: textUnitValues?.langId,
+        ...(typeof e.annotation?.isFemale === 'boolean' ? {dialectId: DialectWithGender(textUnitValues?.langId, e.annotation.isFemale)} : {}),
+        paragraphKeyId: paragraphKey + "-" + index,
+        translations: [],
+        length: 0,
+        ...(e.annotation !== undefined ? {
+          questionNum: e.annotation.questionNum,
+          isQuestionOption: e.annotation.isOption,
+          isAnswer: e.annotation.isAnswer,
+          isFemale: e.annotation.isFemale,
+        } as MetaInfoForTextUnit : {})
+      } as TextUnitDataUpdate))).then((e0) => {
+        SetTextForAddText("").then((e2) => {
+          console.log(`setText("")`);
+          setText("");
+          setParagraphKey(AddParagraph());
+          resolve();
+        });
+      })
+      .catch(err => reject(err));
+    });
+    /*resultPromise.then((e0) => {
+      SetTextForAddText("").then((e1) => {
+        console.log(`call onSaveDoneProp`);
+        onSaveDoneProp.call(null);
+        //console.log(`setText("")`);
+      });
+      //console.log(`call onSaveDoneProp`);
+      //setText("");
+      //onSaveDoneProp.call(null);
+    });*/
+    // TODO: loading modal?
+    //console.log(`setText("")`);
+    //setText("");
+  };
 
-        <h1>Add Text 4</h1>
-        <h2>Add Text 4</h2>
-        <h3>Add Text 4</h3>
-        <h4>Add Text 4</h4>
-        <h5>Add Text 4</h5>
+  const handleTextChange = async (value: string) => {
+    setText(value);
+    await SetTextForAddText(value);
+  }
 
-        <h1>Add Text 5</h1>
-        <h2>Add Text 5</h2>
-        <h3>Add Text 5</h3>
-        <h4>Add Text 5</h4>
-        <h5>Add Text 5</h5>
-
-    </>);
+  return (<>
+    <AddTextMain paragraphKey={paragraphKey}
+      text={text}
+      onSave={saveAllSentences}
+      onTextChange={handleTextChange}
+    />
+  </>);
 }
