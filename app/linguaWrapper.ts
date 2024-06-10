@@ -33,7 +33,7 @@ const load: LoadFunctionType = async (input: LanguageIdentifierInputType) => {
   if (detector && !input.init) {
     return {
       id: input.id,
-      result: detector.computeLanguageConfidenceValues(input.text)
+      result: detector.computeLanguageConfidenceValues(input.text.replaceAll('’', "'"))
     } as LanguageIdentifierOutputType;
   }
   return true;

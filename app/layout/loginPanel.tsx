@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import './layout.css';
-import Image from 'next/image'
+import GoogleLoginIcon from '../oauth-buttons/googleIcon';
 
 export interface LoginPanelProps {
   position?: string;
@@ -20,12 +20,7 @@ export default function LoginPanel({
       "--right-prop": (rightProp ?? 0) + "px",
     } as CSSProperties}}
   >
-    <Image
-      src={`next.svg`}
-      alt="Profile Image"
-      width={38}
-      height={38}
-      unoptimized
-    />
+
+    <GoogleLoginIcon />
   </span>);
 }
