@@ -35,5 +35,16 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
-Run
+# How to run
+
+## on Windows
+choco install -g nodejs rust mingw
+(make sure that "gcc" can be available on the command prompt)
+
+cargo install wasm-pack
+
+npm install -g yarn
+
+yarn install
+
 wasm-pack build --target web -- --no-default-features --features "german,english,spanish,french,hindi,indonesian,italian,japanese,korean,dutch,polish,portuguese,russian,chinese"
