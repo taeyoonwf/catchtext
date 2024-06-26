@@ -1,0 +1,9 @@
+// Add "firebase-config.ts" to this directory.
+// The file should include the following information.
+
+export const firebaseConfig = {
+  // Check https://console.firebase.google.com/project/{your-project}/settings/general
+};
+
+// Check https://console.cloud.google.com/apis/credentials?project={your-project}
+export const clientId = "";

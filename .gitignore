@@ -40,3 +40,7 @@ app/lingua-rs-pkg/lingua*
 app/lingua-rs-pkg/package.json
 app/lingua-rs-pkg/README.md
 app/lingua-rs-pkg/LICENSE
+
+# publisher dependent config files
+app/config-for-publisher/*.ts
+app/config-for-publisher/*.tsx

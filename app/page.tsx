@@ -28,7 +28,7 @@ export default function Home() {
     ];
     const loginPos: LoginPanelProps[] = [
         {},
-        {position: 'absolute', top: 11, right: 11},
+        {position: 'absolute', top: 10, right: 10},
         {},
         {},
         {},
