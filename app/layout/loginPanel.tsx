@@ -6,7 +6,7 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { getAuth, signInWithCredential, GoogleAuthProvider, User } from 'firebase/auth';
 import { Firestore, collection, doc, getFirestore, setDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
-import { firebaseConfig, clientId } from '../config-for-publisher/firebase-config';
+import { firebaseConfig, clientId } from '../config-for-publisher/firebaseConfig';
 
 export interface LoginPanelProps {
   position?: string;
