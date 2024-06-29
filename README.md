@@ -38,13 +38,13 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 # How to run
 
 ## on Windows
-choco install -g nodejs rust mingw
+$ choco install -g nodejs rust mingw
 (make sure that "gcc" can be available on the command prompt)
 
-cargo install wasm-pack
+$ cargo install wasm-pack
 
-npm install -g yarn
+$ npm install -g yarn
 
-yarn install
+$ yarn install
 
-wasm-pack build --target web -- --no-default-features --features "german,english,spanish,french,hindi,indonesian,italian,japanese,korean,dutch,polish,portuguese,russian,chinese"
+catchtext/lingua-rs $ wasm-pack build --target web -- --no-default-features --features "german,english,spanish,french,hindi,indonesian,italian,japanese,korean,dutch,polish,portuguese,russian,chinese"
