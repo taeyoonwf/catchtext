@@ -20,6 +20,8 @@ export default function CtAuthTest() {
   }
   const [user, setUser] = useState<UserInfo | null>(null);
   // const [authProvider, setAuthProvider] = useState("");
+  const [uid, setUid] = useState('');
+  const [text, setText] = useState('');
 
   const doit7 = async (user: User, providerPrefix: string, provider: string) => {
     const db = GetDB();
@@ -93,7 +95,7 @@ export default function CtAuthTest() {
         ...(u.email !== null ? {email: u.email} : {}),
         uid: u.uid,
         photoURL: u.photoURL,
-        authProvider: 'google'
+        authProvider: 'github'
       } as UserInfo);
 
       await doit7(result.user, 'gi', 'github');
@@ -140,13 +142,6 @@ export default function CtAuthTest() {
   }
 
   const loginUI = () => {
-    if (user) {
-      return (
-       <button onClick={() => logout()}>
-        <img src={user.photoURL} />
-       </button>
-      );
-    }
       return (<>
         <GoogleLogin useOneTap={false} auto_select={false} type='icon'
          onSuccess={googleHandleLogin}
@@ -154,11 +149,45 @@ export default function CtAuthTest() {
          console.log('Login Failed');
        }} />
        <button onClick={githubHandleLogin}>Sign in with Github</button>
+       {(user !== null) && <>
+       <br/>
+              <button onClick={() => logout()}>
+          <img src={user.photoURL} width={38} height={38}/>
+        </button></>}
        </>
      );
    }
 
+  const handleUidChange = (value: string) => {
+    setUid(value);
+  }
+
+  const handleTextChange = (value: string) => {
+    setText(value);
+  }
+
+  const requestWriting = async () => {
+    //alert(uid);
+    const db = GetDB();
+    if (db === null)
+      return;
+    const citiesRef = collection(db, "users");
+    console.log(user);
+
+    const myDoc = await setDoc(doc(citiesRef, user?.authProvider.slice(0, 2) + ':' + uid), {
+      ...(text !== '' ? {text: text} : {})
+      }, { merge: true});
+  }
+
   return (<>
       {loginUI()}
+      <br/>
+      {user && user.uid}
+      <br/>
+      UID<input onChange={(e) => handleUidChange(e.currentTarget.value)} />
+      <br/>
+      TEXT<input onChange={(e) => handleTextChange(e.currentTarget.value)}/>
+      <br/>
+      <button onClick={requestWriting}>Request writing text with Uid of the input</button>
   </>);
 }
