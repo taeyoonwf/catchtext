@@ -1,4 +1,4 @@
-// Add "firebase-config.ts" to this directory.
+// Add "firebaseConfig.ts" to this directory.
 // The file should include the following information.
 
 export const firebaseConfig = {
