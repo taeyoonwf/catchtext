@@ -1,76 +1,15 @@
 "use client"
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { CtAuthContext } from './catchTextAuth';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { GithubAuthProvider, GoogleAuthProvider, User, getAuth, onAuthStateChanged, signInWithCredential, signInWithPopup, signOut } from 'firebase/auth';
+import { GithubAuthProvider, GoogleAuthProvider, getAuth, signInWithCredential, signInWithPopup } from 'firebase/auth';
 import { collection, doc, setDoc } from 'firebase/firestore';
 
-interface UserInfo {
-  name?: string,
-  email?: string,
-  photoURL: string,
-  uid: string,
-  authProvider: string,
-}
-
 export default function CtAuthTest() {
-  const { GetUser, SetUser, GetDB } = useContext(CtAuthContext);
-  const SwitchSignIn = () => {
-  }
-  const [user, setUser] = useState<UserInfo | null>(null);
-  // const [authProvider, setAuthProvider] = useState("");
+  const { GetUser, SignIn, GetDB, SignOut } = useContext(CtAuthContext);
   const [uidInInput, setUidInInput] = useState('');
   const [text, setText] = useState('');
-
-  useEffect(() => {
-    const auth = getAuth();
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        //const uid = user.uid;
-        //console.log(`uid: ${uid}`);
-        console.log(user);
-        const u = user;
-
-        const token = await user.getIdToken();
-        const obj = jwtDecode(token);
-        console.log(JSON.stringify(obj));
-        const tokenParsed = JSON.parse(JSON.stringify(obj));
-        let provider = "";
-        if ('firebase' in tokenParsed && 'sign_in_provider' in tokenParsed['firebase']) {
-          provider = tokenParsed['firebase']['sign_in_provider'];
-        }
-        setUser({
-          ...(u.displayName !== null ? {name: u.displayName} : {}),
-          ...(u.email !== null ? {email: u.email} : {}),
-          uid: u.uid,
-          photoURL: u.photoURL,
-          authProvider: provider,
-        } as UserInfo)
-      } else {
-        // User is signed out
-        // ...
-        setUser(null);
-        console.log('signed out');
-      }
-    });
-  }, []);
-
-  const doit7 = async (user: User, providerPrefix: string, provider: string) => {
-    const db = GetDB();
-    if (db === null)
-      return;
-    const citiesRef = collection(db, "users");
-    console.log(user);
-    const myDoc = await setDoc(doc(citiesRef, providerPrefix + ':' + user.uid), {
-      ...(user.displayName !== null ? {name: user.displayName} : {}),
-      ...(user.email !== null ? {email:user.email} : {}),
-      profile: user.photoURL, authProvider: provider });
-    console.log(myDoc);
-    console.log(user);
-  };
 
   const googleHandleLogin = (credentialResponse: CredentialResponse) => {
     const obj = jwtDecode(credentialResponse.credential!);
@@ -83,7 +22,15 @@ export default function CtAuthTest() {
     signInWithCredential(auth, credential).then(async (result) => {
       console.log(result);
       console.log('sign in succeeded');
-      await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId);
+      const u = result.user;
+      await SignIn({
+        ...(u.displayName !== null ? {name: u.displayName} : {}),
+        ...(u.email !== null ? {email: u.email} : {}),
+        photoURL: u.photoURL!,
+        authProvider: credential.providerId,
+        uid: u.uid
+      });
+      //await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId);
     }).catch((error) => {
       console.log(`error occurs`);
       console.log(error);
@@ -108,7 +55,15 @@ export default function CtAuthTest() {
     const credential = GithubAuthProvider.credentialFromResult(result);
     console.log(credential);
     if (credential !== null) {
-      await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId);
+      //await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId);
+      const u = result.user;
+      await SignIn({
+        ...(u.displayName !== null ? {name: u.displayName} : {}),
+        ...(u.email !== null ? {email: u.email} : {}),
+        photoURL: u.photoURL!,
+        authProvider: credential.providerId,
+        uid: u.uid
+      });
     }
   }).catch(async (error) => {
     // Handle Errors here.
@@ -131,20 +86,7 @@ export default function CtAuthTest() {
 
   const logout = () => {
     if (confirm('Are you sure you want to log out?')) {
-      /*if (user?.authProvider === 'google') {
-        googleLogout();
-      }
-      else if (user?.authProvider === 'github') { */
-        const auth = getAuth();
-        signOut(auth).then(() => {
-          // Sign-out successful.
-          console.log('sign out');
-        }).catch((error) => {
-          // An error happened.
-          console.log('sign out fail');
-        });
-      //}
-      setUser(null);
+      SignOut();
     }
   }
 
@@ -156,10 +98,10 @@ export default function CtAuthTest() {
          console.log('Login Failed');
        }} />
        <button onClick={githubHandleLogin}>Sign in with Github</button>
-       {(user !== null) && <>
+       {(GetUser() !== null) && <>
        <br/>
               <button onClick={() => logout()}>
-          <img src={user.photoURL} width={38} height={38}/>
+          <img src={GetUser()?.photoURL} width={38} height={38}/>
         </button></>}
        </>
      );
@@ -175,7 +117,8 @@ export default function CtAuthTest() {
 
   const requestWriting = async () => {
     const db = GetDB();
-    if (db === null)
+    const user = GetUser();
+    if (db === null || user === null)
       return;
 
     const citiesRef = collection(db, "users");
@@ -189,7 +132,7 @@ export default function CtAuthTest() {
   return (<>
       {loginUI()}
       <br/>
-      {user && user.uid}
+      {GetUser() && GetUser()?.uid}
       <br/>
       UID<input onChange={(e) => handleUidChange(e.currentTarget.value)} />
       <br/>
