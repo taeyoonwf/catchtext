@@ -1,9 +1,10 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { Firestore, collection, doc, getFirestore, setDoc } from 'firebase/firestore';
 import { JwtPayload } from "jwt-decode";
 import { initializeApp } from "firebase/app";
 import { clientId, firebaseConfig } from "../config-for-publisher/firebaseConfig";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 interface CtAuthContextType { // CatchTextAuthContextType
   GetUser: () => JwtPayload | null;
@@ -26,6 +27,20 @@ function CtAuth({
   const app = initializeApp(firebaseConfig);
   const db: Firestore = getFirestore(app);
 
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log(user);
+      } else {
+        // User is signed out
+        // ...
+        setUser(null);
+        console.log('signed out');
+      }
+    });
+  }, []);
+  
   const GetUser = () => user;
   const GetDB = () => db;
 

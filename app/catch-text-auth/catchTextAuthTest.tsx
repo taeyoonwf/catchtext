@@ -83,22 +83,7 @@ export default function CtAuthTest() {
     signInWithCredential(auth, credential).then(async (result) => {
       console.log(result);
       console.log('sign in succeeded');
-      const provider = result.user.providerData[0].providerId;
-      await doit7(result.user, provider.slice(0, 2), provider);
-      // User signed in to Firebase, now you can perform actions in Firestore
-      //doit6();
-      //const p: Persistence = browserLocalPersistence;
-      //const u = result.user;
-      //const provider = u.providerData[0].providerId;
-      /* setUser({
-        ...(u.displayName !== null ? {name: u.displayName} : {}),
-        ...(u.email !== null ? {email: u.email} : {}),
-        uid: u.uid,
-        photoURL: u.photoURL,
-        authProvider: provider
-      } as UserInfo);
-      await doit7(result.user, provider.slice(0, 2), provider); */
-      //await SetUser(obj)
+      await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId);
     }).catch((error) => {
       console.log(`error occurs`);
       console.log(error);
@@ -124,19 +109,6 @@ export default function CtAuthTest() {
     console.log(credential);
     if (credential !== null) {
       await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId);
-      //console.log(u);
-      /* setUser({
-        ...(u.displayName !== null ? {name: u.displayName} : {}),
-        ...(u.email !== null ? {email: u.email} : {}),
-        uid: u.uid,
-        photoURL: u.photoURL,
-        authProvider: credential.providerId
-      } as UserInfo);
-
-      await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId); */
-      // The signed-in user info.
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
     }
   }).catch(async (error) => {
     // Handle Errors here.
