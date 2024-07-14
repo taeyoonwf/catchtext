@@ -1,9 +1,9 @@
 "use client"
 import React, { useContext, useEffect, useState } from 'react';
 import { CtAuthContext } from './catchTextAuth';
-import { CredentialResponse, GoogleLogin, googleLogout } from '@react-oauth/google';
-import { JwtPayload, jwtDecode } from 'jwt-decode';
-import { Auth, GithubAuthProvider, GoogleAuthProvider, User, fetchSignInMethodsForEmail, getAuth, getRedirectResult, signInWithCredential, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
+import { GithubAuthProvider, GoogleAuthProvider, User, getAuth, onAuthStateChanged, signInWithCredential, signInWithPopup, signOut } from 'firebase/auth';
 import { collection, doc, setDoc } from 'firebase/firestore';
 
 interface UserInfo {
@@ -20,8 +20,43 @@ export default function CtAuthTest() {
   }
   const [user, setUser] = useState<UserInfo | null>(null);
   // const [authProvider, setAuthProvider] = useState("");
-  const [uid, setUid] = useState('');
+  const [uidInInput, setUidInInput] = useState('');
   const [text, setText] = useState('');
+
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        //const uid = user.uid;
+        //console.log(`uid: ${uid}`);
+        console.log(user);
+        const u = user;
+
+        const token = await user.getIdToken();
+        const obj = jwtDecode(token);
+        console.log(JSON.stringify(obj));
+        const tokenParsed = JSON.parse(JSON.stringify(obj));
+        let provider = "";
+        if ('firebase' in tokenParsed && 'sign_in_provider' in tokenParsed['firebase']) {
+          provider = tokenParsed['firebase']['sign_in_provider'];
+        }
+        setUser({
+          ...(u.displayName !== null ? {name: u.displayName} : {}),
+          ...(u.email !== null ? {email: u.email} : {}),
+          uid: u.uid,
+          photoURL: u.photoURL,
+          authProvider: provider,
+        } as UserInfo)
+      } else {
+        // User is signed out
+        // ...
+        setUser(null);
+        console.log('signed out');
+      }
+    });
+  }, []);
 
   const doit7 = async (user: User, providerPrefix: string, provider: string) => {
     const db = GetDB();
@@ -40,25 +75,29 @@ export default function CtAuthTest() {
   const googleHandleLogin = (credentialResponse: CredentialResponse) => {
     const obj = jwtDecode(credentialResponse.credential!);
     console.log(JSON.stringify(obj));
-    //setUser(obj);
-    //setAuthProvider('google');
 
-    const auth = getAuth();
     console.log(credentialResponse.clientId);
     console.log(credentialResponse.credential);
     const credential = GoogleAuthProvider.credential(credentialResponse.credential);
+    const auth = getAuth();
     signInWithCredential(auth, credential).then(async (result) => {
+      console.log(result);
+      console.log('sign in succeeded');
+      const provider = result.user.providerData[0].providerId;
+      await doit7(result.user, provider.slice(0, 2), provider);
       // User signed in to Firebase, now you can perform actions in Firestore
       //doit6();
-      const u = result.user;
-      setUser({
+      //const p: Persistence = browserLocalPersistence;
+      //const u = result.user;
+      //const provider = u.providerData[0].providerId;
+      /* setUser({
         ...(u.displayName !== null ? {name: u.displayName} : {}),
         ...(u.email !== null ? {email: u.email} : {}),
         uid: u.uid,
         photoURL: u.photoURL,
-        authProvider: 'google'
+        authProvider: provider
       } as UserInfo);
-      await doit7(result.user, 'go', 'google');
+      await doit7(result.user, provider.slice(0, 2), provider); */
       //await SetUser(obj)
     }).catch((error) => {
       console.log(`error occurs`);
@@ -70,7 +109,6 @@ export default function CtAuthTest() {
   
 	const githubHandleLogin = async() => {
     //const credential = GithubAuthProvider.credential(response);
-		console.log('asdf');
     const auth = getAuth();
     const provider = new GithubAuthProvider();
     provider.addScope('read:user')
@@ -85,20 +123,17 @@ export default function CtAuthTest() {
     const credential = GithubAuthProvider.credentialFromResult(result);
     console.log(credential);
     if (credential !== null) {
-      const token = credential.accessToken;
-
-      console.log(token);
-      const u = result.user;
-      console.log(user);
-      setUser({
+      await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId);
+      //console.log(u);
+      /* setUser({
         ...(u.displayName !== null ? {name: u.displayName} : {}),
         ...(u.email !== null ? {email: u.email} : {}),
         uid: u.uid,
         photoURL: u.photoURL,
-        authProvider: 'github'
+        authProvider: credential.providerId
       } as UserInfo);
 
-      await doit7(result.user, 'gi', 'github');
+      await doit7(result.user, credential.providerId.slice(0, 2), credential.providerId); */
       // The signed-in user info.
       // IdP data available using getAdditionalUserInfo(result)
       // ...
@@ -124,10 +159,10 @@ export default function CtAuthTest() {
 
   const logout = () => {
     if (confirm('Are you sure you want to log out?')) {
-      if (user?.authProvider === 'google') {
+      /*if (user?.authProvider === 'google') {
         googleLogout();
       }
-      else if (user?.authProvider === 'github') {
+      else if (user?.authProvider === 'github') { */
         const auth = getAuth();
         signOut(auth).then(() => {
           // Sign-out successful.
@@ -136,7 +171,7 @@ export default function CtAuthTest() {
           // An error happened.
           console.log('sign out fail');
         });
-      }
+      //}
       setUser(null);
     }
   }
@@ -159,7 +194,7 @@ export default function CtAuthTest() {
    }
 
   const handleUidChange = (value: string) => {
-    setUid(value);
+    setUidInInput(value);
   }
 
   const handleTextChange = (value: string) => {
@@ -167,14 +202,14 @@ export default function CtAuthTest() {
   }
 
   const requestWriting = async () => {
-    //alert(uid);
     const db = GetDB();
     if (db === null)
       return;
+
     const citiesRef = collection(db, "users");
     console.log(user);
 
-    const myDoc = await setDoc(doc(citiesRef, user?.authProvider.slice(0, 2) + ':' + uid), {
+    const myDoc = await setDoc(doc(citiesRef, user?.authProvider.slice(0, 2) + ':' + uidInInput), {
       ...(text !== '' ? {text: text} : {})
       }, { merge: true});
   }
