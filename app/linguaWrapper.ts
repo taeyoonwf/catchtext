@@ -30,15 +30,11 @@ const load: LoadFunctionType = async (input: LanguageIdentifierInputType) => {
   if (!detector && input.init) {
     detector = await fetchData();
   }
+
   if (detector && !input.init) {
     return {
       id: input.id,
-      result: detector.computeLanguageConfidenceValues(input.text
-        .replaceAll(/’/, "'")
-        .replaceAll('—', "-")
-        .replaceAll('“', '"')
-        .replaceAll('”', '"')
-      )
+      result: detector.computeLanguageConfidenceValues(input.text)
     } as LanguageIdentifierOutputType;
   }
   return true;
